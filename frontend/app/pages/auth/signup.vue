@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8 max-w-md mx-auto">
+    <div class="p-8  mx-auto">
         <h1 class="text-2xl font-bold">Signup</h1>
         <input
             v-model="email"

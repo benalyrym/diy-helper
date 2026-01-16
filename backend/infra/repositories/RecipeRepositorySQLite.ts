@@ -57,6 +57,17 @@ export class RecipeRepositorySQLite {
         console.log('✅ REPO: Recipe found, enriching...')
         return this._enrichRecipe(recipe)
     }
+    async update(id: string, data: any): Promise<void> {
+        const { name, description } = data
+
+        db.prepare(
+            `
+        UPDATE recipes
+        SET name = ?, description = ?
+        WHERE id = ?
+        `
+        ).run(name, description, id)
+    }
 
     private _enrichRecipe(recipe: any) {
         console.log('🔍 ENRICH: Starting to enrich recipe:', recipe.id)
@@ -105,6 +116,26 @@ export class RecipeRepositorySQLite {
             notes: recipe.notes || undefined,
             createdAt: recipe.createdAt,
             updatedAt: recipe.updatedAt
+        }
+    }
+    async deleteIngredientsByRecipe(recipeId: string) {
+        db.prepare(
+            "DELETE FROM ingredients WHERE recipeId = ?"
+        ).run(recipeId)
+    }
+
+    async insertIngredients(recipeId: string, ingredients: any[]) {
+        const stmt = db.prepare(
+            "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES (?,?,?,?)"
+        )
+
+        for (const ing of ingredients) {
+            stmt.run(
+                recipeId,
+                ing.name,
+                ing.quantity,   // quantity -> ratio
+                ing.unit ?? null
+            )
         }
     }
 }

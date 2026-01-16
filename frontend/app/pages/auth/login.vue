@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8 max-w-md mx-auto">
+    <div class="p-8 mx-auto">
         <h1 class="text-2xl font-bold">Login</h1>
         <input
             v-model="email"
@@ -24,7 +24,7 @@
 
 <script setup>
 import { ref } from "vue"
-import { useAuth } from "../../composables/useAuth.js"
+import { useAuth } from "~/composables/useAuth.ts"
 import { navigateTo } from "nuxt/app"
 
 const email = ref("")

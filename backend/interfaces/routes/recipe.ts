@@ -2,6 +2,7 @@ import { RecipeRepositorySQLite } from "../../infra/repositories/RecipeRepositor
 import { CreateRecipe } from "../../domain/usecases/CreateRecipe"
 import { ListRecipes } from "../../domain/usecases/ListRecipes"
 import {GetRecipe} from "../../domain/usecases/GetRecipe";
+import {UpdateRecipe} from "../../domain/usecases/UpdateRecipe";
 
 export default async function (fastify) {
     const repo = new RecipeRepositorySQLite()
@@ -71,8 +72,18 @@ export default async function (fastify) {
     })
     // PUT /recipes/:id - Mettre à jour une recette (optionnel)
     fastify.put("/:id", async (req, reply) => {
-        // À implémenter si besoin
-        return reply.code(501).send({ error: "Not implemented yet" })
+
+        try {
+            const userId = (req.user as any).id
+            const recipeId = (req.params as any).id
+
+            const update = new UpdateRecipe(repo)
+            await update.execute(recipeId, userId, req.body)
+
+            return reply.code(200).send({ success: true })
+        } catch (error: any) {
+            return reply.code(403).send({ error: error.message })
+        }
     })
 
     // DELETE /recipes/:id - Supprimer une recette (optionnel)
@@ -80,4 +91,5 @@ export default async function (fastify) {
         // À implémenter si besoin
         return reply.code(501).send({ error: "Not implemented yet" })
     })
+
 }
