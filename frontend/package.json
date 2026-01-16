@@ -6,7 +6,10 @@
     "dev": "nuxt dev",
     "start": "nuxt dev  -- -o ",
     "build": "nuxt build",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
