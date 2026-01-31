@@ -1,19 +1,25 @@
 <template>
     <div class="p-8 mx-auto">
         <h1 class="text-2xl font-bold">Login</h1>
+        <label for="email">email</label>
         <input
             v-model="email"
+            id="email"
             placeholder="Email"
+            type="email"
             class="border p-2 w-full"
         />
+        <label for="password">password</label>
         <input
             v-model="pass"
             type="password"
+            id="password"
             placeholder="Password"
             class="border p-2 w-full"
         />
         <button
             @click="onLogin"
+            id="onLogin"
             class="bg-blue-600 text-white p-2 rounded"
         >
             Login
