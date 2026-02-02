@@ -5,7 +5,7 @@ export class CreateRecipe {
     constructor(private recipeRepo: RecipeRepositorySQLite) {}
 
     async execute(data: any) {
-        const recipe = new Recipe(
+        const recipe: any = new Recipe(
             data.name,
             data.description,
             data.ingredients,

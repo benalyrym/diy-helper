@@ -1,3 +1,4 @@
+// infra/repositories/RecipeRepositorySQLite.ts - version corrigée
 import { db } from "../db"
 import { v4 as uuidv4 } from "uuid"
 import { Recipe } from "../../domain/models/Recipe"
@@ -5,137 +6,249 @@ import { Recipe } from "../../domain/models/Recipe"
 export class RecipeRepositorySQLite {
     async save(recipe: Recipe) {
         const id = uuidv4()
-        db.prepare(
-            "INSERT INTO recipes(id,name,description,ownerId) VALUES(?,?,?,?)"
-        ).run(id, recipe.name, recipe.description, recipe.ownerId)
-        const stmt = db.prepare(
-            "INSERT INTO ingredients(recipeId,name,ratio,density) VALUES(?,?,?,?)"
-        )
-        recipe.ingredients.forEach((i) =>
-            stmt.run(id, i.name, i.ratio, i.density)
-        )
-        return { id, ...recipe }
+        const now = new Date().toISOString()
+
+        console.log('💾 Saving recipe:', {
+            name: recipe.name,
+            type: recipe.type || 'recipe'
+        })
+
+        try {
+            // Insertion avec la colonne type
+            db.prepare(
+                `INSERT INTO recipes(
+                    id, name, description, ownerId, type,
+                    volume, skinType, createdAt, updatedAt
+                ) VALUES(?,?,?,?,?,?,?,?,?)`
+            ).run(
+                id,
+                recipe.name,
+                recipe.description || '',
+                recipe.ownerId,
+                recipe.type || 'recipe',
+                recipe.volume || null,
+                recipe.skinType || null,
+                now,
+                now
+            )
+
+            // Insertion des ingrédients
+            if (recipe.ingredients && recipe.ingredients.length > 0) {
+                const stmt = db.prepare(
+                    "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES(?,?,?,?)"
+                )
+
+                for (const ingredient of recipe.ingredients) {
+                    stmt.run(
+                        id,
+                        ingredient.name,
+                        ingredient.quantity,
+                        ingredient.unit || null
+                    )
+                }
+            }
+
+            return {
+                id,
+                ...recipe,
+                createdAt: now,
+                updatedAt: now
+            }
+
+        } catch (error: any) {
+            console.error('💥 Error saving recipe:', error.message)
+            throw error
+        }
     }
 
-    async findByOwner(ownerId: string) {
-        const rows = db
-            .prepare("SELECT * FROM recipes WHERE ownerId=?")
-            .all(ownerId)
-        return rows
+    async findByOwner(ownerId: string, type?: 'recipe' | 'skincare') {
+        try {
+            let query = "SELECT * FROM recipes WHERE ownerId = ?"
+            const params: any[] = [ownerId]
+
+            if (type) {
+                query += " AND type = ?"
+                params.push(type)
+            }
+
+            query += " ORDER BY updatedAt DESC"
+
+            const rows = db.prepare(query).all(...params)
+            console.log(`📊 Found ${rows.length} recipes for owner ${ownerId}`)
+
+            return rows.map(row => this._enrichRecipe(row))
+
+        } catch (error: any) {
+            console.error('💥 Error in findByOwner:', error.message)
+            return []
+        }
     }
-    // infra/repositories/RecipeRepositorySQLite.ts
+
     async findByIdAndOwner(id: string, ownerId: string) {
-        console.log('🔍 REPO: findByIdAndOwner called')
-        console.log('📌 ID recherché:', id)
-        console.log('📌 OwnerID recherché:', ownerId)
-        console.log('📌 Type de ownerId:', typeof ownerId)
+        try {
+            console.log('🔍 REPO: findByIdAndOwner called')
 
-        const recipe = db
-            .prepare("SELECT * FROM recipes WHERE id = ? AND ownerId = ?")
-            .get(id, ownerId)
+            const recipe = db
+                .prepare("SELECT * FROM recipes WHERE id = ? AND ownerId = ?")
+                .get(id, ownerId)
 
-        console.log('📌 Résultat SQL brut:', recipe)
+            if (!recipe) {
+                console.log('❌ REPO: Recipe not found')
+                return null
+            }
 
-        if (!recipe) {
-            console.log('❌ REPO: Recipe not found with these criteria')
+            console.log('✅ REPO: Recipe found')
+            return this._enrichRecipe(recipe)
 
-            // Vérifier si la recette existe sans ownerId
-            const recipeWithoutOwner = db
-                .prepare("SELECT * FROM recipes WHERE id = ?")
-                .get(id)
-            console.log('🔍 Recette sans vérification owner:', recipeWithoutOwner)
-
-            // Vérifier les recettes de cet owner
-            const ownerRecipes = db
-                .prepare("SELECT id, name FROM recipes WHERE ownerId = ?")
-                .all(ownerId)
-            console.log('📋 Toutes les recettes de cet owner:', ownerRecipes)
-
+        } catch (error: any) {
+            console.error('💥 Error in findByIdAndOwner:', error.message)
             return null
         }
-
-        console.log('✅ REPO: Recipe found, enriching...')
-        return this._enrichRecipe(recipe)
     }
-    async update(id: string, data: any): Promise<void> {
-        const { name, description } = data
 
-        db.prepare(
-            `
-        UPDATE recipes
-        SET name = ?, description = ?
-        WHERE id = ?
-        `
-        ).run(name, description, id)
+    async update(id: string, data: any): Promise<void> {
+        const now = new Date().toISOString()
+
+        console.log('📝 Repository update:', { id, data })
+
+        try {
+            // Mise à jour de la recette
+            const stmt = db.prepare(`
+                UPDATE recipes 
+                SET name = ?, description = ?, type = ?,
+                    volume = ?, skinType = ?, updatedAt = ?
+                WHERE id = ?
+            `)
+
+            stmt.run(
+                data.name || '',
+                data.description || '',
+                data.type || 'recipe',
+                data.volume || null,
+                data.skinType || null,
+                now,
+                id
+            )
+
+            // Mettre à jour les ingrédients si fournis
+            if (data.ingredients && Array.isArray(data.ingredients)) {
+                // Supprimer les anciens ingrédients
+                await this.deleteIngredientsByRecipe(id)
+
+                // Insérer les nouveaux ingrédients
+                if (data.ingredients.length > 0) {
+                    const insertStmt = db.prepare(`
+                        INSERT INTO ingredients(recipeId, name, ratio, density)
+                        VALUES (?, ?, ?, ?)
+                    `)
+
+                    for (const ing of data.ingredients) {
+                        insertStmt.run(
+                            id,
+                            ing.name,
+                            ing.quantity || 0,
+                            ing.unit || null
+                        )
+                    }
+                }
+            }
+
+            console.log('✅ Repository: Recipe updated successfully')
+
+        } catch (error: any) {
+            console.error('💥 Repository update error:', error.message)
+            throw error
+        }
     }
 
     private _enrichRecipe(recipe: any) {
-        console.log('🔍 ENRICH: Starting to enrich recipe:', recipe.id)
-
-        // Récupérer les ingrédients - UTILISER LES BONNES COLONNES
-        const ingredientsQuery = db
-            .prepare("SELECT name, ratio, density FROM ingredients WHERE recipeId = ?")
-
-        const ingredientsRows = ingredientsQuery.all(recipe.id)
-        console.log('📦 Ingredients rows from DB:', ingredientsRows)
-
-        const ingredients = ingredientsRows.map(ing => {
-            console.log('📦 Processing ingredient:', ing)
-            return {
-                name: ing.name,
-                quantity: ing.ratio,  // Utiliser ratio comme quantity
-                unit: ing.density || undefined  // Utiliser density comme unit
-            }
-        })
-
-        console.log('📦 Processed ingredients:', ingredients)
-
-        // Récupérer les étapes
         try {
-            const stepsQuery = db
-                .prepare("SELECT description FROM steps WHERE recipeId = ? ORDER BY stepNumber")
-            const stepsRows = stepsQuery.all(recipe.id)
-            const steps = stepsRows.map(s => s.description)
-            console.log('📋 Steps found:', steps)
-        } catch (error) {
-            console.log('📋 No steps table or error:', error.message)
-            // Pas de table steps ou autre erreur
-        }
+            console.log(`🔍 Enriching recipe: ${recipe.id}`)
 
-        return {
-            id: recipe.id,
-            name: recipe.name,
-            description: recipe.description,
-            ownerId: recipe.ownerId,
-            ingredients,
-            steps: [], // Temporairement vide
-            prepTime: recipe.prepTime || undefined,
-            cookTime: recipe.cookTime || undefined,
-            servings: recipe.servings || undefined,
-            difficulty: recipe.difficulty || undefined,
-            notes: recipe.notes || undefined,
-            createdAt: recipe.createdAt,
-            updatedAt: recipe.updatedAt
+            // Récupérer les ingrédients
+            const ingredientsQuery = db
+                .prepare("SELECT name, ratio, density FROM ingredients WHERE recipeId = ?")
+
+            const ingredientsRows = ingredientsQuery.all(recipe.id)
+
+            const ingredients = ingredientsRows.map((ing: any) => ({
+                name: ing.name,
+                quantity: ing.ratio,
+                unit: ing.density || undefined
+            }))
+
+            // Construction de l'objet enrichi
+            const enriched: any = {
+                id: recipe.id,
+                name: recipe.name,
+                description: recipe.description,
+                ownerId: recipe.ownerId,
+                ingredients,
+                type: recipe.type || 'recipe',
+                createdAt: recipe.createdAt,
+                updatedAt: recipe.updatedAt
+            }
+
+            // Ajouter les champs spécifiques selon le type
+            if (recipe.type === 'skincare') {
+                enriched.volume = recipe.volume || 50
+                enriched.skinType = recipe.skinType || 'mixte'
+            } else {
+                enriched.prepTime = recipe.prepTime || undefined
+                enriched.cookTime = recipe.cookTime || undefined
+                enriched.servings = recipe.servings || undefined
+                enriched.difficulty = recipe.difficulty || undefined
+                enriched.notes = recipe.notes || undefined
+            }
+
+            console.log(`✅ Recipe enriched: ${recipe.name}`)
+            return enriched
+
+        } catch (error: any) {
+            console.error(`💥 Error enriching recipe ${recipe.id}:`, error.message)
+
+            // Retourner la recette de base en cas d'erreur
+            return {
+                id: recipe.id,
+                name: recipe.name,
+                description: recipe.description,
+                ownerId: recipe.ownerId,
+                ingredients: [],
+                type: recipe.type || 'recipe'
+            }
         }
     }
+
     async deleteIngredientsByRecipe(recipeId: string) {
-        db.prepare(
-            "DELETE FROM ingredients WHERE recipeId = ?"
-        ).run(recipeId)
+        try {
+            db.prepare(
+                "DELETE FROM ingredients WHERE recipeId = ?"
+            ).run(recipeId)
+            console.log(`✅ Ingredients deleted for recipe ${recipeId}`)
+        } catch (error: any) {
+            console.error('💥 Error deleting ingredients:', error.message)
+            throw error
+        }
     }
 
     async insertIngredients(recipeId: string, ingredients: any[]) {
-        const stmt = db.prepare(
-            "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES (?,?,?,?)"
-        )
-
-        for (const ing of ingredients) {
-            stmt.run(
-                recipeId,
-                ing.name,
-                ing.quantity,   // quantity -> ratio
-                ing.unit ?? null
+        try {
+            const stmt = db.prepare(
+                "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES (?,?,?,?)"
             )
+
+            for (const ing of ingredients) {
+                stmt.run(
+                    recipeId,
+                    ing.name,
+                    ing.quantity,
+                    ing.unit || null
+                )
+            }
+            console.log(`✅ ${ingredients.length} ingredients inserted for recipe ${recipeId}`)
+        } catch (error: any) {
+            console.error('💥 Error inserting ingredients:', error.message)
+            throw error
         }
     }
 }

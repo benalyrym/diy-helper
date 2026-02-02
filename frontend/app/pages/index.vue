@@ -2,7 +2,7 @@
     <div class="min-h-screen bg-gray-50">
         <!-- Header avec logout -->
         <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-4">
                     <h1 class="text-xl font-semibold text-gray-900">DIY Recipe Helper</h1>
                     <button
@@ -16,13 +16,13 @@
         </header>
 
         <!-- Contenu principal -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <main class=" mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Hero section -->
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">
                     Bienvenue dans votre assistant de recettes
                 </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 mx-auto">
                     Créez, organisez et partagez vos recettes favorites.
                     Simplifiez votre cuisine au quotidien.
                 </p>
