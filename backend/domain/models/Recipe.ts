@@ -17,7 +17,8 @@ export class Recipe {
         public cookTime?: number,
         public servings?: number,
         public difficulty?: 'easy' | 'medium' | 'hard',
-        public notes?: string
+        public notes?: string,
+        public skincareData?: any
     ) {
         if (!name) throw new DomainError("Name required")
 

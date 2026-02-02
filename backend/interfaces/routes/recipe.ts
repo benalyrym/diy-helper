@@ -1,6 +1,7 @@
 // interfaces/routes/recipe.ts - version complète avec toutes les routes
 import { RecipeRepositorySQLite } from "../../infra/repositories/RecipeRepositorySQLite.js"
 import { CreateRecipe } from "../../domain/usecases/CreateRecipe.js"
+import { CreateSkincareFormula } from "../../domain/usecases/CreateSkincareFormula.js"
 import { ListRecipes } from "../../domain/usecases/ListRecipes.js"
 import { GetRecipe } from "../../domain/usecases/GetRecipe.js"
 import { UpdateRecipe } from "../../domain/usecases/UpdateRecipe.js"
@@ -82,7 +83,9 @@ export default async function (fastify: any) {
             console.log('➕ Creating recipe for user:', userId)
             console.log('📦 Data:', data)
 
-            const create = new CreateRecipe(repo)
+            const create = data.type === 'skincare'
+                ? new CreateSkincareFormula(repo)
+                : new CreateRecipe(repo)
             const result = await create.execute(data)
 
             console.log('✅ Recipe created:', result.id)

@@ -9,4 +9,8 @@ export type RecipeDTO = {
     description: string
     ingredients: any[]
     ownerId: string
+    type?: 'recipe' | 'skincare'
+    volume?: number
+    skinType?: string
+    skincareData?: any
 }

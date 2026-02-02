@@ -19,7 +19,9 @@
                 :oil="oil"
                 :is-selected="isOilSelected(oil.name)"
                 :total-percent="totalPercent"
+                :volume="volume"
                 @toggle="handleToggle"
+                @update-percent="handleUpdatePercent"
             />
         </div>
     </div>
@@ -34,13 +36,17 @@ const props = defineProps({
     oils: Array,
     selectedOils: Array,
     totalPercent: Number,
+    volume: {
+        type: Number,
+        default: 50
+    },
     showAll: {
         type: Boolean,
         default: true
     }
 })
 
-const emit = defineEmits(['toggle-oil'])
+const emit = defineEmits(['toggle-oil', 'update-percent'])
 
 const shouldShowCategory = computed(() => {
     return props.showAll || props.oils.some(oil => isOilSelected(oil.name))
@@ -61,6 +67,10 @@ const handleToggle = (oil) => {
         oil,
         action: isOilSelected(oil.name) ? 'remove' : 'add'
     })
+}
+
+const handleUpdatePercent = (data) => {
+    emit('update-percent', data)
 }
 </script>
 

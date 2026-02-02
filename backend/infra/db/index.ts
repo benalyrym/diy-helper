@@ -29,6 +29,7 @@ db.prepare(
         type TEXT DEFAULT 'recipe',
         volume INTEGER,
         skinType TEXT,
+        skincareData TEXT,
         prepTime INTEGER,
         cookTime INTEGER,
         servings INTEGER,
@@ -39,6 +40,12 @@ db.prepare(
         FOREIGN KEY (ownerId) REFERENCES users(id)
     )`
 ).run()
+
+// Ajouter les colonnes manquantes si la base existe deja
+const recipeColumns = db.prepare(\"PRAGMA table_info(recipes)\").all().map((c: any) => c.name)
+if (!recipeColumns.includes('skincareData')) {
+    db.prepare(\"ALTER TABLE recipes ADD COLUMN skincareData TEXT\").run()
+}
 
 db.prepare(
     `CREATE TABLE IF NOT EXISTS ingredients(

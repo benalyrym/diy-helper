@@ -75,7 +75,7 @@
                         @change="updatePropertyFilter"
                     >
                         <option value="">Toutes propriétés</option>
-                        <option value="anti-âge">Anti-âge</option>
+                        <option value="anti-age">Anti-age</option>
                         <option value="hydratant">Hydratant</option>
                         <option value="apaisant">Apaisant</option>
                         <option value="purifiant">Purifiant</option>
@@ -148,9 +148,10 @@
                 :oils="oils"
                 :selected-oils="selectedHE"
                 :total-percent="heTotal"
+                :show-all="showAll"
+                :volume="volume"
                 @toggle-oil="toggleOil"
                 @update-percent="updateOilPercent"
-                @remove-oil="removeOil"
             />
         </div>
 
@@ -184,6 +185,7 @@
                     v-for="oil in selectedHE"
                     :key="oil.name"
                     :oil="oil"
+                    :volume="volume"
                     @update-percent="updateOilPercent"
                     @remove="removeOil"
                 />
@@ -261,6 +263,11 @@ const props = defineProps({
         type: Array,
         required: true,
         default: () => []
+    },
+
+    volume: {
+        type: Number,
+        default: 50
     },
 
     // Filtres de recherche

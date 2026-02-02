@@ -12,6 +12,20 @@ export class CreateSkincareFormula {
         // Préparation des ingrédients
         const ingredients = this.prepareIngredients(data)
 
+        const skincareData = {
+            formulaType: data.formulaType,
+            spf: data.spf,
+            preservativeSystem: data.preservativeSystem,
+            actives: data.actives || [],
+            selectedHE: data.selectedHE || [],
+            phases: data.phases,
+            regulatoryStatus: data.regulatoryStatus,
+            inciList: data.inciList,
+            mandatoryMentions: data.mandatoryMentions,
+            compliance: data.compliance,
+            version: data.version
+        }
+
         // Création de la recette
         const recipe = new Recipe(
             data.name,
@@ -20,7 +34,13 @@ export class CreateSkincareFormula {
             data.ownerId,
             'skincare',
             data.volume,
-            data.skinType
+            data.skinType,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            skincareData
         )
 
         // Sauvegarde
@@ -78,20 +98,60 @@ export class CreateSkincareFormula {
         }
 
         // Phases de base
-        if (data.phases?.oil) {
-            ingredients.push({
-                name: 'Phase huileuse',
-                quantity: data.phases.oil,
-                unit: '%'
-            })
-        }
+        if (Array.isArray(data.phases)) {
+            const phaseMap = data.phases.reduce((acc: any, phase: any) => {
+                acc[phase.name] = phase
+                return acc
+            }, {})
+            const oilPhase = Object.values(phaseMap).find((p: any) =>
+                typeof p?.name === 'string' && p.name.toLowerCase().includes('huile')
+            )
+            const waterPhase = Object.values(phaseMap).find((p: any) =>
+                typeof p?.name === 'string' && p.name.toLowerCase().includes('aqueuse')
+            )
+            const emulsifierPhase = Object.values(phaseMap).find((p: any) =>
+                typeof p?.name === 'string' && p.name.toLowerCase().includes('emuls')
+            )
 
-        if (data.phases?.water) {
-            ingredients.push({
-                name: 'Phase aqueuse',
-                quantity: data.phases.water,
-                unit: '%'
-            })
+            if (oilPhase) {
+                ingredients.push({
+                    name: oilPhase.name,
+                    quantity: oilPhase.percent,
+                    unit: '%'
+                })
+            }
+
+            if (waterPhase) {
+                ingredients.push({
+                    name: waterPhase.name,
+                    quantity: waterPhase.percent,
+                    unit: '%'
+                })
+            }
+
+            if (emulsifierPhase) {
+                ingredients.push({
+                    name: emulsifierPhase.name,
+                    quantity: emulsifierPhase.percent,
+                    unit: '%'
+                })
+            }
+        } else {
+            if (data.phases?.oil) {
+                ingredients.push({
+                    name: 'Phase huileuse',
+                    quantity: data.phases.oil,
+                    unit: '%'
+                })
+            }
+
+            if (data.phases?.water) {
+                ingredients.push({
+                    name: 'Phase aqueuse',
+                    quantity: data.phases.water,
+                    unit: '%'
+                })
+            }
         }
 
         return ingredients

@@ -13,6 +13,21 @@ export interface Recipe {
     servings?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
     notes?: string;
+    type?: 'recipe' | 'skincare';
+    volume?: number;
+    skinType?: string;
+    formulaType?: string;
+    spf?: number;
+    preservativeSystem?: string;
+    actives?: any[];
+    selectedHE?: any[];
+    phases?: any;
+    regulatoryStatus?: any;
+    inciList?: string[];
+    mandatoryMentions?: string[];
+    compliance?: any;
+    version?: string;
+    skincareData?: any;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -28,13 +43,13 @@ export function useApi() {
         authFetch<Recipe>(`/recipes/${id}`)
 
     const createRecipe = async (data: any): Promise<Recipe> => {
-        console.log('Envoi des données:', data)
-        const response = await authFetch<Recipe>("/recipes", {
+        console.log('Envoi des donnees:', data)
+        const response: any = await authFetch<any>("/recipes", {
             method: "POST",
             body: data
         })
-        console.log('Réponse reçue:', response)
-        return response
+        console.log('Reponse recue:', response)
+        return response?.data || response
     }
     const updateRecipe = (id: string | number, data: Partial<Recipe>): Promise<Recipe> => {
         const recipeId = typeof id === 'number' ? id.toString() : id

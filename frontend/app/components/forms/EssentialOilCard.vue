@@ -339,14 +339,29 @@ const getIFRAClass = (ifraValue) => {
 
 const getPropertyClass = (property) => {
     const propertyMap = {
-        'Anti-âge': 'property-antiage',
+        'Anti-?ge': 'property-antiage',
+        'Anti-age': 'property-antiage',
         'Hydratant': 'property-hydrating',
         'Apaisant': 'property-soothing',
         'Purifiant': 'property-purifying',
         'Antioxydant': 'property-antioxidant',
-        'Régénérant': 'property-regenerating',
+        'R?g?n?rant': 'property-regenerating',
+        'Regenerant': 'property-regenerating',
         'Antiseptique': 'property-antiseptic',
-        'Cicatrisant': 'property-healing'
+        'Cicatrisant': 'property-healing',
+        'Eclat': 'property-antioxidant',
+        'Equilibrant': 'property-default',
+        'Tonique': 'property-antioxidant',
+        'Circulatoire': 'property-antioxidant',
+        'Relaxant': 'property-soothing',
+        'Detoxifiant': 'property-purifying',
+        'Rechauffant': 'property-antioxidant',
+        'Stimulant': 'property-antioxidant',
+        'Astringent': 'property-purifying',
+        'Ancrant': 'property-default',
+        'Calmant': 'property-soothing',
+        'Anti-inflammatoire': 'property-soothing',
+        'Digestif': 'property-default'
     }
 
     return propertyMap[property] || 'property-default'

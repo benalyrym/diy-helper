@@ -12,6 +12,21 @@ export interface Recipe {
     servings?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
     notes?: string;
+    type?: 'recipe' | 'skincare';
+    volume?: number;
+    skinType?: string;
+    formulaType?: string;
+    spf?: number;
+    preservativeSystem?: string;
+    actives?: any[];
+    selectedHE?: any[];
+    phases?: any;
+    regulatoryStatus?: any;
+    inciList?: string[];
+    mandatoryMentions?: string[];
+    compliance?: any;
+    version?: string;
+    skincareData?: any;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -26,4 +41,19 @@ export interface RecipeForm {
     servings?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
     notes?: string;
+    type?: 'recipe' | 'skincare';
+    volume?: number;
+    skinType?: string;
+    formulaType?: string;
+    spf?: number;
+    preservativeSystem?: string;
+    actives?: any[];
+    selectedHE?: any[];
+    phases?: any;
+    regulatoryStatus?: any;
+    inciList?: string[];
+    mandatoryMentions?: string[];
+    compliance?: any;
+    version?: string;
+    skincareData?: any;
 }

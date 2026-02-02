@@ -7,6 +7,7 @@ export class RecipeRepositorySQLite {
     async save(recipe: Recipe) {
         const id = uuidv4()
         const now = new Date().toISOString()
+        const skincarePayload = recipe.skincareData ? JSON.stringify(recipe.skincareData) : null
 
         console.log('💾 Saving recipe:', {
             name: recipe.name,
@@ -18,8 +19,8 @@ export class RecipeRepositorySQLite {
             db.prepare(
                 `INSERT INTO recipes(
                     id, name, description, ownerId, type,
-                    volume, skinType, createdAt, updatedAt
-                ) VALUES(?,?,?,?,?,?,?,?,?)`
+                    volume, skinType, skincareData, createdAt, updatedAt
+                ) VALUES(?,?,?,?,?,?,?,?,?,?)`
             ).run(
                 id,
                 recipe.name,
@@ -28,6 +29,7 @@ export class RecipeRepositorySQLite {
                 recipe.type || 'recipe',
                 recipe.volume || null,
                 recipe.skinType || null,
+                skincarePayload,
                 now,
                 now
             )
@@ -39,11 +41,13 @@ export class RecipeRepositorySQLite {
                 )
 
                 for (const ingredient of recipe.ingredients) {
+                    const quantity = ingredient.quantity ?? ingredient.ratio ?? 0
+                    const unit = ingredient.unit ?? ingredient.density ?? null
                     stmt.run(
                         id,
                         ingredient.name,
-                        ingredient.quantity,
-                        ingredient.unit || null
+                        quantity,
+                        unit
                     )
                 }
             }
@@ -52,7 +56,8 @@ export class RecipeRepositorySQLite {
                 id,
                 ...recipe,
                 createdAt: now,
-                updatedAt: now
+                updatedAt: now,
+                skincareData: recipe.skincareData
             }
 
         } catch (error: any) {
@@ -108,6 +113,26 @@ export class RecipeRepositorySQLite {
 
     async update(id: string, data: any): Promise<void> {
         const now = new Date().toISOString()
+        let skincarePayload: string | null = null
+
+        if (typeof data.skincareData !== 'undefined') {
+            skincarePayload = data.skincareData ? JSON.stringify(data.skincareData) : null
+        } else if (data.type === 'skincare') {
+            const picked = {
+                formulaType: data.formulaType,
+                spf: data.spf,
+                preservativeSystem: data.preservativeSystem,
+                actives: data.actives || [],
+                selectedHE: data.selectedHE || [],
+                phases: data.phases,
+                regulatoryStatus: data.regulatoryStatus,
+                inciList: data.inciList,
+                mandatoryMentions: data.mandatoryMentions,
+                compliance: data.compliance,
+                version: data.version
+            }
+            skincarePayload = JSON.stringify(picked)
+        }
 
         console.log('📝 Repository update:', { id, data })
 
@@ -116,7 +141,7 @@ export class RecipeRepositorySQLite {
             const stmt = db.prepare(`
                 UPDATE recipes 
                 SET name = ?, description = ?, type = ?,
-                    volume = ?, skinType = ?, updatedAt = ?
+                    volume = ?, skinType = ?, skincareData = COALESCE(?, skincareData), updatedAt = ?
                 WHERE id = ?
             `)
 
@@ -126,6 +151,7 @@ export class RecipeRepositorySQLite {
                 data.type || 'recipe',
                 data.volume || null,
                 data.skinType || null,
+                skincarePayload,
                 now,
                 id
             )
@@ -143,11 +169,13 @@ export class RecipeRepositorySQLite {
                     `)
 
                     for (const ing of data.ingredients) {
+                        const quantity = ing.quantity ?? ing.ratio ?? 0
+                        const unit = ing.unit ?? ing.density ?? null
                         insertStmt.run(
                             id,
                             ing.name,
-                            ing.quantity || 0,
-                            ing.unit || null
+                            quantity,
+                            unit
                         )
                     }
                 }
@@ -178,6 +206,15 @@ export class RecipeRepositorySQLite {
             }))
 
             // Construction de l'objet enrichi
+            let skincareData: any = null
+            if (recipe.skincareData) {
+                try {
+                    skincareData = JSON.parse(recipe.skincareData)
+                } catch (err: any) {
+                    console.warn('⚠️ Invalid skincareData JSON for recipe', recipe.id)
+                }
+            }
+
             const enriched: any = {
                 id: recipe.id,
                 name: recipe.name,
@@ -193,6 +230,10 @@ export class RecipeRepositorySQLite {
             if (recipe.type === 'skincare') {
                 enriched.volume = recipe.volume || 50
                 enriched.skinType = recipe.skinType || 'mixte'
+                if (skincareData) {
+                    enriched.skincareData = skincareData
+                    Object.assign(enriched, skincareData)
+                }
             } else {
                 enriched.prepTime = recipe.prepTime || undefined
                 enriched.cookTime = recipe.cookTime || undefined
@@ -238,11 +279,13 @@ export class RecipeRepositorySQLite {
             )
 
             for (const ing of ingredients) {
+                const quantity = ing.quantity ?? ing.ratio ?? 0
+                const unit = ing.unit ?? ing.density ?? null
                 stmt.run(
                     recipeId,
                     ing.name,
-                    ing.quantity,
-                    ing.unit || null
+                    quantity,
+                    unit
                 )
             }
             console.log(`✅ ${ingredients.length} ingredients inserted for recipe ${recipeId}`)
