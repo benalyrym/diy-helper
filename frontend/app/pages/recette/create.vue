@@ -16,8 +16,8 @@
         </div>
 
         <!-- Formulaire -->
-        <RecipeForm @save="handleSave" @cancel="handleCancel" />
-
+<!--        <RecipeForm @save="handleSave" @cancel="handleCancel" />-->
+        <formulateur-cosmetique  @save="handleSave" @cancel="handleCancel"></formulateur-cosmetique>
         <!-- États -->
         <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -43,7 +43,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import RecipeForm from '../../components/RecipeForm.vue'
-import { useApi } from '../../composables/useApi'
+import FormulateurCosmetique from '../../components/formulateur-cosmetique/FormulateurCosmetique.vue'
+import { useApi } from '~/composables/useApi'
 
 const router = useRouter()
 const { createRecipe } = useApi()
@@ -75,6 +76,6 @@ const handleSave = async (recipeData: any) => {
 }
 
 const handleCancel = () => {
-    router.push('/recettes')
+    router.push('/')
 }
 </script>

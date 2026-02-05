@@ -6,26 +6,28 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <!-- Logo et titre -->
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                            <span class="text-2xl text-white">🧪</span>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
-                                Formulateur Pro
-                            </h1>
-                            <p class="text-xs text-gray-500">Création de formules cosmétiques et ménagères</p>
-                        </div>
+                        <NuxtLink to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                            <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                                <span class="text-2xl text-white">🧪</span>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+                                    Formulateur Pro
+                                </h1>
+                                <p class="text-xs text-gray-500">Création de formules cosmétiques et ménagères</p>
+                            </div>
+                        </NuxtLink>
                     </div>
 
                     <!-- Statistiques -->
                     <div class="flex items-center gap-4">
                         <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
-              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
-                {{ recipes.length }} formules
-              </span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                                {{ recipes.length }} formules
+                            </span>
                             <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                {{ categoriesCount }} catégories
-              </span>
+                                {{ categoriesCount }} catégories
+                            </span>
                         </div>
 
                         <!-- Bouton nouvelle formule -->
@@ -56,7 +58,7 @@
                             type="text"
                             placeholder="Rechercher une formule par nom, ingrédient ou catégorie..."
                             class="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:ring-offset-1 transition-all duration-300"
-                            @input="debouncedSearch"
+                            @input="handleSearch"
                         />
                         <div v-if="searchTerm" class="absolute right-4 top-1/2 transform -translate-y-1/2">
                             <button
@@ -76,17 +78,17 @@
                             :key="category.id"
                             @click="toggleCategoryFilter(category.id)"
                             :class="[
-                'px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2',
-                activeFilters.includes(category.id)
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
-              ]"
+                                'px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2',
+                                activeFilters.includes(category.id)
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'
+                                    : 'bg-white border border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                            ]"
                         >
                             <span>{{ category.icon }}</span>
                             <span>{{ category.name }}</span>
                             <span class="text-xs opacity-75">
-                {{ getCategoryCount(category.id) }}
-              </span>
+                                {{ getCategoryCount(category.id) }}
+                            </span>
                         </button>
                         <button
                             @click="showAllCategories = !showAllCategories"
@@ -106,19 +108,19 @@
                             :key="category.id"
                             @click="toggleCategoryFilter(category.id)"
                             :class="[
-                'px-3 py-2 rounded-lg text-sm transition-all duration-300 flex items-center justify-between',
-                activeFilters.includes(category.id)
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm'
-                  : 'bg-gray-50 border border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
-              ]"
+                                'px-3 py-2 rounded-lg text-sm transition-all duration-300 flex items-center justify-between',
+                                activeFilters.includes(category.id)
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm'
+                                    : 'bg-gray-50 border border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                            ]"
                         >
                             <div class="flex items-center gap-2">
                                 <span>{{ category.icon }}</span>
                                 <span class="truncate">{{ category.name }}</span>
                             </div>
                             <span class="text-xs bg-white/20 px-1.5 py-0.5 rounded-full">
-                {{ getCategoryCount(category.id) }}
-              </span>
+                                {{ getCategoryCount(category.id) }}
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -127,20 +129,20 @@
                 <div v-if="activeFilters.length > 0" class="flex items-center gap-2 mt-4">
                     <span class="text-sm text-gray-600">Filtres actifs:</span>
                     <div class="flex flex-wrap gap-2">
-            <span
-                v-for="filterId in activeFilters"
-                :key="filterId"
-                class="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 rounded-full text-sm font-medium border border-blue-200"
-            >
-              {{ getCategoryName(filterId) }}
-              <button
-                  @click="removeFilter(filterId)"
-                  class="text-blue-600 hover:text-blue-800 ml-1"
-                  aria-label="Retirer ce filtre"
-              >
-                ×
-              </button>
-            </span>
+                        <span
+                            v-for="filterId in activeFilters"
+                            :key="filterId"
+                            class="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 rounded-full text-sm font-medium border border-blue-200"
+                        >
+                            {{ getCategoryName(filterId) }}
+                            <button
+                                @click="removeFilter(filterId)"
+                                class="text-blue-600 hover:text-blue-800 ml-1"
+                                aria-label="Retirer ce filtre"
+                            >
+                                ×
+                            </button>
+                        </span>
                         <button
                             @click="clearAllFilters"
                             class="text-sm text-red-600 hover:text-red-800 font-medium"
@@ -250,8 +252,8 @@
                                 </div>
                             </div>
                             <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                {{ recipesInCategory.length }} formule{{ recipesInCategory.length > 1 ? 's' : '' }}
-              </span>
+                                {{ recipesInCategory.length }} formule{{ recipesInCategory.length > 1 ? 's' : '' }}
+                            </span>
                         </div>
 
                         <!-- Grille de cartes -->
@@ -270,25 +272,22 @@
                                                     {{ recipe.name }}
                                                 </h3>
                                                 <div class="flex items-center gap-2 mt-1">
-                          <span class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200">
-                            {{ getCategoryName(recipe.category) }}
-                          </span>
+                                                    <span class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200">
+                                                        {{ getRecipeType(recipe) }}
+                                                    </span>
                                                     <span v-if="recipe.skinType" class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border border-purple-200">
-                            Peau {{ recipe.skinType }}
-                          </span>
-                                                    <span v-if="recipe.hairType" class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-amber-100 to-amber-50 text-amber-700 border border-amber-200">
-                            Cheveux {{ recipe.hairType }}
-                          </span>
+                                                        Peau {{ recipe.skinType }}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="flex-shrink-0 ml-3">
-                                                <span class="text-3xl">{{ getCategoryIcon(recipe.category) }}</span>
+                                                <span class="text-3xl">{{ getRecipeIcon(recipe) }}</span>
                                             </div>
                                         </div>
 
                                         <!-- Description -->
                                         <p v-if="recipe.description" class="text-sm text-gray-600 line-clamp-2 mb-4">
-                                            {{ recipe.description }}
+                                            {{ truncateDescription(recipe.description) }}
                                         </p>
                                         <p v-else class="text-sm text-gray-400 italic mb-4">
                                             Aucune description
@@ -302,22 +301,22 @@
                                                     <div class="text-xs text-gray-500 mb-1">Volume</div>
                                                     <div class="font-bold text-blue-700">{{ recipe.volume }} ml</div>
                                                 </div>
-                                                <div v-if="recipe.prepTime" class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-3 border border-amber-100">
-                                                    <div class="text-xs text-gray-500 mb-1">Temps</div>
-                                                    <div class="font-bold text-amber-700">{{ recipe.prepTime }} min</div>
+                                                <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-3 border border-emerald-100">
+                                                    <div class="text-xs text-gray-500 mb-1">Type</div>
+                                                    <div class="font-bold text-emerald-700">{{ recipe.type || 'recipe' }}</div>
                                                 </div>
                                             </div>
 
-                                            <!-- Ingénierie -->
+                                            <!-- Informations techniques -->
                                             <div class="flex items-center justify-between text-xs text-gray-500">
                                                 <div class="flex items-center gap-2">
                                                     <span>🔄 {{ formatDate(recipe.updatedAt) }}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1">
-                          <span v-if="recipe.ingredients?.length" class="flex items-center gap-1">
-                            <span>🧪</span>
-                            <span>{{ recipe.ingredients.length }} ingrédients</span>
-                          </span>
+                                                    <span v-if="recipe.ingredients?.length" class="flex items-center gap-1">
+                                                        <span>🧪</span>
+                                                        <span>{{ recipe.ingredients.length }} ingrédients</span>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -330,15 +329,13 @@
                                                 Créé le {{ formatDateShort(recipe.createdAt) }}
                                             </div>
                                             <div class="flex items-center gap-2">
-                        <span v-if="recipe.compliance?.isValid !== undefined"
-                              :class="[
-                            'px-2 py-1 rounded-full text-xs font-bold',
-                            recipe.compliance.isValid
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          ]">
-                          {{ recipe.compliance.isValid ? '✅ Conforme' : '⚠️ Non conforme' }}
-                        </span>
+                                                <span v-if="recipe.compliance?.isValid"
+                                                      class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                                                    ✅ Conforme
+                                                </span>
+                                                <span v-else class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                                    ⚠️ Non conforme
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -363,21 +360,21 @@
                                             {{ recipe.name }}
                                         </h3>
                                         <div class="flex items-center gap-2 mt-1">
-                      <span class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200">
-                        {{ getCategoryName(recipe.category) }}
-                      </span>
+                                            <span class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border border-blue-200">
+                                                {{ getRecipeType(recipe) }}
+                                            </span>
                                             <span v-if="recipe.skinType" class="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border border-purple-200">
-                        Peau {{ recipe.skinType }}
-                      </span>
+                                                Peau {{ recipe.skinType }}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0 ml-3">
-                                        <span class="text-3xl">{{ getCategoryIcon(recipe.category) }}</span>
+                                        <span class="text-3xl">{{ getRecipeIcon(recipe) }}</span>
                                     </div>
                                 </div>
 
                                 <p v-if="recipe.description" class="text-sm text-gray-600 line-clamp-2 mb-4">
-                                    {{ recipe.description }}
+                                    {{ truncateDescription(recipe.description) }}
                                 </p>
                                 <p v-else class="text-sm text-gray-400 italic mb-4">
                                     Aucune description
@@ -389,9 +386,9 @@
                                             <div class="text-xs text-gray-500 mb-1">Volume</div>
                                             <div class="font-bold text-blue-700">{{ recipe.volume }} ml</div>
                                         </div>
-                                        <div v-if="recipe.prepTime" class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-3 border border-amber-100">
-                                            <div class="text-xs text-gray-500 mb-1">Temps</div>
-                                            <div class="font-bold text-amber-700">{{ recipe.prepTime }} min</div>
+                                        <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-3 border border-emerald-100">
+                                            <div class="text-xs text-gray-500 mb-1">Type</div>
+                                            <div class="font-bold text-emerald-700">{{ recipe.type || 'recipe' }}</div>
                                         </div>
                                     </div>
 
@@ -400,10 +397,10 @@
                                             <span>🔄 {{ formatDate(recipe.updatedAt) }}</span>
                                         </div>
                                         <div class="flex items-center gap-1">
-                      <span v-if="recipe.ingredients?.length" class="flex items-center gap-1">
-                        <span>🧪</span>
-                        <span>{{ recipe.ingredients.length }}</span>
-                      </span>
+                                            <span v-if="recipe.ingredients?.length" class="flex items-center gap-1">
+                                                <span>🧪</span>
+                                                <span>{{ recipe.ingredients.length }}</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -415,15 +412,13 @@
                                         Créé le {{ formatDateShort(recipe.createdAt) }}
                                     </div>
                                     <div class="flex items-center gap-2">
-                    <span v-if="recipe.compliance?.isValid !== undefined"
-                          :class="[
-                        'px-2 py-1 rounded-full text-xs font-bold',
-                        recipe.compliance.isValid
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      ]">
-                      {{ recipe.compliance.isValid ? '✅ Conforme' : '⚠️ Non conforme' }}
-                    </span>
+                                        <span v-if="recipe.compliance?.isValid"
+                                              class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                                            ✅ Conforme
+                                        </span>
+                                        <span v-else class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                            ⚠️ Non conforme
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -452,11 +447,11 @@
                                     :key="page"
                                     @click="currentPage = page"
                                     :class="[
-                    'px-3 py-1 rounded-lg text-sm font-medium transition-colors',
-                    currentPage === page
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  ]"
+                                        'px-3 py-1 rounded-lg text-sm font-medium transition-colors',
+                                        currentPage === page
+                                            ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                    ]"
                                 >
                                     {{ page }}
                                 </button>
@@ -497,21 +492,6 @@
                         </p>
                     </div>
 
-                    <!-- Catégories -->
-                    <div>
-                        <h3 class="font-bold text-gray-900 mb-3">Catégories</h3>
-                        <div class="flex flex-wrap gap-2">
-              <span
-                  v-for="category in allCategories.slice(0, 6)"
-                  :key="category.id"
-                  class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-              >
-                <span>{{ category.icon }}</span>
-                <span>{{ category.name }}</span>
-              </span>
-                        </div>
-                    </div>
-
                     <!-- Statistiques -->
                     <div>
                         <h3 class="font-bold text-gray-900 mb-3">Votre atelier</h3>
@@ -530,6 +510,25 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Actions rapides -->
+                    <div>
+                        <h3 class="font-bold text-gray-900 mb-3">Actions rapides</h3>
+                        <div class="space-y-2">
+                            <NuxtLink
+                                to="/recette/create"
+                                class="block text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                                + Créer une nouvelle formule
+                            </NuxtLink>
+                            <NuxtLink
+                                to="/tips"
+                                class="block text-sm text-gray-600 hover:text-gray-800 hover:underline"
+                            >
+                                📚 Consulter les guides
+                            </NuxtLink>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-8 pt-8 border-t border-gray-200 text-center text-xs text-gray-500">
@@ -542,10 +541,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { useApi } from '~/composables/useApi'
+import { useRouter } from 'vue-router'
 
-// API
+const router = useRouter()
+
+// Importer les composables (assurez-vous que ces fichiers existent)
+// @ts-ignore
 const { listRecipes } = useApi()
+// @ts-ignore
+const { isAuthenticated } = useAuth()
 
 // États
 const recipes = ref<any[]>([])
@@ -558,76 +562,39 @@ const itemsPerPage = ref(12)
 const groupedByCategory = ref(true)
 const showAllCategories = ref(false)
 
-// Catégories complètes avec toutes les formulations
+// Catégories simplifiées pour les recettes
 const allCategories = [
-    // Cosmétique visage
-    { id: 'face-cream', name: 'Crèmes visage', icon: '🧴', description: 'Soins hydratants, anti-âge, spécialisés' },
-    { id: 'serum', name: 'Sérums', icon: '✨', description: 'Concentrés d\'actifs haute performance' },
-    { id: 'mask', name: 'Masques', icon: '😷', description: 'Masques visage, exfoliants, modelants' },
-    { id: 'toner', name: 'Toniques', icon: '💦', description: 'Lotions tonifiantes, équilibrantes' },
-
-    // Soins corps
-    { id: 'body-lotion', name: 'Laits corps', icon: '🦵', description: 'Hydratants, raffermissants, anti-vergetures' },
-    { id: 'body-butter', name: 'Beurres corps', icon: '🧈', description: 'Textures riches, nourrissantes' },
-    { id: 'scrub', name: 'Gommages', icon: '🌀', description: 'Exfoliants corps et visage' },
-
-    // Soins cheveux
-    { id: 'shampoo', name: 'Shampoings', icon: '🧴', description: 'Nettoyants, spécialisés, traitants' },
-    { id: 'conditioner', name: 'Après-shampoings', icon: '💆', description: 'Démêlants, nourrissants, gainants' },
-    { id: 'hair-mask', name: 'Masques cheveux', icon: '🧖', description: 'Traitements profonds, réparateurs' },
-    { id: 'hair-oil', name: 'Huiles cheveux', icon: '💧', description: 'Brillance, nutrition, pointes' },
-    { id: 'hair-serenum', name: 'Sérums cheveux', icon: '🌟', description: 'Brillance, anti-frisottis, protection' },
-
-    // Soins spécifiques
-    { id: 'suncare', name: 'Protection solaire', icon: '☀️', description: 'Crèmes SPF, sticks, après-soleil' },
-    { id: 'lip-care', name: 'Soins lèvres', icon: '👄', description: 'Baumes, sticks, exfoliants' },
-    { id: 'eye-cream', name: 'Soins contour yeux', icon: '👁️', description: 'Anti-cernes, anti-poches, anti-rides' },
-    { id: 'hand-cream', name: 'Crèmes mains', icon: '✋', description: 'Nourrissantes, réparatrices' },
-    { id: 'foot-cream', name: 'Crèmes pieds', icon: '🦶', description: 'Hydratantes, kératolytiques' },
-
-    // Maquillage
-    { id: 'makeup', name: 'Maquillage', icon: '💄', description: 'Fonds de teint, correcteurs, poudres' },
-    { id: 'lipstick', name: 'Rouges à lèvres', icon: '👄', description: 'Teintées, brillants, mates' },
-
-    // Ménager et hygiène
-    { id: 'laundry', name: 'Lessives', icon: '👕', description: 'Liquides, poudres, capsules' },
-    { id: 'fabric-softener', name: 'Adoucissants', icon: '🌸', description: 'Textiles doux et parfumés' },
-    { id: 'detergent', name: 'Détergents', icon: '🧼', description: 'Multi-surfaces, spécialisés' },
-    { id: 'soap', name: 'Savons', icon: '🧼', description: 'Solides, liquides, surgras' },
-    { id: 'disinfectant', name: 'Désinfectants', icon: '🦠', description: 'Surfaces, mains, sprays' },
-
-    // Autres
-    { id: 'perfume', name: 'Parfums', icon: '🌺', description: 'Eaux de toilette, parfums solides' },
-    { id: 'candle', name: 'Bougies', icon: '🕯️', description: 'Parfumées, décoratives' },
+    { id: 'skincare', name: 'Soin visage', icon: '🧴', description: 'Crèmes, sérums, soins spécifiques' },
+    { id: 'haircare', name: 'Soin cheveux', icon: '💇', description: 'Shampoings, masques, soins capillaires' },
+    { id: 'bodycare', name: 'Soin corps', icon: '🦵', description: 'Laits, beurres, gommages' },
+    { id: 'household', name: 'Ménager', icon: '🏠', description: 'Lessives, détergents, produits ménagers' },
+    { id: 'cosmetic', name: 'Cosmétique', icon: '💄', description: 'Maquillage, parfums, soins spécifiques' },
     { id: 'other', name: 'Autres', icon: '🧪', description: 'Formulations diverses' }
 ]
 
 // Catégories populaires (affichées par défaut)
 const popularCategories = computed(() => {
     return [
-        allCategories.find(c => c.id === 'face-cream'),
-        allCategories.find(c => c.id === 'shampoo'),
-        allCategories.find(c => c.id === 'laundry'),
-        allCategories.find(c => c.id === 'serum'),
-        allCategories.find(c => c.id === 'body-lotion'),
-        allCategories.find(c => c.id === 'detergent')
-    ].filter(Boolean)
+        allCategories.find(c => c.id === 'skincare'),
+        allCategories.find(c => c.id === 'haircare'),
+        allCategories.find(c => c.id === 'household'),
+        allCategories.find(c => c.id === 'bodycare')
+    ].filter(Boolean) as typeof allCategories
 })
 
 // Computed properties
-// Statistiques
 const categoriesCount = computed(() => {
-    const uniqueCategories = new Set(recipes.value.map(r => r.category))
+    const uniqueCategories = new Set(recipes.value.map(r => getRecipeCategory(r)))
     return uniqueCategories.size
 })
 
 const compliantRecipesCount = computed(() => {
-    return recipes.value.filter(r => r.compliance?.isValid === true).length
+    return recipes.value.filter(r => r.compliance?.isValid).length
 })
 
 const lastUpdate = computed(() => {
     if (recipes.value.length === 0) return '—'
-    const dates = recipes.value.map(r => new Date(r.updatedAt || r.createdAt))
+    const dates = recipes.value.map(r => new Date(r.updatedAt || r.createdAt || Date.now()))
     const latest = new Date(Math.max(...dates.map(d => d.getTime())))
     return formatDateShort(latest.toISOString())
 })
@@ -642,12 +609,11 @@ const filteredRecipes = computed(() => {
     if (searchTerm.value.trim()) {
         const term = searchTerm.value.toLowerCase().trim()
         result = result.filter(recipe =>
-            recipe.name.toLowerCase().includes(term) ||
+            recipe.name?.toLowerCase().includes(term) ||
             recipe.description?.toLowerCase().includes(term) ||
-            recipe.category?.toLowerCase().includes(term) ||
             recipe.skinType?.toLowerCase().includes(term) ||
             recipe.ingredients?.some((ing: any) =>
-                ing.name.toLowerCase().includes(term)
+                ing.name?.toLowerCase().includes(term)
             )
         )
     }
@@ -655,7 +621,7 @@ const filteredRecipes = computed(() => {
     // Filtre par catégories
     if (activeFilters.value.length > 0) {
         result = result.filter(recipe =>
-            activeFilters.value.includes(recipe.category)
+            activeFilters.value.includes(getRecipeCategory(recipe))
         )
     }
 
@@ -700,7 +666,7 @@ const groupedRecipesByCategory = computed(() => {
     const grouped: Record<string, any[]> = {}
 
     filteredRecipes.value.forEach(recipe => {
-        const category = recipe.category || 'other'
+        const category = getRecipeCategory(recipe)
         if (!grouped[category]) {
             grouped[category] = []
         }
@@ -714,6 +680,33 @@ const groupedRecipesByCategory = computed(() => {
 })
 
 // Fonctions utilitaires
+const getRecipeCategory = (recipe: any): string => {
+    // Si la recette a une catégorie spécifique
+    if (recipe.category && recipe.category !== 'recipe') {
+        return recipe.category
+    }
+
+    // Sinon, déterminer la catégorie basée sur la description
+    const description = recipe.description?.toLowerCase() || ''
+    if (description.includes('peau') || description.includes('visage') || description.includes('crème') || description.includes('sérum')) {
+        return 'skincare'
+    }
+    if (description.includes('cheveux') || description.includes('shampoo') || description.includes('masque cheveux') || description.includes('après-shampooing')) {
+        return 'haircare'
+    }
+    if (description.includes('corps') || description.includes('lait') || description.includes('beurre') || description.includes('gommage')) {
+        return 'bodycare'
+    }
+    if (description.includes('lessive') || description.includes('détergent') || description.includes('ménager') || description.includes('nettoyant')) {
+        return 'household'
+    }
+    if (description.includes('maquillage') || description.includes('parfum') || description.includes('cosmétique')) {
+        return 'cosmetic'
+    }
+
+    return 'other'
+}
+
 const getCategoryName = (categoryId: string): string => {
     const category = allCategories.find(c => c.id === categoryId)
     return category?.name || 'Non catégorisé'
@@ -730,34 +723,58 @@ const getCategoryDescription = (categoryId: string): string => {
 }
 
 const getCategoryCount = (categoryId: string): number => {
-    return recipes.value.filter(r => r.category === categoryId).length
+    return recipes.value.filter(r => getRecipeCategory(r) === categoryId).length
+}
+
+const getRecipeType = (recipe: any): string => {
+    const category = getRecipeCategory(recipe)
+    return getCategoryName(category)
+}
+
+const getRecipeIcon = (recipe: any): string => {
+    const category = getRecipeCategory(recipe)
+    return getCategoryIcon(category)
+}
+
+const truncateDescription = (description: string): string => {
+    if (!description) return ''
+    if (description.length <= 100) return description
+    return description.substring(0, 97) + '...'
 }
 
 const formatDate = (dateString: string): string => {
     if (!dateString) return '—'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-    })
+    try {
+        const date = new Date(dateString)
+        const now = new Date()
+        const diffTime = Math.abs(now.getTime() - date.getTime())
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+        if (diffDays === 0) return "Aujourd'hui"
+        if (diffDays === 1) return 'Hier'
+        if (diffDays < 7) return `Il y a ${diffDays} jours`
+
+        return date.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'short',
+            year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+        })
+    } catch {
+        return '—'
+    }
 }
 
 const formatDateShort = (dateString: string): string => {
     if (!dateString) return '—'
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffTime = Math.abs(now.getTime() - date.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays === 0) return "Aujourd'hui"
-    if (diffDays === 1) return 'Hier'
-    if (diffDays < 7) return `Il y a ${diffDays} jours`
-
-    return date.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'short'
-    })
+    try {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'short'
+        })
+    } catch {
+        return '—'
+    }
 }
 
 // Méthodes de filtrage
@@ -789,15 +806,13 @@ const clearSearch = () => {
     currentPage.value = 1
 }
 
-// Recherche avec debounce
-const debouncedSearch = () => {
+// Recherche
+const handleSearch = () => {
     currentPage.value = 1
 }
 
-// Chargement des données
+// Chargement des données depuis le backend
 const retryLoad = async () => {
-    loading.value = true
-    error.value = ''
     await loadRecipes()
 }
 
@@ -806,188 +821,39 @@ const loadRecipes = async () => {
         loading.value = true
         error.value = ''
 
-        // Simulation de données - À remplacer par votre appel API
-        await new Promise(resolve => setTimeout(resolve, 800))
+        // Vérifier si l'utilisateur est authentifié
+        if (!isAuthenticated.value) {
+            await router.push('/auth/login')
+            return
+        }
 
-        // Données de démonstration pour chaque catégorie
-        recipes.value = [
-            // Crèmes visage
-            {
-                id: '1',
-                name: 'Crème hydratante intense',
-                description: 'Formule riche en acide hyaluronique et vitamine E pour peaux très sèches',
-                category: 'face-cream',
-                skinType: 'seche',
-                volume: 50,
-                prepTime: 15,
-                createdAt: '2024-01-15T10:30:00Z',
-                updatedAt: '2024-01-20T14:45:00Z',
-                ingredients: [
-                    { name: 'Acide hyaluronique', quantity: 1.5 },
-                    { name: 'Vitamine E', quantity: 0.3 },
-                    { name: 'Beurre de karité', quantity: 5.0 }
-                ],
-                compliance: { isValid: true }
-            },
-            {
-                id: '2',
-                name: 'Gel matifiant anti-brillance',
-                description: 'Texture légère pour réguler l\'excès de sébum, avec extrait de thé vert',
-                category: 'face-cream',
-                skinType: 'grasse',
-                volume: 30,
-                prepTime: 20,
-                createdAt: '2024-01-18T09:15:00Z',
-                updatedAt: '2024-01-25T11:20:00Z',
-                ingredients: [
-                    { name: 'Extrait de thé vert', quantity: 2.0 },
-                    { name: 'Zinc PCA', quantity: 0.5 }
-                ],
-                compliance: { isValid: true }
-            },
+        // Charger les recettes depuis l'API
+        const data = await listRecipes()
 
-            // Sérums
-            {
-                id: '3',
-                name: 'Sérum vitaminé éclat',
-                description: 'Concentré de vitamine C 20% pour un teint lumineux et uniforme',
-                category: 'serum',
-                skinType: 'mixte',
-                volume: 15,
-                prepTime: 25,
-                createdAt: '2024-01-20T14:00:00Z',
-                updatedAt: '2024-01-22T16:30:00Z',
-                ingredients: [
-                    { name: 'Vitamine C (ascorbic acid)', quantity: 20.0 },
-                    { name: 'Acide ferulique', quantity: 0.5 }
-                ],
-                compliance: { isValid: true }
-            },
+        // Transformer les données pour correspondre au format attendu
+        recipes.value = data.map((recipe: any) => ({
+            id: recipe.id,
+            name: recipe.name,
+            description: recipe.description,
+            category: recipe.category || 'recipe',
+            skinType: recipe.skin_type || recipe.skinType,
+            hairType: recipe.hair_type || recipe.hairType,
+            volume: recipe.volume,
+            prepTime: recipe.prep_time || recipe.prepTime,
+            createdAt: recipe.created_at || recipe.createdAt,
+            updatedAt: recipe.updated_at || recipe.updatedAt,
+            ingredients: recipe.ingredients || [],
+            compliance: recipe.compliance || { isValid: false }
+        }))
 
-            // Shampoings
-            {
-                id: '4',
-                name: 'Shampoing doux bébé',
-                description: 'Sans sulfates, pH neutre, doux pour le cuir chevelu sensible',
-                category: 'shampoo',
-                hairType: 'fins',
-                volume: 200,
-                prepTime: 30,
-                createdAt: '2024-01-10T08:45:00Z',
-                updatedAt: '2024-01-28T10:15:00Z',
-                ingredients: [
-                    { name: 'Base lavante douce', quantity: 30.0 },
-                    { name: 'Glycérine', quantity: 3.0 }
-                ],
-                compliance: { isValid: true }
-            },
-            {
-                id: '5',
-                name: 'Shampoing fortifiant kératine',
-                description: 'Avec protéines de riz et biotine pour cheveux cassants et abîmés',
-                category: 'shampoo',
-                hairType: 'abimés',
-                volume: 250,
-                prepTime: 35,
-                createdAt: '2024-02-01T11:30:00Z',
-                updatedAt: '2024-02-05T09:45:00Z',
-                ingredients: [
-                    { name: 'Kératine hydrolysée', quantity: 2.0 },
-                    { name: 'Biotine', quantity: 0.1 }
-                ],
-                compliance: { isValid: true }
-            },
-
-            // Masques cheveux
-            {
-                id: '6',
-                name: 'Masque reconstructeur avocat',
-                description: 'Riche en acides gras essentiels, 20 minutes de pose pour une réparation profonde',
-                category: 'hair-mask',
-                hairType: 'secs',
-                prepTime: 40,
-                volume: 150,
-                createdAt: '2024-01-25T16:20:00Z',
-                updatedAt: '2024-01-30T14:10:00Z',
-                ingredients: [
-                    { name: 'Huile d\'avocat', quantity: 10.0 },
-                    { name: 'Beurre de mangue', quantity: 8.0 }
-                ],
-                compliance: { isValid: true }
-            },
-
-            // Lessives
-            {
-                id: '7',
-                name: 'Lessive liquide hypoallergénique',
-                description: 'Sans parfum, sans colorant, pour peaux sensibles et bébés',
-                category: 'laundry',
-                volume: 1000,
-                prepTime: 45,
-                createdAt: '2024-02-03T13:45:00Z',
-                updatedAt: '2024-01-30T14:10:00Z',
-                ingredients: [
-                    { name: 'Tensioactifs doux', quantity: 20.0 },
-                    { name: 'Carbonate de sodium', quantity: 5.0 }
-                ],
-                compliance: { isValid: true }
-            },
-
-            // Savons
-            {
-                id: '8',
-                name: 'Savon surgras à l\'avoine',
-                description: 'Doux et nourrissant pour les peaux sèches et sensibles',
-                category: 'soap',
-                skinType: 'sensible',
-                prepTime: 60,
-                volume: 100,
-                createdAt: '2024-02-08T09:30:00Z',
-                updatedAt: '2024-02-10T15:20:00Z',
-                ingredients: [
-                    { name: 'Huile d\'olive', quantity: 40.0 },
-                    { name: 'Flocons d\'avoine', quantity: 5.0 }
-                ],
-                compliance: { isValid: true }
-            },
-
-            // Crèmes mains
-            {
-                id: '9',
-                name: 'Crème réparatrice mains',
-                description: 'Avec allantoïne et panthénol pour mains très abîmées',
-                category: 'hand-cream',
-                volume: 75,
-                prepTime: 25,
-                createdAt: '2024-02-05T14:15:00Z',
-                updatedAt: '2024-02-12T11:45:00Z',
-                ingredients: [
-                    { name: 'Allantoïne', quantity: 0.5 },
-                    { name: 'Panthénol', quantity: 1.0 }
-                ],
-                compliance: { isValid: true }
-            },
-
-            // Détergents
-            {
-                id: '10',
-                name: 'Détergent multi-surfaces',
-                description: 'Nettoyant écologique aux huiles essentielles d\'agrumes',
-                category: 'detergent',
-                volume: 500,
-                prepTime: 20,
-                createdAt: '2024-02-07T10:00:00Z',
-                updatedAt: '2024-02-14T16:30:00Z',
-                ingredients: [
-                    { name: 'Tensioactifs végétaux', quantity: 15.0 },
-                    { name: 'Huile essentielle citron', quantity: 0.5 }
-                ],
-                compliance: { isValid: false }
-            }
-        ]
     } catch (err: any) {
-        console.error('Erreur de chargement:', err)
-        error.value = err.message || 'Impossible de charger les formules'
+        console.error('Erreur de chargement des recettes:', err)
+        error.value = err.message || 'Impossible de charger les recettes. Vérifiez votre connexion.'
+
+        // En cas d'erreur 401, rediriger vers login
+        if (err.response?.status === 401) {
+            await router.push('/auth/login')
+        }
     } finally {
         loading.value = false
     }
@@ -1019,5 +885,54 @@ onMounted(async () => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Animation de transition pour les cartes */
+.recipe-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Style pour les liens de pagination actifs */
+.active-page {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour les états de chargement */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .recipe-card {
+        margin: 0 -1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .recipe-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+
+    .recipe-card:hover {
+        border-color: #4b5563;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
 }
 </style>

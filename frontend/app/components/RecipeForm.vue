@@ -5,7 +5,7 @@
             Passer au contenu principal
         </a>
 
-        <div class="max-w-7xl mx-auto space-y-8" role="application" aria-label="Formulaire de formulation cosmétique">
+        <div class=" mx-auto space-y-8" role="application" aria-label="Formulaire de formulation cosmétique">
             <!-- En-tête -->
             <header class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 border border-gray-100">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -2398,7 +2398,7 @@
             <!-- Barre d'actions fixe -->
             <div class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-gray-200 shadow-2xl z-50 transform transition-transform duration-300"
                  :class="showFixedBar ? 'translate-y-0' : 'translate-y-full'">
-                <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class=" mx-auto px-4 py-3">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <!-- Statut -->
                         <div class="flex-1">
