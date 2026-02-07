@@ -46,15 +46,6 @@
       />
     </div>
 
-    <!-- Fallback si pas de recipeType -->
-   <div v-else-if="recipe" class="bg-white rounded-lg shadow-md p-6">
-     <!--      <GenericRecipeForm
-              :initial-data="recipe"
-              @save="handleSave"
-              @cancel="handleCancel"
-          />-->
-    </div>
-
     <!-- État de sauvegarde -->
     <div v-if="saving" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -98,21 +89,39 @@ const saveError = ref('')
 const recipeType = computed(() => {
   if (!recipe.value) return null
 
-  // Analyser la description pour trouver le type
-  const desc = recipe.value.description || ''
-  let subtype = 'custom'
-  let mainCategory = 'haircare' // par défaut
+  const typeMap: Record<string, { subtype: string, mainCategory: string }> = {
+    hair_conditioner: { subtype: 'conditioner', mainCategory: 'haircare' },
+    conditioner: { subtype: 'conditioner', mainCategory: 'haircare' },
+    shampoo: { subtype: 'shampoo', mainCategory: 'haircare' },
+    hair_shampoo: { subtype: 'shampoo', mainCategory: 'haircare' },
+    face_cream: { subtype: 'face_cream', mainCategory: 'skincare' },
+    skincare: { subtype: 'face_cream', mainCategory: 'skincare' },
+    body_lotion: { subtype: 'body_lotion', mainCategory: 'bodycare' },
+    body_butter: { subtype: 'body_butter', mainCategory: 'bodycare' },
+    body_scrub: { subtype: 'body_scrub', mainCategory: 'bodycare' }
+  }
+
+  const recipeTypeValue = recipe.value.type?.toLowerCase?.() || ''
+  let subtype = typeMap[recipeTypeValue]?.subtype || 'custom'
+  let mainCategory = typeMap[recipeTypeValue]?.mainCategory || 'haircare'
+
+  if (recipe.value.category && recipe.value.category !== 'recipe') {
+    mainCategory = recipe.value.category
+  }
 
   // Déterminer la catégorie principale
-  if (desc.includes('après-shampoing') || desc.includes('conditioner')) {
-    subtype = 'conditioner'
-    mainCategory = 'haircare'
-  } else if (desc.includes('shampoing') || desc.includes('shampoo')) {
-    subtype = 'shampoo'
-    mainCategory = 'haircare'
-  } else if (desc.includes('crème') || desc.includes('cream')) {
-    subtype = 'face_cream'
-    mainCategory = 'skincare'
+  if (subtype === 'custom') {
+    const desc = recipe.value.description?.toLowerCase() || ''
+    if (desc.includes('après-shampoing') || desc.includes('conditioner')) {
+      subtype = 'conditioner'
+      mainCategory = 'haircare'
+    } else if (desc.includes('shampoing') || desc.includes('shampoo')) {
+      subtype = 'shampoo'
+      mainCategory = 'haircare'
+    } else if (desc.includes('crème') || desc.includes('cream')) {
+      subtype = 'face_cream'
+      mainCategory = 'skincare'
+    }
   }
 
   // Déterminer categoryName
