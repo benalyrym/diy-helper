@@ -301,3 +301,106 @@ const updateVolume = (volume) => {
     emit('validate-volume')
 }
 </script>
+
+<style scoped>
+/* Styles spécifiques aux après-shampoings */
+
+.input-field {
+  @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl
+  bg-white
+  focus:outline-none focus:ring-2 focus:ring-offset-1
+  transition-all duration-200
+  placeholder:text-gray-400
+  disabled:bg-gray-100 disabled:cursor-not-allowed;
+}
+
+.label {
+  @apply block text-base font-bold text-gray-900 mb-2
+  tracking-tight;
+}
+
+.label.required::after {
+  content: " *";
+  @apply text-red-600;
+}
+
+.error-message {
+  @apply mt-1 text-sm text-red-600 font-medium flex items-center gap-1;
+}
+
+.help-text {
+  @apply mt-1 text-sm text-gray-500;
+}
+
+
+/* Range sliders */
+input[type="range"] {
+  @apply appearance-none bg-transparent;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none h-5 w-5 rounded-full
+  border-4 border-white shadow-xl
+  cursor-pointer;
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full hover:bg-gray-500;
+}
+
+/* Focus visible amélioré */
+:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* Support navigateurs plus anciens */
+@supports not (selector(:focus-visible)) {
+  :focus {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+  }
+}
+</style>

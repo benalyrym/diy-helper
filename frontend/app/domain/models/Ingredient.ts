@@ -1,12 +1,3 @@
-// domain/models/Ingredient.ts
-export interface Ingredient {
-    id?: string | number;
-    name: string;
-    quantity: number;
-    unit?: string;
-}
-
-// OU si c'est une classe :
 export class Ingredient {
     id?: string | number;
     name: string;
@@ -21,7 +12,6 @@ export class Ingredient {
     }
 }
 
-// Si tu as besoin d'un type pour le formulaire :
 export interface IngredientForm {
     name: string;
     quantity: number;

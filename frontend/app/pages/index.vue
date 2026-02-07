@@ -58,7 +58,7 @@
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink
-                to="/recette/create"
+                to="/recette/choose-type"
                 aria-label="Créer une nouvelle recette"
                 class="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
@@ -134,7 +134,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <NuxtLink
-              to="/recette/create"
+              to="/recette/choose-type"
               aria-label="Créer une nouvelle recette"
               class="group bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-blue-100 hover:border-blue-300 hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
@@ -182,7 +182,7 @@
           </NuxtLink>
 
           <NuxtLink
-              to="/tips"
+              to="/"
               aria-label="Voir les astuces culinaires"
               class="group bg-gradient-to-br from-white to-purple-50 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-purple-100 hover:border-purple-300 hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
@@ -207,128 +207,6 @@
         </div>
       </section>
 
-      <!-- Section recettes récentes améliorée -->
-      <section class="mb-16" aria-labelledby="recent-recipes-title">
-        <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-          <div class="px-8 py-6 border-b border-gray-100">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h2 id="recent-recipes-title" class="text-2xl font-bold text-gray-900">
-                  Vos recettes récentes
-                </h2>
-                <p class="text-gray-600 mt-1">
-                  Dernières créations et modifications
-                </p>
-              </div>
-              <NuxtLink
-                  to="/recettes"
-                  aria-label="Voir toutes les recettes"
-                  class="group inline-flex items-center px-5 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl hover:from-gray-800 hover:to-gray-700 transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
-              >
-                <span>Toutes les recettes</span>
-                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                </svg>
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div class="p-8">
-            <div v-if="recentRecipes.length === 0" class="text-center py-12">
-              <div class="inline-block p-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl mb-6">
-                <svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">
-                Votre collection est vide
-              </h3>
-              <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                Commencez par créer votre première recette et transformez vos idées en délicieuses créations
-              </p>
-              <NuxtLink
-                  to="/recette/create"
-                  aria-label="Créer votre première recette"
-                  class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                </svg>
-                Créer votre première recette
-              </NuxtLink>
-            </div>
-
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <article
-                  v-for="recipe in recentRecipes"
-                  :key="recipe.id"
-                  class="group bg-white rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
-              >
-                <NuxtLink
-                    :to="`/recette/${recipe.id}`"
-                    :aria-label="`Voir la recette ${recipe.name}`"
-                    class="block p-6"
-                >
-                  <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-700 line-clamp-2">
-                      {{ recipe.name }}
-                    </h3>
-                    <span class="bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                                            Nouveau
-                                        </span>
-                  </div>
-
-                  <p v-if="recipe.description" class="text-gray-600 text-sm line-clamp-3 mb-6 leading-relaxed">
-                    {{ recipe.description }}
-                  </p>
-
-                  <div class="flex flex-wrap gap-4 text-sm">
-                    <div v-if="recipe.prepTime" class="flex items-center text-gray-700">
-                      <div class="bg-blue-100 p-2 rounded-lg mr-2">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                      </div>
-                      <span>{{ recipe.prepTime }} min</span>
-                    </div>
-
-                    <div v-if="recipe.servings" class="flex items-center text-gray-700">
-                      <div class="bg-green-100 p-2 rounded-lg mr-2">
-                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                      </div>
-                      <span>{{ recipe.servings }} pers.</span>
-                    </div>
-
-                    <div v-if="recipe.difficulty" class="flex items-center text-gray-700">
-                      <div class="bg-yellow-100 p-2 rounded-lg mr-2">
-                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                        </svg>
-                      </div>
-                      <span>{{ recipe.difficulty }}</span>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 flex items-center justify-between">
-                                        <span class="text-blue-600 font-medium group-hover:text-blue-800">
-                                            Voir la recette
-                                            <svg class="w-4 h-4 inline ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                            </svg>
-                                        </span>
-                    <span class="text-xs text-gray-500">
-                                            {{ formatDate(recipe.createdAt) }}
-                                        </span>
-                  </div>
-                </NuxtLink>
-              </article>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- Section inspiration -->
       <section class="text-center" aria-labelledby="inspiration-title">
         <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 md:p-12">
@@ -339,7 +217,7 @@
             Découvrez nos collections thématiques et nos recettes du moment pour stimuler votre créativité culinaire
           </p>
           <NuxtLink
-              to="/explore"
+              to="/"
               aria-label="Explorer les recettes tendances"
               class="inline-flex items-center px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
@@ -385,8 +263,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useAuth } from '../composables/useAuth'
-import { useApi } from '../composables/useApi'
+import { useAuth } from '~/composables/useAuth'
+import { useApi } from '~/composables/useApi'
 import { useRouter } from "vue-router"
 
 const router = useRouter()

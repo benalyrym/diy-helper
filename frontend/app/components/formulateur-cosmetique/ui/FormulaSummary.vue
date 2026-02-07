@@ -39,7 +39,7 @@
                         <div>
                             <span class="text-sm font-medium text-gray-500 block mb-1">Type de peau</span>
                             <div class="p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-                                <p class="text-lg font-bold text-purple-700 capitalize">{{ formData.skinType || '—' }}</p>
+                                <p class="text-lg font-bold text-purple-700 capitalize">{{ formData.skinType ||  formData.hairType || '—' }} </p>
                             </div>
                         </div>
                     </div>

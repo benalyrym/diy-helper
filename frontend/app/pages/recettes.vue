@@ -1,47 +1,101 @@
 <template>
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
         <!-- Navigation supérieure -->
-        <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 py-4">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <!-- Logo et titre -->
-                    <div class="flex items-center gap-3">
-                        <NuxtLink to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                            <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                                <span class="text-2xl text-white">🧪</span>
-                            </div>
-                            <div>
-                                <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
-                                    Formulateur Pro
-                                </h1>
-                                <p class="text-xs text-gray-500">Création de formules cosmétiques et ménagères</p>
-                            </div>
-                        </NuxtLink>
-                    </div>
-
-                    <!-- Statistiques -->
-                    <div class="flex items-center gap-4">
-                        <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
-                                {{ recipes.length }} formules
-                            </span>
-                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
-                                {{ categoriesCount }} catégories
-                            </span>
-                        </div>
-
-                        <!-- Bouton nouvelle formule -->
-                        <NuxtLink
-                            to="/recette/create"
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95"
-                        >
-                            <span class="text-xl">+</span>
-                            <span>Nouvelle formule</span>
-                        </NuxtLink>
-                    </div>
+      <!-- Navigation supérieure avec menu complet -->
+      <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Logo et navigation principale -->
+            <div class="flex items-center justify-between w-full md:w-auto">
+              <!-- Logo et titre -->
+              <NuxtLink to="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                  <span class="text-2xl text-white">🧪</span>
                 </div>
+                <div class="hidden md:block">
+                  <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+                    Formulateur Pro
+                  </h1>
+                  <p class="text-xs text-gray-500">Création de formules</p>
+                </div>
+              </NuxtLink>
+
+              <!-- Bouton menu mobile -->
+              <button
+                  @click="showMobileMenu = !showMobileMenu"
+                  class="md:hidden p-2 rounded-lg border border-gray-300 text-gray-700"
+                  aria-label="Ouvrir le menu"
+              >
+                <span class="text-xl">≡</span>
+              </button>
             </div>
-        </nav>
+
+            <!-- Navigation desktop -->
+            <div class="hidden md:flex items-center gap-2">
+              <button
+                  @click="goToHome"
+                  class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 font-medium rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 border border-blue-200"
+              >
+                <span class="text-xl">🏠</span>
+                <span>Accueil</span>
+              </button>
+
+              <button
+                  @click="goToRecipes"
+                  class="flex items-center gap-2 px-4 py-3 bg-white text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300 border border-gray-200"
+              >
+                <span class="text-xl">📋</span>
+                <span>Mes formules</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+                        {{ recipes.length }}
+                    </span>
+              </button>
+
+              <NuxtLink
+                  to="/recette/choose-type"
+                  class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <span class="text-xl">+</span>
+                <span>Nouveau</span>
+              </NuxtLink>
+            </div>
+
+            <!-- Menu mobile -->
+            <div v-if="showMobileMenu" class="md:hidden bg-white border border-gray-200 rounded-xl p-4 space-y-2">
+              <button
+                  @click="goToHome"
+                  class="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 font-medium rounded-lg"
+              >
+                <span class="text-xl">🏠</span>
+                <span>Accueil</span>
+              </button>
+
+              <button
+                  @click="goToRecipes"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 text-gray-700 font-medium rounded-lg"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">📋</span>
+                  <span>Mes formules</span>
+                </div>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+                        {{ recipes.length }}
+                    </span>
+              </button>
+
+              <NuxtLink
+                  to="/recette/choose-type"
+                  class="block w-full text-center px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg"
+              >
+                <div class="flex items-center justify-center gap-2">
+                  <span class="text-xl">+</span>
+                  <span>Nouvelle formule</span>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </nav>
 
         <!-- Contenu principal -->
         <div class="max-w-7xl mx-auto p-4 md:p-8">
@@ -215,7 +269,7 @@
                     </p>
                     <div class="space-y-3">
                         <NuxtLink
-                            to="/recette/create"
+                            to="/recette/choose-type"
                             class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl"
                         >
                             <span class="text-2xl">+</span>
@@ -472,7 +526,7 @@
 
         <!-- Bouton flottant pour nouvelle formule (mobile) -->
         <NuxtLink
-            to="/recette/create"
+            to="/recette/choose-type"
             class="fixed bottom-6 right-6 md:hidden p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-95 z-50"
             aria-label="Créer une nouvelle formule"
         >
@@ -516,13 +570,13 @@
                         <h3 class="font-bold text-gray-900 mb-3">Actions rapides</h3>
                         <div class="space-y-2">
                             <NuxtLink
-                                to="/recette/create"
+                                to="/recette/choose-type"
                                 class="block text-sm text-blue-600 hover:text-blue-800 hover:underline"
                             >
                                 + Créer une nouvelle formule
                             </NuxtLink>
                             <NuxtLink
-                                to="/tips"
+                                to="/"
                                 class="block text-sm text-gray-600 hover:text-gray-800 hover:underline"
                             >
                                 📚 Consulter les guides
@@ -571,7 +625,28 @@ const allCategories = [
     { id: 'cosmetic', name: 'Cosmétique', icon: '💄', description: 'Maquillage, parfums, soins spécifiques' },
     { id: 'other', name: 'Autres', icon: '🧪', description: 'Formulations diverses' }
 ]
+const showMobileMenu = ref(false)
 
+// Fermer le menu mobile quand on clique ailleurs
+onMounted(() => {
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement
+    if (!target.closest('.mobile-menu') && !target.closest('button[aria-label="Ouvrir le menu"]')) {
+      showMobileMenu.value = false
+    }
+  })
+})
+const goToHome = () => {
+  router.push('/')
+}
+
+const goToRecipes = () => {
+  router.push('/recettes')
+}
+
+const goToCreateRecipe = () => {
+  router.push('/recette/choose-type')
+}
 // Catégories populaires (affichées par défaut)
 const popularCategories = computed(() => {
     return [

@@ -1,4 +1,3 @@
-// composables/useFilters.js
 import { ref, computed } from 'vue'
 
 export default function useFilters(actives, extendedEssentialOils) {
@@ -15,38 +14,15 @@ export default function useFilters(actives, extendedEssentialOils) {
         noAllergen: false
     })
 
-    // S'assurer que les actifs sont bien un tableau
-    const getActivesArray = () => {
-        // Si c'est un ref, retourner sa valeur
-        if (actives && typeof actives.value !== 'undefined') {
-            return actives.value || []
-        }
-        // Sinon, retourner le tableau directement
-        return actives || []
-    }
-
     const filteredActives = computed(() => {
-        const activesArray = getActivesArray()
-
-        if (!Array.isArray(activesArray)) {
-            console.error('actives is not an array:', activesArray)
-            return []
-        }
-
-        return activesArray.filter(active => {
-            // Filtre par recherche
-            if (activeSearch.value) {
-                const searchLower = activeSearch.value.toLowerCase()
-                const matchesSearch =
-                    (active.label && active.label.toLowerCase().includes(searchLower)) ||
-                    (active.inci && active.inci.toLowerCase().includes(searchLower)) ||
-                    (active.description && active.description.toLowerCase().includes(searchLower)) ||
-                    (active.benefit && active.benefit.toLowerCase().includes(searchLower))
-
-                if (!matchesSearch) return false
+        return actives.filter(active => {
+            if (activeSearch.value &&
+                !active.label.toLowerCase().includes(activeSearch.value.toLowerCase()) &&
+                !active.inci.toLowerCase().includes(activeSearch.value.toLowerCase()) &&
+                !active.description.toLowerCase().includes(activeSearch.value.toLowerCase())) {
+                return false
             }
 
-            // Filtre par type
             if (activeTypeFilter.value && active.type !== activeTypeFilter.value) {
                 return false
             }
@@ -58,31 +34,20 @@ export default function useFilters(actives, extendedEssentialOils) {
     const filteredEssentialOils = computed(() => {
         const filtered = {}
 
-        // Vérifier si extendedEssentialOils existe
-        if (!extendedEssentialOils) return filtered
-
         for (const [category, oils] of Object.entries(extendedEssentialOils)) {
-            if (!Array.isArray(oils)) continue
-
             let filteredOils = oils
 
             if (heSearchTerm.value) {
-                const searchLower = heSearchTerm.value.toLowerCase()
                 filteredOils = filteredOils.filter(oil =>
-                    (oil.name && oil.name.toLowerCase().includes(searchLower)) ||
-                    (oil.latinName && oil.latinName.toLowerCase().includes(searchLower)) ||
-                    (oil.properties && oil.properties.some(p =>
-                        p && p.toLowerCase().includes(searchLower)
-                    ))
+                    oil.name.toLowerCase().includes(heSearchTerm.value.toLowerCase()) ||
+                    oil.latinName.toLowerCase().includes(heSearchTerm.value.toLowerCase()) ||
+                    oil.properties.some(p => p.toLowerCase().includes(heSearchTerm.value.toLowerCase()))
                 )
             }
 
             if (heFilterProperty.value) {
-                const propertyLower = heFilterProperty.value.toLowerCase()
                 filteredOils = filteredOils.filter(oil =>
-                        oil.properties && oil.properties.some(p =>
-                            p && p.toLowerCase().includes(propertyLower)
-                        )
+                    oil.properties.some(p => p.toLowerCase().includes(heFilterProperty.value.toLowerCase()))
                 )
             }
 
@@ -138,9 +103,6 @@ export default function useFilters(actives, extendedEssentialOils) {
         filteredEssentialOils,
         filteredHECount,
         updateSearch,
-        updateTypeFilter,
-        updateHESearch,
-        updateHEPropertyFilter,
-        updateHEFilters
+        updateTypeFilter
     }
 }
