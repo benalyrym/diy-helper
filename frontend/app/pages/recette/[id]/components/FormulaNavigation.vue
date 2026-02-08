@@ -17,11 +17,11 @@
 
                     <!-- Actions rapides -->
                     <div class="flex items-center gap-2">
-                        <NuxtLink
-                            :to="`/recette/${formula.id}/edit`"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
-                            aria-label="Modifier cette formule"
-                        >
+                    <NuxtLink
+                        :to="editLink"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
+                        aria-label="Modifier cette formule"
+                    >
                             <span>✏️</span>
                             <span class="hidden sm:inline">Modifier</span>
                         </NuxtLink>
@@ -76,7 +76,7 @@
 <script setup>
 import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
     formula: {
         type: Object,
         required: true
@@ -88,6 +88,24 @@ defineProps({
 })
 
 defineEmits(['generate-pdf', 'toggle-print'])
+
+const editLink = computed(() => {
+    const id = props.formula?.id
+    const rawType = props.formula?.type ||
+        props.formula?.subtype ||
+        props.formula?.recipeType?.subtype ||
+        props.formula?.recipeType?.type ||
+        ''
+    const params = new URLSearchParams()
+    if (rawType) {
+        params.set('type', String(rawType))
+    }
+    if (props.formula?.category) {
+        params.set('category', String(props.formula.category))
+    }
+    const suffix = params.toString()
+    return suffix ? `/recette/${id}/edit?${suffix}` : `/recette/${id}/edit`
+})
 
 const formatDateShort = (dateString) => {
     if (!dateString) return 'N/A'

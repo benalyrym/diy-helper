@@ -130,23 +130,80 @@ const incompleteIngredients = computed(() => {
     return formula.value?.ingredients?.filter(ing => ing.quantity === null) || []
 })
 
+const determineIngredientType = (name) => {
+    const lowerName = name.toLowerCase()
+
+    if (lowerName.includes('he ') || lowerName.includes('huile essentielle')) return 'essential_oil'
+    if (
+        lowerName.includes('btms') ||
+        lowerName.includes('behentrimonium') ||
+        lowerName.includes('cetyl alcohol') ||
+        lowerName.includes('quaternium') ||
+        lowerName.includes('polyquat')
+    ) {
+        return 'conditioning_agent'
+    }
+    if (
+        lowerName.includes('xanthane') ||
+        lowerName.includes('guar') ||
+        lowerName.includes('carbomer')
+    ) {
+        return 'thickener'
+    }
+    if (
+        lowerName.includes('vitamine') ||
+        lowerName.includes('acide') ||
+        lowerName.includes('panthénol') ||
+        lowerName.includes('panthenol') ||
+        lowerName.includes('niacinamide') ||
+        lowerName.includes('kératine') ||
+        lowerName.includes('keratine') ||
+        lowerName.includes('protéine') ||
+        lowerName.includes('proteine')
+    ) {
+        return 'active'
+    }
+    if (lowerName.includes('cosgard') || lowerName.includes('conservateur')) return 'preservative'
+    if (lowerName.includes('eau') || lowerName.includes('hydrolat') || lowerName.includes('hamamélis')) return 'water'
+    if (lowerName.includes('huile') || lowerName.includes('beurre')) return 'oil'
+    if (lowerName.includes('émulsifiant')) return 'emulsifier'
+    return 'other'
+}
+
 const getIngredientType = (ingredient) => {
-    const name = ingredient.name.toLowerCase()
-    if (name.includes('he ') || name.includes('huile essentielle')) return 'Huile essentielle'
-    if (name.includes('vitamine') || name.includes('acide')) return 'Actif cosmétique'
-    if (name.includes('cosgard')) return 'Conservateur'
-    if (name.includes('eau') || name.includes('hydrolat')) return 'Phase aqueuse'
-    if (name.includes('huile')) return 'Huile végétale'
-    return 'Autre'
+    const type = ingredient.type || determineIngredientType(ingredient.name)
+
+    switch (type) {
+        case 'essential_oil':
+            return 'Huile essentielle'
+        case 'conditioning_agent':
+            return 'Agent démêlant'
+        case 'thickener':
+            return 'Épaississant'
+        case 'active':
+            return 'Actif capillaire'
+        case 'preservative':
+            return 'Conservateur'
+        case 'water':
+            return 'Phase aqueuse'
+        case 'oil':
+            return 'Huile végétale'
+        case 'emulsifier':
+            return 'Émulsifiant'
+        default:
+            return 'Autre'
+    }
 }
 
 const getSuggestions = (ingredient) => {
-    const type = getIngredientType(ingredient)
+    const type = ingredient.type || determineIngredientType(ingredient.name)
     switch(type) {
-        case 'Huile essentielle': return [0.1, 0.3, 0.5, 1.0]
-        case 'Actif cosmétique': return [0.5, 1.0, 2.0, 5.0]
-        case 'Conservateur': return [0.5, 0.8, 1.0]
-        case 'Huile végétale': return [5.0, 10.0, 15.0, 20.0]
+        case 'essential_oil': return [0.1, 0.3, 0.5, 1.0]
+        case 'active': return [0.5, 1.0, 2.0, 5.0]
+        case 'conditioning_agent': return [1.0, 2.0, 3.0, 5.0]
+        case 'thickener': return [0.2, 0.5, 1.0, 1.5]
+        case 'preservative': return [0.5, 0.8, 1.0]
+        case 'oil': return [5.0, 10.0, 15.0, 20.0]
         default: return [1.0, 2.0, 5.0]
     }
 }
@@ -165,7 +222,8 @@ const saveAsDraft = async () => {
     // Enregistrer comme brouillon avec les nouvelles valeurs
     const updatedIngredients = formula.value.ingredients.map(ing => ({
         name: ing.name,
-        quantity: ing.newQuantity
+        quantity: ing.newQuantity,
+        type: ing.type || determineIngredientType(ing.name)
     }))
 
     await  $api(`/api/recipes/${formula.value.id}`, {
@@ -185,7 +243,7 @@ const convertToFullFormula = async () => {
     const updatedIngredients = formula.value.ingredients.map(ing => ({
         name: ing.name,
         quantity: ing.newQuantity,
-        type: determineIngredientType(ing.name)
+        type: ing.type || determineIngredientType(ing.name)
     }))
 
     await  $api(`/api/recipes/${formula.value.id}/convert`, {

@@ -6,10 +6,34 @@ export default function useConditionerRegulatoryValidation(
     waterPhase,
     oilPhaseTotal,
     totalConditioningPercent,
-    hairProfiles
+    hairProfiles,
+    heTotal
   },
   errors
 ) {
+  const heContraindications = computed(() => {
+    const warnings = []
+    const selected = formData.selectedEssentialOils || []
+
+    const phototoxic = new Set(['Lemon', 'Grapefruit', 'Bergamot', 'Lime', 'Orange', 'Mandarin'])
+    const irritant = new Set(['Cinnamon Bark', 'Cinnamon Leaf', 'Clove Bud', 'Thyme', 'Oregano', 'Lemongrass', 'Peppermint', 'Eucalyptus'])
+    const pregnancyCaution = new Set(['Clary Sage', 'Rosemary', 'Rosemary CT camphor', 'Rosemary CT verbenone', 'Sage', 'Basil'])
+
+    selected.forEach(he => {
+      if (phototoxic.has(he.name)) {
+        warnings.push(`${he.name}: photosensibilisante`)
+      }
+      if (irritant.has(he.name)) {
+        warnings.push(`${he.name}: irritante, usage faible recommandé`)
+      }
+      if (pregnancyCaution.has(he.name)) {
+        warnings.push(`${he.name}: déconseillée grossesse/allaitement`)
+      }
+    })
+
+    return warnings
+  })
+
   const regulatoryChecks = computed(() => [
     {
       name: 'Nom de la formule',
@@ -60,6 +84,20 @@ export default function useConditionerRegulatoryValidation(
       passed: totalConditioningPercent.value <= (hairProfiles[formData.hairType]?.oil || 10) * 0.8,
       error: `Trop d'agents démêlants: ${totalConditioningPercent.value.toFixed(1)}%`,
       recommendation: `Réduisez les agents démêlants à ${(hairProfiles[formData.hairType]?.oil || 10) * 0.8}% maximum`
+    },
+    {
+      name: 'Agents conditionnants requis',
+      description: 'Un après-shampoing doit contenir au moins un agent conditionnant',
+      passed: totalConditioningPercent.value > 0,
+      error: 'Aucun agent conditionnant sélectionné',
+      recommendation: 'Ajoutez un agent cationique (BTMS, Behentrimonium Methosulfate, alcool cétylique)'
+    },
+    {
+      name: 'Limite totale des huiles essentielles',
+      description: "Maximum 1% d'HE total dans les produits cosmétiques pour le visage (Article 3, Règlement UE 1223/2009)",
+      passed: heTotal.value <= 1,
+      error: `Dépassement de la limite UE: ${heTotal.value.toFixed(2)}% > 1%`,
+      recommendation: 'Réduire le total des HE à 1% maximum en ajustant les pourcentages individuels'
     }
   ])
 
@@ -93,6 +131,7 @@ export default function useConditionerRegulatoryValidation(
     regulatoryChecks,
     regulatoryErrors,
     regulatoryStatus,
+    heContraindications,
     validateVolume,
     clearError
   }

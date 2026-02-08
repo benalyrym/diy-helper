@@ -1,7 +1,8 @@
 <template>
   <div :class="containerClasses">
     <!-- Navigation d'accessibilit? -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
       Passer au contenu principal
     </a>
 
@@ -43,111 +44,112 @@
 
         <!-- Contenu principal du formulaire -->
         <main id="main-content" class="lg:w-3/4 space-y-8" role="main">
-                  <!-- Section 1: Informations de base -->
-                  <ConditionerBasicInfoSection
-    :form-data="formData"
-    :errors="errors"
-    :hair-profiles-options="hairProfilesOptions"
-    :selected-hair-profile="selectedHairProfile"
-    :clear-error="clearError"
-    :validate-volume="validateVolume"
-/>
+          <!-- Section 1: Informations de base -->
+          <ConditionerBasicInfoSection
+              :form-data="formData"
+              :errors="errors"
+              :hair-profiles-options="hairProfilesOptions"
+              :selected-hair-profile="selectedHairProfile"
+              :clear-error="clearError"
+              :validate-volume="validateVolume"
+          />
 
-                  <!-- Section 2: Actifs capillaires -->
-                  <ConditionerActivesSection
-    :filtered-actives="filteredActives"
-    :form-data="formData"
-    :hair-profiles="hairProfiles"
-    :enabled-actives-count="enabledActivesCount"
-    :too-many-actives="tooManyActives"
-    :active-search="activeSearch"
-    :active-type-filter="activeTypeFilter"
-    :update-active-search="updateActiveSearch"
-    :update-active-type-filter="updateActiveTypeFilter"
-    :grams="grams"
-/>
+          <!-- Section 2: Actifs capillaires -->
+          <ConditionerActivesSection
+              :filtered-actives="filteredActives"
+              :form-data="formData"
+              :hair-profiles="hairProfiles"
+              :enabled-actives-count="enabledActivesCount"
+              :too-many-actives="tooManyActives"
+              :active-search="activeSearch"
+              :active-type-filter="activeTypeFilter"
+              :update-active-search="updateActiveSearch"
+              :update-active-type-filter="updateActiveTypeFilter"
+              :grams="grams"
+          />
 
-                  <!-- Section 3: Phase aqueuse -->
-                  <ConditionerAqueousPhaseSection
-    :aqueous-phase-options="aqueousPhaseOptions"
-    :selected-aqueous-phase="selectedAqueousPhase"
-    :aqueous-phase-total="aqueousPhaseTotal"
-    :grams="grams"
-    :auto-calculate-water-phase="autoCalculateWaterPhase"
-    :optimize-aqueous-phase="optimizeAqueousPhase"
-    :toggle-category="toggleCategory"
-    :reduced-motion="reducedMotion"
-/>
+          <!-- Section 3: Phase aqueuse -->
+          <ConditionerAqueousPhaseSection
+              :aqueous-phase-options="aqueousPhaseOptions"
+              :selected-aqueous-phase="selectedAqueousPhase"
+              :aqueous-phase-total="aqueousPhaseTotal"
+              :grams="grams"
+              :auto-calculate-water-phase="autoCalculateWaterPhase"
+              :optimize-aqueous-phase="optimizeAqueousPhase"
+              :toggle-category="toggleCategory"
+              :reduced-motion="reducedMotion"
+          />
 
-                  <!-- Section 4: Phase grasse -->
-                  <ConditionerOilPhaseSection
-    :oil-phase-options="oilPhaseOptions"
-    :selected-oil-phase="selectedOilPhase"
-    :oil-phase-total="oilPhaseTotal"
-    :form-data="formData"
-    :hair-profiles="hairProfiles"
-    :oil-phase-exceeded="oilPhaseExceeded"
-    :penetration-distribution="penetrationDistribution"
-    :grams="grams"
-    :toggle-category="toggleCategory"
-    :auto-calculate-oil-phase="autoCalculateOilPhase"
-    :optimize-oil-phase="optimizeOilPhase"
-/>
+          <!-- Section 4: Phase grasse -->
+          <ConditionerOilPhaseSection
+              :oil-phase-options="oilPhaseOptions"
+              :selected-oil-phase="selectedOilPhase"
+              :oil-phase-total="oilPhaseTotal"
+              :form-data="formData"
+              :hair-profiles="hairProfiles"
+              :oil-phase-exceeded="oilPhaseExceeded"
+              :penetration-distribution="penetrationDistribution"
+              :grams="grams"
+              :toggle-category="toggleCategory"
+              :auto-calculate-oil-phase="autoCalculateOilPhase"
+              :optimize-oil-phase="optimizeOilPhase"
+          />
 
-                  <!-- Section 5: Agents démêlants et épaississants -->
-                  <ConditionerConditioningAgentsSection
-    :conditioning-agents="conditioningAgents"
-    :thickeners="thickeners"
-    :form-data="formData"
-    :selected-conditioning-agents="selectedConditioningAgents"
-    :total-conditioning-percent="totalConditioningPercent"
-    :grams="grams"
-/>
+          <!-- Section 5: Agents démêlants et épaississants -->
+          <ConditionerConditioningAgentsSection
+              :conditioning-agents="conditioningAgents"
+              :thickeners="thickeners"
+              :form-data="formData"
+              :selected-conditioning-agents="selectedConditioningAgents"
+              :total-conditioning-percent="totalConditioningPercent"
+              :grams="grams"
+          />
 
-                  <!-- Section 6: Système de conservation -->
-                  <ConditionerPreservativesSection
-    :form-data="formData"
-    :preservative-systems="preservativeSystems"
-/>
+          <!-- Section 6: Système de conservation -->
+          <ConditionerPreservativesSection
+              :form-data="formData"
+              :preservative-systems="preservativeSystems"
+          />
 
-                  <!-- Section 7: Parfums et huiles essentielles -->
-                  <ConditionerFragranceSection
-    :form-data="formData"
-    :fragrance-options="fragranceOptions"
-    :fragrance-notes="fragranceNotes"
-    :hair-essential-oils="hairEssentialOils"
-    :toggle-essential-oil="toggleEssentialOil"
-/>
+          <!-- Section 7: Parfums et huiles essentielles -->
+          <ConditionerFragranceSection
+              :form-data="formData"
+              :fragrance-options="fragranceOptions"
+              :fragrance-notes="fragranceNotes"
+              :hair-essential-oils="hairEssentialOils"
+              :toggle-essential-oil="toggleEssentialOil"
+          />
 
-                  <!-- Section 8: Analyse et validation -->
-                  <ConditionerAnalysisSection
-    :phases="phases"
-    :total-formulation-percent="totalFormulationPercent"
-    :water-phase="waterPhase"
-    :water-phase-grams="waterPhaseGrams"
-    :get-phase-dash-offset="getPhaseDashOffset"
-    :format-inci-list="formatINCIList"
-    :copy-inci="copyINCI"
-    :copied="copied"
-    :inci-list="inciList"
-    :regulatory-status="regulatoryStatus"
-    :regulatory-errors="regulatoryErrors"
-    :regulatory-checks="regulatoryChecks"
-    :generate-compliance-report="generateComplianceReport"
-/>
+          <!-- Section 8: Analyse et validation -->
+          <ConditionerAnalysisSection
+              :phases="phases"
+              :total-formulation-percent="totalFormulationPercent"
+              :water-phase="waterPhase"
+              :water-phase-grams="waterPhaseGrams"
+              :get-phase-dash-offset="getPhaseDashOffset"
+              :format-inci-list="formatINCIList"
+              :copy-inci="copyINCI"
+              :copied="copied"
+              :inci-list="inciList"
+              :regulatory-status="regulatoryStatus"
+              :regulatory-errors="regulatoryErrors"
+              :regulatory-checks="regulatoryChecks"
+              :he-contraindications="heContraindications"
+              :generate-compliance-report="generateComplianceReport"
+          />
 
-                  <!-- Section 9: Finalisation -->
-                  <ConditionerActionsSection
-    :is-valid="isValid"
-    :saving="saving"
-    :is-edit-mode="isEditMode"
-    :initial-data="props.initialData"
-    :save-draft="saveDraft"
-    :save="save"
-    :cancel="cancel"
-    :format-date="formatDate"
-/>
-                </main>
+          <!-- Section 9: Finalisation -->
+          <ConditionerActionsSection
+              :is-valid="isValid"
+              :saving="saving"
+              :is-edit-mode="isEditMode"
+              :initial-data="props.initialData"
+              :save-draft="saveDraft"
+              :save="save"
+              :cancel="cancel"
+              :format-date="formatDate"
+          />
+        </main>
       </div>
 
       <!-- Barre d'actions fixe -->
@@ -167,15 +169,15 @@
       <div class="h-20"></div>
 
       <!-- Footer -->
-      <Footer :current-date="currentDate" />
+      <Footer :current-date="currentDate"/>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useClipboard } from '@vueuse/core'
+import {computed, ref, watch, onMounted, onUnmounted} from 'vue'
+import {useRouter} from 'vue-router'
+import {useClipboard} from '@vueuse/core'
 
 // Composables
 import useConditionerFormData from '../composables/hair/useConditionerFormData'
@@ -202,7 +204,7 @@ import ConditionerAnalysisSection from '../ui/sections/conditioner/AnalysisSecti
 import ConditionerActionsSection from '../ui/sections/conditioner/ActionsSection.vue'
 
 const router = useRouter()
-const { copy, copied } = useClipboard()
+const {copy, copied} = useClipboard()
 
 // Props pour les donn?es initiales
 const props = defineProps({
@@ -272,6 +274,7 @@ const {
   preservativePercent,
   thickenerPercent,
   totalActivesPercent,
+  heTotal,
   waterPhase,
   waterPhaseGrams,
   totalFormulationPercent,
@@ -291,21 +294,23 @@ const {
   regulatoryChecks,
   regulatoryErrors,
   regulatoryStatus,
+  heContraindications,
   validateVolume,
   clearError
 } = useConditionerRegulatoryValidation(
-  {
-    formData,
-    waterPhase,
-    oilPhaseTotal,
-    totalConditioningPercent,
-    hairProfiles
-  },
-  errors
+    {
+      formData,
+      waterPhase,
+      oilPhaseTotal,
+      totalConditioningPercent,
+      hairProfiles,
+      heTotal
+    },
+    errors
 )
 
 // Ingr?dients
-const { inciList } = useConditionerIngredients({
+const {inciList} = useConditionerIngredients({
   formData,
   actives,
   thickeners,
@@ -335,15 +340,15 @@ const currentDate = ref(new Date().toLocaleDateString('fr-FR', {
 
 // Sections pour navigation
 const sections = [
-  { id: 'basic-info', name: 'Informations' },
-  { id: 'actives', name: 'Actifs' },
-  { id: 'aqueous-phase', name: 'Infusions' },
-  { id: 'oil-phase', name: 'Phase grasse' },
-  { id: 'conditioning-agents', name: 'D?m?lants' },
-  { id: 'preservatives', name: 'Conservation' },
-  { id: 'fragrance', name: 'Parfum' },
-  { id: 'analysis', name: 'Analyse' },
-  { id: 'actions', name: 'Finalisation' }
+  {id: 'basic-info', name: 'Informations'},
+  {id: 'actives', name: 'Actifs'},
+  {id: 'aqueous-phase', name: 'Infusions'},
+  {id: 'oil-phase', name: 'Phase grasse'},
+  {id: 'conditioning-agents', name: 'D?m?lants'},
+  {id: 'preservatives', name: 'Conservation'},
+  {id: 'fragrance', name: 'Parfum'},
+  {id: 'analysis', name: 'Analyse'},
+  {id: 'actions', name: 'Finalisation'}
 ]
 
 const isMobile = computed(() => window.innerWidth < 1024)
@@ -375,8 +380,8 @@ const completionPercentage = computed(() => {
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    element.focus({ preventScroll: true })
+    element.scrollIntoView({behavior: 'smooth', block: 'start'})
+    element.focus({preventScroll: true})
   }
 }
 
@@ -408,12 +413,12 @@ const toggleCategory = (category, type) => {
 // M?thodes de calcul automatique
 const autoCalculateWaterPhase = () => {
   const currentTotal = oilPhaseTotal.value +
-    aqueousPhaseTotal.value +
-    totalActivesPercent.value +
-    preservativePercent.value +
-    totalConditioningPercent.value +
-    thickenerPercent.value +
-    (formData.fragranceType === 'essential_oils' ? 0.5 : 0.3)
+      aqueousPhaseTotal.value +
+      totalActivesPercent.value +
+      preservativePercent.value +
+      totalConditioningPercent.value +
+      thickenerPercent.value +
+      (formData.fragranceType === 'essential_oils' ? 0.5 : 0.3)
 
   if (currentTotal < 100) {
     const remaining = 100 - currentTotal
@@ -459,22 +464,156 @@ const autoCalculateOilPhase = () => {
   }
 }
 
+const normalizeName = (value) => {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 const findAqueousItem = (name) => {
+  const target = normalizeName(name)
   for (const category of Object.values(aqueousPhaseOptions)) {
     for (const item of category.items) {
-      if (item.name === name) return item
+      if (item.name === name || normalizeName(item.name) === target) return item
     }
   }
   return null
 }
 
 const findOilItem = (name) => {
+  const target = normalizeName(name)
   for (const category of Object.values(oilPhaseOptions)) {
     for (const item of category.items) {
-      if (item.name === name) return item
+      if (item.name === name || normalizeName(item.name) === target) return item
     }
   }
   return null
+}
+
+const findActiveByIngredient = (ingredient) => {
+  const target = normalizeName(ingredient.name)
+  return actives.find(active => {
+    if (active.label && normalizeName(active.label) === target) return true
+    if (active.inci && normalizeName(active.inci) === target) return true
+    if (active.key && normalizeName(active.key) === target) return true
+    return false
+  })
+}
+
+const resetSelections = () => {
+  actives.forEach(active => {
+    active.enabled = false
+  })
+  Object.values(aqueousPhaseOptions).forEach(category => {
+    category.items.forEach(item => {
+      item.selected = false
+    })
+  })
+  Object.values(oilPhaseOptions).forEach(category => {
+    category.items.forEach(item => {
+      item.selected = false
+    })
+  })
+  conditioningAgents.forEach(agent => {
+    agent.selected = false
+  })
+  formData.selectedEssentialOils = []
+}
+
+const loadInitialIngredients = (initialData) => {
+  if (!initialData?.ingredients || !Array.isArray(initialData.ingredients)) return
+
+  resetSelections()
+
+  initialData.ingredients.forEach(ingredient => {
+    const type = String(ingredient.type || '').toLowerCase()
+    const quantity = typeof ingredient.quantity === 'number' ? ingredient.quantity : null
+
+    if (type === 'active') {
+      const active = findActiveByIngredient(ingredient)
+      if (active) {
+        active.enabled = true
+        if (quantity !== null) active.percent = quantity
+        return
+      }
+    }
+
+    if (type === 'infusion' || type === 'aqueous') {
+      const item = findAqueousItem(ingredient.name)
+      if (item) {
+        item.selected = true
+        if (quantity !== null) item.percent = quantity
+        return
+      }
+    }
+
+    if (type === 'hair_oil' || type === 'oil') {
+      const item = findOilItem(ingredient.name)
+      if (item) {
+        item.selected = true
+        if (quantity !== null) item.percent = quantity
+        return
+      }
+    }
+
+    if (type === 'conditioning_agent') {
+      const agent = conditioningAgents.find(a => a.name === ingredient.name)
+      if (agent) {
+        agent.selected = true
+        if (quantity !== null) agent.percent = quantity
+        return
+      }
+    }
+
+    if (type === 'essential_oil') {
+      const heName = String(ingredient.name || '').replace(/^HE\s+/i, '').trim()
+      const existing = hairEssentialOils.find(he => he.name === heName)
+      if (existing) {
+        formData.selectedEssentialOils.push({
+          ...existing,
+          percent: quantity ?? existing.percent ?? 0.1
+        })
+        return
+      } else if (heName) {
+        formData.selectedEssentialOils.push({
+          name: heName,
+          latinName: ingredient.latinName || '',
+          percent: quantity ?? 0.1
+        })
+        return
+      }
+    }
+
+    if (type === 'thickener') {
+      if (ingredient.name) formData.thickener = ingredient.name
+      if (quantity !== null) formData.thickenerPercent = quantity
+      return
+    }
+
+    // Fallback: attempt to match by name when type is missing/unknown.
+    const fallbackActive = findActiveByIngredient(ingredient)
+    if (fallbackActive) {
+      fallbackActive.enabled = true
+      if (quantity !== null) fallbackActive.percent = quantity
+      return
+    }
+
+    const fallbackAqueous = findAqueousItem(ingredient.name)
+    if (fallbackAqueous) {
+      fallbackAqueous.selected = true
+      if (quantity !== null) fallbackAqueous.percent = quantity
+      return
+    }
+
+    const fallbackOil = findOilItem(ingredient.name)
+    if (fallbackOil) {
+      fallbackOil.selected = true
+      if (quantity !== null) fallbackOil.percent = quantity
+    }
+  })
 }
 
 // M?thodes d'optimisation
@@ -490,8 +629,8 @@ const optimizeAqueousPhase = () => {
     const originalItem = findAqueousItem(item.name)
     if (originalItem) {
       originalItem.percent = Math.min(
-        originalItem.max,
-        Math.max(originalItem.min, equalPercent)
+          originalItem.max,
+          Math.max(originalItem.min, equalPercent)
       )
     }
   })
@@ -508,8 +647,8 @@ const optimizeOilPhase = () => {
     const originalItem = findOilItem(item.name)
     if (originalItem) {
       originalItem.percent = Math.min(
-        originalItem.max,
-        Math.max(originalItem.min, targetPercent)
+          originalItem.max,
+          Math.max(originalItem.min, targetPercent)
       )
     }
   })
@@ -519,7 +658,7 @@ const optimizeOilPhase = () => {
 const toggleEssentialOil = (he) => {
   const idx = formData.selectedEssentialOils.findIndex(eo => eo.name === he.name)
   if (idx === -1) {
-    formData.selectedEssentialOils.push({ ...he })
+    formData.selectedEssentialOils.push({...he})
   } else {
     formData.selectedEssentialOils.splice(idx, 1)
   }
@@ -561,15 +700,15 @@ const getPhaseDashOffset = (phase, index) => {
 // Validation de sauvegarde
 const canSave = computed(() => {
   const hasPreservative = formData.preservativeSystem === 'cosgard'
-    ? (formData.cosgardPercent >= 0.5 && formData.cosgardPercent <= 1.0)
-    : formData.preservativeSystem
+      ? (formData.cosgardPercent >= 0.5 && formData.cosgardPercent <= 1.0)
+      : formData.preservativeSystem
 
   return formData.name.trim().length > 0 &&
-    formData.volume >= 100 &&
-    formData.hairType &&
-    hasPreservative &&
-    formData.thickener &&
-    waterPhase.value >= 0
+      formData.volume >= 100 &&
+      formData.hairType &&
+      hasPreservative &&
+      formData.thickener &&
+      waterPhase.value >= 0
 })
 
 const isValid = computed(() => {
@@ -617,7 +756,7 @@ const generateIngredientsForDB = () => {
   formData.selectedEssentialOils.forEach(he => {
     ingredients.push({
       name: `HE ${he.name}`,
-      quantity: 0.1,
+      quantity: typeof he.percent === 'number' ? he.percent : 0.1,
       unit: "%",
       type: "essential_oil",
       latinName: he.latinName
@@ -668,8 +807,8 @@ const generateIngredientsForDB = () => {
 }
 
 const save = async () => {
-  if (!canSave.value) {
-    alert("Veuillez corriger les erreurs avant d'enregistrer")
+  if (!isValid.value) {
+    alert("Veuillez corriger les erreurs réglementaires avant d'enregistrer")
     return
   }
 
@@ -793,7 +932,7 @@ const exportFormula = () => {
   }
 
   const dataStr = JSON.stringify(exportData, null, 2)
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
 
   const exportFileDefaultName = `apres-shampoing-${formData.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
 
@@ -812,6 +951,7 @@ onMounted(() => {
   if (props.initialData && Object.keys(props.initialData).length > 0) {
     isEditMode.value = true
     applyInitialData(props.initialData)
+    loadInitialIngredients(props.initialData)
 
     if (props.initialData.ingredients) {
       // Charger les ingr?dients depuis les donn?es initiales
@@ -847,8 +987,10 @@ const handleKeyboardShortcuts = (e) => {
 watch(() => props.initialData, (newData) => {
   if (newData && Object.keys(newData).length > 0) {
     isEditMode.value = true
+    applyInitialData(newData)
+    loadInitialIngredients(newData)
   }
-}, { immediate: true })
+}, {immediate: true})
 
 watch(() => formData.cosgardPercent, (newVal) => {
   if (newVal < 0.5 || newVal > 1.0) {
@@ -1016,8 +1158,12 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .animate-fadeIn {

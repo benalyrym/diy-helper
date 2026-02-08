@@ -121,6 +121,8 @@ const getIngredientType = (ingredient) => {
         switch(ingredient.type) {
             case 'active': return 'Actif cosmétique'
             case 'essential_oil': return 'Huile essentielle'
+            case 'conditioning_agent': return 'Agent démêlant'
+            case 'thickener': return 'épaississant'
             case 'preservative': return 'Conservateur'
             case 'oil': return 'Huile végétale'
             case 'aqueous': return 'Phase aqueuse'
@@ -131,8 +133,10 @@ const getIngredientType = (ingredient) => {
     }
 
     if (ingredient.name.startsWith('HE ')) return 'Huile essentielle'
-    if (ingredient.name.includes('Acide') || ingredient.name.includes('Vitamine')) return 'Actif cosmétique'
-    if (ingredient.name.includes('Eau')) return 'Eau'
+    if (ingredient.name.includes('BTMS') || ingredient.name.includes('Behentrimonium') || ingredient.name.includes('Quaternium') || ingredient.name.includes('Polyquat')) return 'Agent démêlant'
+    if (ingredient.name.includes('Xanthane') || ingredient.name.includes('Guar') || ingredient.name.includes('Carbomer')) return 'Épaississant'
+    if (ingredient.name.includes('Acide') || ingredient.name.includes('Vitamine') || ingredient.name.includes('Panthénol') || ingredient.name.includes('Panthenol') || ingredient.name.includes('Niacinamide') || ingredient.name.includes('Kératine') || ingredient.name.includes('Keratine') || ingredient.name.includes('Protéine') || ingredient.name.includes('Proteine')) return 'Actif cosmétique'
+    if (ingredient.name.includes('Eau') || ingredient.name.includes('Hydrolat')) return 'Eau'
     return 'Ingrédient'
 }
 
@@ -141,6 +145,8 @@ const getIngredientIcon = (ingredient) => {
     switch(type) {
         case 'Huile essentielle': return '🌿'
         case 'Actif cosmétique': return '✨'
+        case 'Agent démêlant': return '✨'
+        case 'épaississant': return '🌊'
         case 'Conservateur': return '🛡️'
         case 'Huile végétale': return '🫒'
         case 'Phase aqueuse': return '💧'
@@ -155,6 +161,8 @@ const getIngredientTypeColor = (ingredient) => {
     switch(type) {
         case 'Huile essentielle': return 'bg-gradient-to-br from-green-100 to-emerald-100 text-green-700'
         case 'Actif cosmétique': return 'bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-700'
+        case 'Agent démêlant': return 'bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-700'
+        case 'épaississant': return 'bg-gradient-to-br from-pink-100 to-rose-100 text-pink-700'
         case 'Conservateur': return 'bg-gradient-to-br from-red-100 to-orange-100 text-red-700'
         case 'Huile végétale': return 'bg-gradient-to-br from-amber-100 to-yellow-100 text-amber-700'
         case 'Phase aqueuse': return 'bg-gradient-to-br from-cyan-100 to-blue-100 text-cyan-700'
@@ -169,6 +177,8 @@ const getIngredientTypeClass = (ingredient) => {
     switch(type) {
         case 'Huile essentielle': return 'px-3 py-1.5 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-bold rounded-full'
         case 'Actif cosmétique': return 'px-3 py-1.5 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 text-xs font-bold rounded-full'
+        case 'Agent démêlant': return 'px-3 py-1.5 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 text-xs font-bold rounded-full'
+        case 'épaississant': return 'px-3 py-1.5 bg-gradient-to-r from-pink-100 to-rose-100 text-pink-800 text-xs font-bold rounded-full'
         case 'Conservateur': return 'px-3 py-1.5 bg-gradient-to-r from-red-100 to-orange-100 text-red-800 text-xs font-bold rounded-full'
         case 'Huile végétale': return 'px-3 py-1.5 bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 text-xs font-bold rounded-full'
         default: return 'px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 text-xs font-bold rounded-full'
@@ -217,3 +227,6 @@ const getIngredientStatusClass = (ingredient) => {
     }
 }
 </script>
+
+
+

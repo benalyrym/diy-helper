@@ -44,7 +44,7 @@ const hairActivesData = [
     {
         id: 'silk_protein',
         label: 'Protéine de soie hydrolysée',
-        inci: 'Hydrolyzed Silk Protein',
+        inci: 'Hydrolyzed Silk',
         type: 'repair',
         benefit: 'Brillance et douceur',
         description: 'Confère brillance, légèreté et douceur soyeuse aux cheveux.',

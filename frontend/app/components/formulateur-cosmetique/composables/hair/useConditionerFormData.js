@@ -1,4 +1,7 @@
 import { reactive, computed } from 'vue'
+import { fragranceOptions } from '../../data/fragranceOptions'
+import { fragranceNotes } from '../../data/fragranceNotes'
+import { hairEssentialOils } from '../../data/hairEssentialOils'
 
 export default function useConditionerFormData() {
   const formData = reactive({
@@ -9,10 +12,12 @@ export default function useConditionerFormData() {
     cosgardPercent: 0.8,
     thickener: 'xanthane',
     thickenerPercent: 1.0,
-    fragranceType: 'synthetic',
-    fragranceIntensity: 2,
+    fragranceType: 'essential_oils',
+    fragranceIntensity: 5,
     fragranceNote: 'floral',
-    selectedEssentialOils: []
+    selectedEssentialOils: [],
+    fragranceName: '',
+    fragranceDescription: ''
   })
 
   // Profils de cheveux
@@ -400,66 +405,23 @@ export default function useConditionerFormData() {
     }
   ]
 
-  // Options de parfum
-  const fragranceOptions = [
-    { value: 'synthetic', label: 'Parfum synthétique', description: 'Stable, large choix de notes' },
-    { value: 'essential_oils', label: 'Huiles essentielles', description: '100% naturel, propriétés additionnelles' },
-    { value: 'none', label: 'Sans parfum', description: 'Pour peaux sensibles ou allergies' }
-  ]
-
-  // Notes de parfum
-  const fragranceNotes = [
-    { value: 'floral', label: 'Florale', examples: 'Rose, Jasmin, Lavande' },
-    { value: 'fruity', label: 'Fruitée', examples: 'Pêche, Fraise, Agrumes' },
-    { value: 'woody', label: 'Boisée', examples: 'Santal, Cèdre, Patchouli' },
-    { value: 'fresh', label: 'Fraîche', examples: 'Menthe, Citron, Herbes' }
-  ]
-
-  // Huiles essentielles capillaires
-  const hairEssentialOils = [
-    {
-      name: 'Lavande',
-      latinName: 'Lavandula angustifolia',
-      properties: ['Apaisant', 'Antiseptique', 'Équilibrant']
-    },
-    {
-      name: 'Romarin',
-      latinName: 'Rosmarinus officinalis',
-      properties: ['Stimulant', 'Antipelliculaire', 'Fortifiant']
-    },
-    {
-      name: 'Ylang-Ylang',
-      latinName: 'Cananga odorata',
-      properties: ['Équilibrant', 'Aphrodisiaque', 'Antistress']
-    },
-    {
-      name: 'Cèdre',
-      latinName: 'Cedrus atlantica',
-      properties: ['Astringent', 'Antiseptique', 'Tonifiant']
-    },
-    {
-      name: 'Tea Tree',
-      latinName: 'Melaleuca alternifolia',
-      properties: ['Antibactérien', 'Antifongique', 'Purifiant']
-    },
-    {
-      name: 'Citron',
-      latinName: 'Citrus limon',
-      properties: ['Astringent', 'Purifiant', 'Éclaircissant']
-    }
-  ]
-
   const applyInitialData = (initialData = {}) => {
     if (!initialData || Object.keys(initialData).length === 0) return
 
     Object.assign(formData, {
-      name: initialData.name || '',
-      volume: initialData.volume || 500,
-      hairType: initialData.hairType || 'normaux',
-      preservativeSystem: initialData.preservativeSystem || 'cosgard',
-      cosgardPercent: initialData.cosgardPercent || 0.8,
-      thickener: initialData.thickener || 'xanthane',
-      thickenerPercent: initialData.thickenerPercent || 1.0
+      name: initialData.name ?? '',
+      volume: initialData.volume ?? 500,
+      hairType: initialData.hairType ?? 'normaux',
+      preservativeSystem: initialData.preservativeSystem ?? 'cosgard',
+      cosgardPercent: initialData.cosgardPercent ?? 0.8,
+      thickener: initialData.thickener ?? 'xanthane',
+      thickenerPercent: initialData.thickenerPercent ?? 1.0,
+      fragranceType: initialData.fragranceType ?? 'essential_oils',
+      fragranceIntensity: initialData.fragranceIntensity ?? 5,
+      fragranceNote: initialData.fragranceNote ?? 'floral',
+      selectedEssentialOils: initialData.selectedEssentialOils ?? [],
+      fragranceName: initialData.fragranceName ?? '',
+      fragranceDescription: initialData.fragranceDescription ?? ''
     })
   }
 

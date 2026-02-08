@@ -206,6 +206,22 @@
           </div>
         </div>
 
+        <!-- Contre-indications HE -->
+        <div v-if="heContraindications.length > 0"
+             class="mt-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-300">
+          <div class="flex items-start gap-3">
+            <span class="text-amber-600 text-xl mt-1">⚠️</span>
+            <div>
+              <h4 class="font-bold text-amber-800 mb-2">Contre-indications (HE)</h4>
+              <ul class="text-sm text-amber-800 space-y-1">
+                <li v-for="warning in heContraindications" :key="warning">
+                  {{ warning }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <!-- Rapport de conformité -->
         <div class="mt-8">
           <div class="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
@@ -238,6 +254,7 @@ defineProps({
   regulatoryStatus: { type: Object, required: true },
   regulatoryErrors: { type: Array, required: true },
   regulatoryChecks: { type: Array, required: true },
+  heContraindications: { type: Array, required: true },
   generateComplianceReport: { type: Function, required: true }
 })
 </script>

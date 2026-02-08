@@ -6,6 +6,14 @@ export interface Recipe {
     id?: string | number;
     name: string;
     description?: string;
+    type?: string;
+    category?: string;
+    subtype?: string;
+    recipeType?: {
+        subtype?: string;
+        type?: string;
+    };
+    formulaType?: string;
     ingredients: Ingredient[];
     steps?: string[];
     prepTime?: number; // en minutes

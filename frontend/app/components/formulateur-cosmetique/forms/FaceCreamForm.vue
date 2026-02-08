@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div :class="containerClasses">
     <!-- Navigation d'accessibilité -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
@@ -706,10 +706,137 @@ const generateComplianceReport = () => {
   console.log('Génération du rapport de conformité...')
 }
 
+const findEssentialOilByName = (name) => {
+  for (const oils of Object.values(extendedEssentialOils)) {
+    if (!Array.isArray(oils)) continue
+    const match = oils.find(oil => oil.name === name)
+    if (match) return match
+  }
+  return null
+}
+
+const resetSelections = () => {
+  actives.forEach(active => {
+    active.enabled = false
+  })
+  Object.values(aqueousPhaseOptions).forEach(category => {
+    category.items.forEach(item => {
+      item.selected = false
+    })
+  })
+  Object.values(oilPhaseOptions).forEach(category => {
+    category.items.forEach(item => {
+      item.selected = false
+    })
+  })
+  formData.selectedHE = []
+}
+
+const applyInitialData = (initialData) => {
+  if (!initialData || Object.keys(initialData).length === 0) return
+
+  updateFormData('name', initialData.name ?? '')
+  updateFormData('volume', initialData.volume ?? 50)
+  updateFormData('skinType', initialData.skinType ?? 'mixte')
+  updateFormData('preservativeSystem', initialData.preservativeSystem ?? 'cosgard')
+  updateFormData('cosgardPercent', initialData.cosgardPercent ?? 0.8)
+  updateFormData('formulaType', initialData.formulaType ?? 'creme')
+  updateFormData('spf', initialData.spf ?? 0)
+
+  resetSelections()
+
+  if (Array.isArray(initialData.actives)) {
+    initialData.actives.forEach(active => {
+      const match = actives.find(a => a.key === active.key || a.label === active.label)
+      if (match) {
+        match.enabled = true
+        if (typeof active.percent === 'number') match.percent = active.percent
+      }
+    })
+  }
+
+  if (Array.isArray(initialData.aqueousPhase)) {
+    initialData.aqueousPhase.forEach(item => {
+      const match = findAqueousItem(item.name)
+      if (match) {
+        match.selected = true
+        if (typeof item.percent === 'number') match.percent = item.percent
+      }
+    })
+  }
+
+  if (Array.isArray(initialData.oilPhase)) {
+    initialData.oilPhase.forEach(item => {
+      const match = findOilItem(item.name)
+      if (match) {
+        match.selected = true
+        if (typeof item.percent === 'number') match.percent = item.percent
+      }
+    })
+  }
+
+  const hasIngredients = Array.isArray(initialData.ingredients)
+  if (Array.isArray(initialData.he) && !hasIngredients) {
+    formData.selectedHE = initialData.he.map(he => ({ ...he }))
+  }
+
+  if (!hasIngredients) return
+
+  initialData.ingredients.forEach(ingredient => {
+    const type = String(ingredient.type || '').toLowerCase()
+    const quantity = typeof ingredient.quantity === 'number' ? ingredient.quantity : null
+
+    if (type === 'active') {
+      const match = actives.find(a => a.label === ingredient.name || a.key === ingredient.key)
+      if (match) {
+        match.enabled = true
+        if (quantity !== null) match.percent = quantity
+      }
+      return
+    }
+
+    if (type === 'aqueous') {
+      const match = findAqueousItem(ingredient.name)
+      if (match) {
+        match.selected = true
+        if (quantity !== null) match.percent = quantity
+      }
+      return
+    }
+
+    if (type === 'oil') {
+      const match = findOilItem(ingredient.name)
+      if (match) {
+        match.selected = true
+        if (quantity !== null) match.percent = quantity
+      }
+      return
+    }
+
+    if (type === 'essential_oil') {
+      const heName = String(ingredient.name || '').replace(/^HE\s+/i, '').trim()
+      const match = findEssentialOilByName(heName)
+      if (match) {
+        formData.selectedHE.push({
+          ...match,
+          percent: quantity ?? match.maxFace ?? 0.1
+        })
+      } else if (heName) {
+        formData.selectedHE.push({
+          name: heName,
+          latinName: ingredient.latinName || '',
+          percent: quantity ?? 0.1
+        })
+      }
+    }
+  })
+}
+
 // Hooks de cycle de vie
 onMounted(() => {
   if (props.initialData && Object.keys(props.initialData).length > 0) {
     isEditMode.value = true
+    applyInitialData(props.initialData)
   }
 
   document.addEventListener('keydown', handleKeyboardShortcuts)
@@ -746,6 +873,13 @@ watch(() => formData.cosgardPercent, (newVal) => {
 })
 
 watch(() => formData.volume, validateVolume)
+
+watch(() => props.initialData, (newData) => {
+  if (newData && Object.keys(newData).length > 0) {
+    isEditMode.value = true
+    applyInitialData(newData)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

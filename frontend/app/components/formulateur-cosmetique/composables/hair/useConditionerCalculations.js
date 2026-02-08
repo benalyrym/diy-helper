@@ -110,6 +110,12 @@ export default function useConditionerCalculations({
     return actives.filter(a => a.enabled).reduce((sum, a) => sum + a.percent, 0)
   })
 
+  const heTotal = computed(() => {
+    return formData.selectedEssentialOils.reduce((sum, he) => {
+      return sum + (typeof he.percent === 'number' ? he.percent : 0)
+    }, 0)
+  })
+
   const waterPhase = computed(() => {
     const totalUsed = oilPhaseTotal.value +
       aqueousPhaseTotal.value +
@@ -117,7 +123,7 @@ export default function useConditionerCalculations({
       preservativePercent.value +
       totalConditioningPercent.value +
       thickenerPercent.value +
-      (formData.fragranceType === 'essential_oils' ? 0.5 : 0.3)
+      heTotal.value
 
     return Math.max(0, 100 - totalUsed)
   })
@@ -174,11 +180,11 @@ export default function useConditionerCalculations({
       }
     ]
 
-    if (formData.fragranceType !== 'none') {
+    if (heTotal.value > 0) {
       phasesList.push({
         name: 'Parfum',
-        percent: formData.fragranceType === 'essential_oils' ? 0.5 : 0.3,
-        grams: grams(formData.fragranceType === 'essential_oils' ? 0.5 : 0.3),
+        percent: heTotal.value,
+        grams: grams(heTotal.value),
         color: '#f472b6',
         icon: '🌸'
       })
@@ -219,6 +225,7 @@ export default function useConditionerCalculations({
     preservativePercent,
     thickenerPercent,
     totalActivesPercent,
+    heTotal,
     waterPhase,
     waterPhaseGrams,
     totalFormulationPercent,

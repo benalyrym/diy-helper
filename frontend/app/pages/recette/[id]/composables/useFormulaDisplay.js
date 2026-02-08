@@ -50,7 +50,7 @@ export function useFormulaDisplay(formula, loading, error, route, router) {
         // Transformer les ingrédients
         const transformedIngredients = apiData.ingredients?.map(ing => {
             // Déterminer le type d'ingrédient
-            const type = determineIngredientType(ing.name)
+            const type = ing.type || determineIngredientType(ing.name)
 
             // Si quantité est null, essayer d'extraire de la description
             let quantity = ing.quantity
@@ -103,7 +103,33 @@ export function useFormulaDisplay(formula, loading, error, route, router) {
         if (lowerName.includes('he ') || lowerName.includes('huile essentielle')) {
             return 'essential_oil'
         }
-        if (lowerName.includes('vitamine') || lowerName.includes('acide') || lowerName.includes('panthénol') || lowerName.includes('niacinamide')) {
+        if (
+            lowerName.includes('btms') ||
+            lowerName.includes('behentrimonium') ||
+            lowerName.includes('cetyl alcohol') ||
+            lowerName.includes('quaternium') ||
+            lowerName.includes('polyquat')
+        ) {
+            return 'conditioning_agent'
+        }
+        if (
+            lowerName.includes('xanthane') ||
+            lowerName.includes('guar') ||
+            lowerName.includes('carbomer')
+        ) {
+            return 'thickener'
+        }
+        if (
+            lowerName.includes('vitamine') ||
+            lowerName.includes('acide') ||
+            lowerName.includes('panthénol') ||
+            lowerName.includes('panthenol') ||
+            lowerName.includes('niacinamide') ||
+            lowerName.includes('kératine') ||
+            lowerName.includes('keratine') ||
+            lowerName.includes('protéine') ||
+            lowerName.includes('proteine')
+        ) {
             return 'active'
         }
         if (lowerName.includes('cosgard') || lowerName.includes('conservateur')) {
@@ -112,7 +138,7 @@ export function useFormulaDisplay(formula, loading, error, route, router) {
         if (lowerName.includes('eau') || lowerName.includes('hydrolat') || lowerName.includes('hamamélis')) {
             return 'water'
         }
-        if (lowerName.includes('huile') || lowerName.includes('jojoba') || lowerName.includes('amande')) {
+        if (lowerName.includes('huile') || lowerName.includes('beurre') || lowerName.includes('jojoba') || lowerName.includes('amande')) {
             return 'oil'
         }
         if (lowerName.includes('émulsifiant')) {
@@ -151,6 +177,10 @@ export function useFormulaDisplay(formula, loading, error, route, router) {
                 return 70.0
             case 'emulsifier':
                 return 5.0
+            case 'conditioning_agent':
+                return 3.0
+            case 'thickener':
+                return 1.0
             default:
                 return 1.0
         }

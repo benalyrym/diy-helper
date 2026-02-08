@@ -38,7 +38,9 @@ const results = ref([])
 const { getRecipe } = useApi()
 
 onMounted(async () => {
-    recipe.value = await getRecipe(route.params.id)
+    const id = route.params.id
+    if (!id) return
+    recipe.value = await getRecipe(id)
 })
 
 const onCalc = () => {

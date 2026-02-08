@@ -79,15 +79,17 @@
              :key="thickener.name"
              :class="[
                'rounded-lg p-4 border-2 transition-all duration-300 transform hover:-translate-y-1',
-               formData.thickener === thickener.name ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-md' : 'border-gray-200 hover:border-blue-200'
+               formData.thickener === thickener.name && formData.thickenerPercent > 0
+                 ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-md'
+                 : 'border-gray-200 hover:border-blue-200'
              ]"
-             @click="formData.thickener = thickener.name">
+             @click="toggleThickener(thickener)">
           <div class="flex items-start gap-3">
             <div class="flex items-center h-6 pt-1">
               <input :id="`thickener-${thickener.name}`"
                      type="radio"
-                     v-model="formData.thickener"
-                     :value="thickener.name"
+                     :checked="formData.thickener === thickener.name"
+                     @click.stop.prevent="toggleThickener(thickener)"
                      class="h-5 w-5 rounded-full border-2 border-gray-300 checked:border-blue-600 checked:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             </div>
             <div class="flex-1">
@@ -107,7 +109,7 @@
                 </div>
               </div>
 
-              <div v-if="formData.thickener === thickener.name" class="mt-3 space-y-2">
+              <div v-if="formData.thickener === thickener.name && formData.thickenerPercent > 0" class="mt-3 space-y-2">
                 <label class="block text-xs font-medium text-gray-700">
                   Concentration (%)
                 </label>
@@ -128,7 +130,7 @@
     </div>
 
     <!-- Résumé des agents -->
-    <div v-if="selectedConditioningAgents.length > 0 || formData.thickener"
+    <div v-if="selectedConditioningAgents.length > 0 || (formData.thickener && formData.thickenerPercent > 0)"
          class="mt-8 bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl p-6 border border-emerald-300">
       <h3 class="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
         <span class="text-emerald-600">📊</span>
@@ -153,7 +155,7 @@
           </div>
         </div>
 
-        <div v-if="formData.thickener">
+        <div v-if="formData.thickener && formData.thickenerPercent > 0">
           <h4 class="font-medium text-gray-900 mb-3">Épaississant sélectionné</h4>
           <div class="p-4 bg-white/80 rounded-lg">
             <div class="flex justify-between items-center mb-2">
@@ -171,7 +173,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   conditioningAgents: { type: Array, required: true },
   thickeners: { type: Array, required: true },
   formData: { type: Object, required: true },
@@ -179,4 +181,17 @@ defineProps({
   totalConditioningPercent: { type: Number, required: true },
   grams: { type: Function, required: true }
 })
+
+const toggleThickener = (thickener) => {
+  if (props.formData.thickener === thickener.name) {
+    props.formData.thickener = ''
+    props.formData.thickenerPercent = 0
+    return
+  }
+
+  props.formData.thickener = thickener.name
+  if (!props.formData.thickenerPercent || props.formData.thickenerPercent < thickener.min) {
+    props.formData.thickenerPercent = thickener.min
+  }
+}
 </script>
