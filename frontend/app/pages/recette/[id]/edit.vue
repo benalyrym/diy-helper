@@ -264,11 +264,12 @@ const recipeType = computed(() => {
   }
 
   let subtype = typeMap[recipeTypeValue]?.subtype || 'custom'
-  let mainCategory = typeMap[recipeTypeValue]?.mainCategory || 'haircare'
-
-  if (recipe.value.category && recipe.value.category !== 'recipe') {
-    mainCategory = recipe.value.category
-  }
+  let mainCategory = typeMap[recipeTypeValue]?.mainCategory ||
+    (recipe.value.category && recipe.value.category !== 'recipe' ? recipe.value.category : '') ||
+    (recipeTypeValue === 'skincare' ? 'skincare' : '') ||
+    (recipeTypeValue === 'haircare' ? 'haircare' : '') ||
+    (recipeTypeValue === 'bodycare' ? 'bodycare' : '') ||
+    'other'
 
   // Déterminer la catégorie principale
   if (subtype === 'custom') {
