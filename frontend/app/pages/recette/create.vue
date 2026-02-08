@@ -83,7 +83,7 @@ import { useApi } from '~/composables/useApi'
 import FormRenderer from "~/components/formulateur-cosmetique/FormRenderer.vue";
 
 const router = useRouter()
-const { createRecipe } = useApi()
+const { createRecipe, listRecipes } = useApi()
 
 const loading = ref(false)
 const error = ref('')
@@ -121,11 +121,24 @@ const handleSave = async (recipeData: any) => {
     // Nettoyer le sessionStorage après utilisation
     sessionStorage.removeItem('selectedRecipeType')
 
-    if (!newRecipe.id) {
+    let createdId = newRecipe?.id || newRecipe?._id
+    if (!createdId) {
+      const recipes = await listRecipes()
+      const latest = recipes
+        .filter(r => r?.id || r?._id)
+        .sort((a, b) => {
+          const aDate = new Date(a.updatedAt || a.createdAt || 0).getTime()
+          const bDate = new Date(b.updatedAt || b.createdAt || 0).getTime()
+          return bDate - aDate
+        })[0]
+      createdId = latest?.id || latest?._id
+    }
+
+    if (!createdId) {
       throw new Error('La recette créée n\'a pas d\'ID')
     }
 
-    await router.push(`/recette/${newRecipe.id}`)
+    await router.push(`/recette/${createdId}`)
 
   } catch (err: any) {
     console.error('Erreur complète:', err)

@@ -1,13 +1,13 @@
 <template>
   <div :class="containerClasses">
-    <!-- Navigation d'accessibilit? -->
+    <!-- Navigation d'accessibilité -->
     <a href="#main-content"
        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
       Passer au contenu principal
     </a>
 
-    <div class=" mx-auto space-y-8" role="application" aria-label="Formulation d'apr?s-shampoing">
-      <!-- En-t?te -->
+    <div class="mx-auto space-y-8" role="application" aria-label="Formulation d'après-shampoing">
+      <!-- En-tête -->
       <HeaderSection
           :completion-percentage="completionPercentage"
           :regulatory-status="regulatoryStatus"
@@ -16,7 +16,7 @@
           @toggle-accessibility="toggleAccessibilityMenu"
       />
 
-      <!-- Menu d'accessibilit? -->
+      <!-- Menu d'accessibilité -->
       <AccessibilityMenu
           v-if="showAccessibilityMenu"
           :high-contrast="highContrast"
@@ -29,7 +29,7 @@
       />
 
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Sidebar avec r?sum? -->
+        <!-- Sidebar avec résumé -->
         <FormulaSummary
             :form-data="formData"
             :regulatory-errors="regulatoryErrors"
@@ -206,7 +206,7 @@ import ConditionerActionsSection from '../ui/sections/conditioner/ActionsSection
 const router = useRouter()
 const {copy, copied} = useClipboard()
 
-// Props pour les donn?es initiales
+// Props pour les données initiales
 const props = defineProps({
   initialData: {
     type: Object,
@@ -214,10 +214,10 @@ const props = defineProps({
   }
 })
 
-// ?v?nements
+// Événements
 const emit = defineEmits(['save', 'cancel', 'save-draft'])
 
-// ?tats UI
+// États UI
 const saving = ref(false)
 const errors = ref({})
 const isEditMode = ref(false)
@@ -225,7 +225,7 @@ const showFixedBar = ref(true)
 const summaryExpanded = ref(false)
 const showAccessibilityMenu = ref(false)
 
-// Donn?es
+// Données
 const {
   formData,
   hairProfiles,
@@ -289,7 +289,7 @@ const {
   hairProfiles
 })
 
-// Validation r?glementaire
+// Validation réglementaire
 const {
   regulatoryChecks,
   regulatoryErrors,
@@ -309,7 +309,7 @@ const {
     errors
 )
 
-// Ingr?dients
+// Ingrédients
 const {inciList} = useConditionerIngredients({
   formData,
   actives,
@@ -320,7 +320,7 @@ const {inciList} = useConditionerIngredients({
   selectedAqueousPhase
 })
 
-// Accessibilit?
+// Accessibilité
 const {
   highContrast,
   reducedMotion,
@@ -344,7 +344,7 @@ const sections = [
   {id: 'actives', name: 'Actifs'},
   {id: 'aqueous-phase', name: 'Infusions'},
   {id: 'oil-phase', name: 'Phase grasse'},
-  {id: 'conditioning-agents', name: 'D?m?lants'},
+  {id: 'conditioning-agents', name: 'Démêlants'},
   {id: 'preservatives', name: 'Conservation'},
   {id: 'fragrance', name: 'Parfum'},
   {id: 'analysis', name: 'Analyse'},
@@ -353,7 +353,7 @@ const sections = [
 
 const isMobile = computed(() => window.innerWidth < 1024)
 
-// Pourcentage de compl?tion
+// Pourcentage de complétion
 const completionPercentage = computed(() => {
   let percentage = 0
 
@@ -376,7 +376,7 @@ const completionPercentage = computed(() => {
   return Math.min(percentage, 100)
 })
 
-// M?thodes UI
+// Méthodes UI
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)
   if (element) {
@@ -397,20 +397,20 @@ const toggleAccessibilityMenu = () => {
   showAccessibilityMenu.value = !showAccessibilityMenu.value
 }
 
-// M?thodes de cat?gories
+// Méthodes de catégories
 const toggleCategory = (category, type) => {
   const items = category.items
   const allSelected = items.every(i => i.selected)
 
   items.forEach(item => {
     if (type === 'oil' && !allSelected && oilPhaseExceeded.value && !item.selected) {
-      return // Ne pas s?lectionner si phase grasse d?pass?e
+      return // Ne pas sélectionner si phase grasse dépassée
     }
     item.selected = !allSelected
   })
 }
 
-// M?thodes de calcul automatique
+// Méthodes de calcul automatique
 const autoCalculateWaterPhase = () => {
   const currentTotal = oilPhaseTotal.value +
       aqueousPhaseTotal.value +
@@ -441,7 +441,7 @@ const autoCalculateOilPhase = () => {
   const current = oilPhaseTotal.value
 
   if (current > max) {
-    // R?duire proportionnellement
+    // Réduire proportionnellement
     selectedOilPhase.value.forEach(item => {
       const originalItem = findOilItem(item.name)
       if (originalItem) {
@@ -466,11 +466,11 @@ const autoCalculateOilPhase = () => {
 
 const normalizeName = (value) => {
   return String(value || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
 }
 
 const findAqueousItem = (name) => {
@@ -616,12 +616,12 @@ const loadInitialIngredients = (initialData) => {
   })
 }
 
-// M?thodes d'optimisation
+// Méthodes d'optimisation
 const optimizeAqueousPhase = () => {
   const selected = selectedAqueousPhase.value
   if (selected.length === 0) return
 
-  // R?partir ?quitablement jusqu'? 40% total
+  // Répartir équitablement jusqu'à 40% total
   const targetTotal = Math.min(40, selected.length * 15)
   const equalPercent = targetTotal / selected.length
 
@@ -654,7 +654,7 @@ const optimizeOilPhase = () => {
   })
 }
 
-// M?thodes huiles essentielles
+// Méthodes huiles essentielles
 const toggleEssentialOil = (he) => {
   const idx = formData.selectedEssentialOils.findIndex(eo => eo.name === he.name)
   if (idx === -1) {
@@ -664,7 +664,7 @@ const toggleEssentialOil = (he) => {
   }
 }
 
-// M?thodes INCI
+// Méthodes INCI
 const formatINCIList = () => {
   return inciList.value.join(',\n')
 }
@@ -676,7 +676,7 @@ const copyINCI = async () => {
   }, 2000)
 }
 
-// M?thodes de formatage
+// Méthodes de formatage
 const formatDate = (dateString) => {
   if (!dateString) return 'Jamais'
   const date = new Date(dateString)
@@ -707,7 +707,6 @@ const canSave = computed(() => {
       formData.volume >= 100 &&
       formData.hairType &&
       hasPreservative &&
-      formData.thickener &&
       waterPhase.value >= 0
 })
 
@@ -715,7 +714,7 @@ const isValid = computed(() => {
   return canSave.value && regulatoryErrors.value.length === 0
 })
 
-// M?thodes de sauvegarde
+// Méthodes de sauvegarde
 const generateIngredientsForDB = () => {
   const ingredients = []
 
@@ -742,7 +741,7 @@ const generateIngredientsForDB = () => {
     })
   }
 
-  // Agents d?m?lants
+  // Agents démêlants
   selectedConditioningAgents.value.forEach(agent => {
     ingredients.push({
       name: agent.name,
@@ -784,7 +783,7 @@ const generateIngredientsForDB = () => {
     })
   })
 
-  // ?paississant
+  // Épaississant
   const thickenerObj = thickeners.find(t => t.name === formData.thickener)
   if (thickenerObj) {
     ingredients.push({
@@ -797,7 +796,7 @@ const generateIngredientsForDB = () => {
 
   // Eau
   ingredients.push({
-    name: "Eau d?min?ralis?e",
+    name: "Eau déminéralisée",
     quantity: waterPhase.value,
     unit: "%",
     type: "water"
@@ -808,7 +807,10 @@ const generateIngredientsForDB = () => {
 
 const save = async () => {
   if (!isValid.value) {
-    alert("Veuillez corriger les erreurs réglementaires avant d'enregistrer")
+    const details = regulatoryErrors.value.length
+        ? `\n\nErreurs:\n- ${regulatoryErrors.value.join('\n- ')}`
+        : ''
+    alert(`Veuillez corriger les erreurs réglementaires avant d'enregistrer${details}`)
     return
   }
 
@@ -833,14 +835,14 @@ const save = async () => {
       fragranceIntensity: formData.fragranceIntensity,
       fragranceNote: formData.fragranceNote,
 
-      // Ingr?dients
+      // Ingrédients
       ingredients: generateIngredientsForDB(),
 
       // Calculs
       totalPercent: totalFormulationPercent.value,
       waterPercent: waterPhase.value,
 
-      // M?tadonn?es
+      // Métadonnées
       version: "2.2",
       compliance: {
         euRegulation: "1223/2009",
@@ -887,27 +889,27 @@ const cancel = () => {
 }
 
 const generateDescription = () => {
-  const preservativeName = preservativeSystems.find(p => p.id === formData.preservativeSystem)?.name || 'Non sp?cifi?'
+  const preservativeName = preservativeSystems.find(p => p.id === formData.preservativeSystem)?.name || 'Non spécifié'
 
-  return `${formData.name} - Apr?s-shampoing pour cheveux ${formData.hairType}
-? Volume: ${formData.volume}ml
-? Actifs: ${actives.filter(a => a.enabled).map(a => `${a.label} ${a.percent}%`).join(', ') || 'Aucun'}
-? Phase grasse: ${oilPhaseTotal.value.toFixed(1)}%
-? Phase aqueuse: ${aqueousPhaseTotal.value.toFixed(1)}%
-? Agents d?m?lants: ${selectedConditioningAgents.value.map(a => `${a.name} ${a.percent}%`).join(', ') || 'Aucun'}
-? Conservateur: ${preservativeName} ${formData.preservativeSystem === 'cosgard' ? formData.cosgardPercent + '%' : ''}
-? ?paississant: ${formData.thickener} ${formData.thickenerPercent}%
-? Validation UE: ${regulatoryStatus.value.isValid ? 'Conforme' : 'Non conforme'}`
+  return `${formData.name} - Après-shampoing pour cheveux ${formData.hairType}
+- Volume: ${formData.volume}ml
+- Actifs: ${actives.filter(a => a.enabled).map(a => `${a.label} ${a.percent}%`).join(', ') || 'Aucun'}
+- Phase grasse: ${oilPhaseTotal.value.toFixed(1)}%
+- Phase aqueuse: ${aqueousPhaseTotal.value.toFixed(1)}%
+- Agents démêlants: ${selectedConditioningAgents.value.map(a => `${a.name} ${a.percent}%`).join(', ') || 'Aucun'}
+- Conservateur: ${preservativeName} ${formData.preservativeSystem === 'cosgard' ? formData.cosgardPercent + '%' : ''}
+- Épaississant: ${formData.thickener} ${formData.thickenerPercent}%
+- Validation UE: ${regulatoryStatus.value.isValid ? 'Conforme' : 'Non conforme'}`
 }
 
-// M?thodes d'export
+// Méthodes d'export
 const generateReport = () => {
   if (!isValid.value) {
-    alert("La formule doit ?tre valide pour g?n?rer un rapport")
+    alert("La formule doit être valide pour générer un rapport")
     return
   }
 
-  console.log('G?n?ration du rapport PDF...')
+  console.log('Génération du rapport PDF...')
 }
 
 const exportFormula = () => {
@@ -927,7 +929,7 @@ const exportFormula = () => {
     metadata: {
       version: "2.2",
       exportDate: new Date().toISOString(),
-      generatedBy: "Formulateur Apr?s-Shampoing Pro"
+      generatedBy: "Formulateur Après-Shampoing Pro"
     }
   }
 
@@ -943,7 +945,7 @@ const exportFormula = () => {
 }
 
 const generateComplianceReport = () => {
-  console.log('G?n?ration du rapport de conformit?...')
+  console.log('Génération du rapport de conformité...')
 }
 
 // Initialisation
@@ -954,7 +956,7 @@ onMounted(() => {
     loadInitialIngredients(props.initialData)
 
     if (props.initialData.ingredients) {
-      // Charger les ingr?dients depuis les donn?es initiales
+      // Charger les ingrédients depuis les données initiales
       // ... (logique de chargement similaire au premier template)
     }
   }
@@ -1235,4 +1237,3 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 </style>
-

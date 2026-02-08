@@ -365,10 +365,11 @@ const handleSave = async (updatedData: any) => {
       updatedAt: new Date().toISOString()
     }
 
-    await updateRecipe(id, fullData)
+    const updatedRecipe = await updateRecipe(id, fullData)
+    const targetId = updatedRecipe?.id || updatedRecipe?._id || id
 
     // Redirection vers la page de détail
-    await router.push(`/recette/${id}`)
+    await router.push(`/recette/${targetId}`)
 
   } catch (err: any) {
     console.error('💥 Erreur mise à jour:', err)

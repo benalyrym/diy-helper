@@ -515,6 +515,9 @@ const save = async () => {
   saving.value = true
   try {
     const formulaData = generateFormulaData()
+    if (isEditMode.value && props.initialData.id) {
+      formulaData.id = props.initialData.id
+    }
     emit('save', formulaData)
   } catch (error) {
     console.error('Erreur lors de l\'enregistrement:', error)
