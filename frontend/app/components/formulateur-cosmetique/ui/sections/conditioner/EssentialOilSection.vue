@@ -895,3 +895,4 @@ input[type="range"]::-moz-range-thumb {
   animation: fadeIn 0.3s ease-out;
 }
 </style>
+

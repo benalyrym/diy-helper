@@ -330,3 +330,4 @@ const getActiveSliderClass = (active) => {
     return 'range-amber'
 }
 </script>
+

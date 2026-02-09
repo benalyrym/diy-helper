@@ -157,3 +157,4 @@ defineEmits(['copy-inci', 'toggle-mentions', 'generate-safety-report'])
     @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0;
 }
 </style>
+

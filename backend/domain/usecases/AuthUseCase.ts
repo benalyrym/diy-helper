@@ -5,19 +5,58 @@ import fastifyJwt from '@fastify/jwt'
 export class AuthUseCase {
     constructor(private userRepo: UserRepositorySQLite) {}
 
-    async signup(email: string, password: string) {
+    async signup(data: { email: string; password: string; firstName?: string; lastName?: string; displayName?: string }) {
+        const email = (data.email || '').trim().toLowerCase()
+        const password = data.password || ''
+        const firstName = data.firstName?.trim() || ''
+        const lastName = data.lastName?.trim() || ''
+        const displayName = data.displayName?.trim() || `${firstName} ${lastName}`.trim()
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            throw new Error("Email invalide")
+        }
+
+        if (password.length < 8 || password.length > 72 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+            throw new Error("Mot de passe trop faible")
+        }
+
+        if ((firstName && firstName.length > 60) || (lastName && lastName.length > 60) || (displayName && displayName.length > 80)) {
+            throw new Error("Nom trop long")
+        }
+
         const exists = await this.userRepo.findByEmail(email)
-        if (exists) return { error: "User exists" }
-        const hash = bcrypt.hashSync(password, 10)
-        const user = await this.userRepo.save({ email, password: hash })
+        if (exists) {
+            throw new Error("User exists")
+        }
+
+        const hash = await bcrypt.hash(password, 10)
+        const user = await this.userRepo.save({
+            email,
+            password: hash,
+            firstName: firstName || null,
+            lastName: lastName || null,
+            displayName: displayName || null
+        })
         return user
     }
 
     async login(fastifyJwt: any, email: string, password: string) {
-        const user = await this.userRepo.findByEmail(email)
-        if (!user || !bcrypt.compareSync(password, user.password))
-            return { error: "Invalid credentials" }
-        const token = fastifyJwt.sign({ id: user.id, email })
+        const normalizedEmail = (email || '').trim().toLowerCase()
+        const user = await this.userRepo.findByEmail(normalizedEmail)
+        if (!user) {
+            throw new Error("Invalid credentials")
+        }
+
+        const isValid = await bcrypt.compare(password, user.password)
+        if (!isValid) {
+            throw new Error("Invalid credentials")
+        }
+
+        const token = fastifyJwt.sign({
+            id: user.id.toString(),
+            email: user.email,
+            displayName: user.displayName || undefined
+        })
         return { token }
     }
 }

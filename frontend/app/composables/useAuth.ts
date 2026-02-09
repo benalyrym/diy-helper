@@ -51,11 +51,17 @@ export function useAuth() {
     }
 
     // 📝 Signup
-    const signup = async (email: string, pass: string) => {
-        return $fetch("/api/signup", {
+    const signup = async (data: {
+        email: string
+        password: string
+        firstName?: string
+        lastName?: string
+        displayName?: string
+    }) => {
+        return $fetch("/signup", {
             baseURL: config.public.apiBase,
             method: "POST" as const,
-            body: { email, password: pass },
+            body: data,
         })
     }
 

@@ -891,3 +891,4 @@ onMounted(() => {
   @apply appearance-none h-5 w-5 rounded-full border-4 border-white shadow-xl cursor-pointer bg-green-500;
 }
 </style>
+

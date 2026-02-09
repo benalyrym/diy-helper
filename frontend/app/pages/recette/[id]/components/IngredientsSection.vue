@@ -99,3 +99,4 @@ const showAllHE = ref(false)
     @apply px-3 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 text-sm font-bold rounded-full border border-blue-200;
 }
 </style>
+

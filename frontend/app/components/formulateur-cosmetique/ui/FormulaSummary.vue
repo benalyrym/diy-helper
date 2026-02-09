@@ -142,3 +142,4 @@ defineProps({
 
 defineEmits(['toggle-summary', 'generate-report', 'export-formula'])
 </script>
+

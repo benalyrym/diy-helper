@@ -361,3 +361,4 @@ const slipScore = computed(() => {
   return Math.min(10, totalSlip * 10)
 })
 </script>
+

@@ -87,11 +87,7 @@ export default async function (fastify: any) {
 
             console.log('✅ Recipe created:', result.id)
 
-            return reply.code(201).send({
-                success: true,
-                data: result,
-                message: "Recette créée avec succès"
-            })
+            return reply.code(201).send(result)
 
         } catch (error: any) {
             console.error("💥 Error creating recipe:", error.message)
@@ -113,12 +109,9 @@ export default async function (fastify: any) {
             console.log('📦 Update data:', data)
 
             const update = new UpdateRecipe(repo)
-            await update.execute(recipeId, userId, data)
+            const updated = await update.execute(recipeId, userId, data)
 
-            return reply.code(200).send({
-                success: true,
-                message: "Recipe updated successfully"
-            })
+            return reply.code(200).send(updated)
 
         } catch (error: any) {
             console.error("💥 Error updating recipe:", error.message)
@@ -179,3 +172,4 @@ export default async function (fastify: any) {
         }
     })
 }
+

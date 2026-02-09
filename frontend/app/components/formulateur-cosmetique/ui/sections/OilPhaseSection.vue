@@ -1,15 +1,15 @@
-Ôªø<template>
+<template>
   <section id="oil-phase"
            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 animate-fadeIn">
     <div class="flex items-start gap-4 mb-8">
       <div class="p-3 bg-gradient-to-br from-green-200 to-emerald-200 rounded-xl shadow-lg" aria-hidden="true">
-        <span class="text-2xl text-white">ü´í</span>
+        <span class="text-2xl text-white">??</span>
       </div>
       <div class="flex-1">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Phase huileuse</h2>
-            <p class="text-gray-600">Huiles v√©g√©tales, beurres et cires - Nutrition et texture</p>
+            <p class="text-gray-600">Huiles vÈgÈtales, beurres et cires - Nutrition et texture</p>
           </div>
           <div class="flex items-center gap-3">
             <div :class="[
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <!-- Cat√©gories d'huiles -->
+    <!-- CatÈgories d'huiles -->
     <div class="space-y-6">
       <div v-for="(category, catName) in oilPhaseOptions"
            :key="catName"
@@ -42,7 +42,7 @@
                ? 'border-green-300 bg-green-50/50'
                : 'border-gray-200 hover:border-green-200'
            ]">
-        <!-- En-t√™te de cat√©gorie -->
+        <!-- En-tÍte de catÈgorie -->
         <div class="flex items-center justify-between mb-6">
           <h3 class="font-bold text-xl text-gray-900 flex items-center gap-3">
             <span class="p-2 bg-gradient-to-br from-green-100 to-emerald-200 rounded-lg text-white">
@@ -58,7 +58,7 @@
                   class="text-sm text-green-600 hover:text-green-800"
                   :disabled="oilPhaseExceeded && !selectedOilPhase.some(item => category.items.some(i => i.name === item.name))">
             {{
-              selectedOilPhase.some(item => category.items.some(i => i.name === item.name)) ? 'Tout d√©s√©lectionner' : 'Tout s√©lectionner'
+              selectedOilPhase.some(item => category.items.some(i => i.name === item.name)) ? 'Tout dÈsÈlectionner' : 'Tout sÈlectionner'
             }}
           </button>
         </div>
@@ -87,7 +87,7 @@
 
               <!-- Contenu -->
               <div class="flex-1">
-                <!-- En-t√™te avec com√©dog√©nicit√© -->
+                <!-- En-tÍte avec comÈdogÈnicitÈ -->
                 <div class="flex justify-between items-start mb-2">
                   <div>
                     <label :for="`oil-${oil.name}`"
@@ -102,14 +102,14 @@
                     </p>
                   </div>
 
-                  <!-- Indicateur com√©dog√©nicit√© -->
+                  <!-- Indicateur comÈdogÈnicitÈ -->
                   <div :class="[
                     'px-2 py-1 rounded-full text-xs font-bold',
                     oil.comedogenic <= 1 ? 'bg-green-100 text-green-800' :
                     oil.comedogenic <= 2 ? 'bg-green-100 text-green-800' :
                     'bg-red-100 text-red-800'
                   ]"
-                       :title="`Indice com√©dog√®ne: ${oil.comedogenic}/5`">
+                       :title="`Indice comÈdogËne: ${oil.comedogenic}/5`">
                     COM: {{ oil.comedogenic }}
                   </div>
                 </div>
@@ -150,7 +150,7 @@
                   <div class="space-y-1">
                     <div class="flex justify-between text-xs">
                       <span class="text-gray-500">Min: {{ oil.min }}%</span>
-                      <span class="text-green-600 font-medium">Recommand√©</span>
+                      <span class="text-green-600 font-medium">RecommandÈ</span>
                       <span class="text-gray-500">Max: {{ oil.max }}%</span>
                     </div>
                     <input type="range"
@@ -163,7 +163,7 @@
                   </div>
                 </div>
 
-                <!-- Propri√©t√©s -->
+                <!-- PropriÈtÈs -->
                 <div class="mt-3">
                   <div class="flex flex-wrap gap-1">
                     <span v-for="prop in oil.properties.slice(0, 3)"
@@ -178,7 +178,7 @@
                   </div>
                 </div>
 
-                <!-- Caract√©ristiques sp√©cifiques -->
+                <!-- CaractÈristiques spÈcifiques -->
                 <div v-if="oil.specifics" class="mt-2">
                   <div class="flex flex-wrap gap-1">
                     <span v-for="spec in oil.specifics"
@@ -195,20 +195,20 @@
       </div>
     </div>
 
-    <!-- R√©sum√© phase huileuse -->
+    <!-- RÈsumÈ phase huileuse -->
     <div v-if="selectedOilPhase.length > 0"
          class="mt-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-300">
       <div class="flex items-center justify-between mb-6">
         <h3 class="font-bold text-xl text-gray-900 flex items-center gap-2">
-          <span class="text-green-600">üìä</span>
-          R√©partition phase huileuse
+          <span class="text-green-600">??</span>
+          RÈpartition phase huileuse
         </h3>
         <div class="flex items-center gap-3">
           <div :class="[
             'px-3 py-1 rounded-full text-sm font-medium',
             oilPhaseExceeded ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
           ]">
-            {{ oilPhaseExceeded ? '‚ö†Ô∏è D√©passement' : '‚úÖ Dans la limite' }}
+            {{ oilPhaseExceeded ? '?? DÈpassement' : '? Dans la limite' }}
           </div>
           <button @click="$emit('optimize')"
                   type="button"
@@ -218,7 +218,7 @@
         </div>
       </div>
 
-      <!-- Graphique et d√©tails -->
+      <!-- Graphique et dÈtails -->
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Graphique -->
         <div class="lg:w-1/3">
@@ -272,11 +272,11 @@
         <!-- Statistiques -->
         <div class="lg:w-2/3">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- R√©partition par com√©dog√©nicit√© -->
+            <!-- RÈpartition par comÈdogÈnicitÈ -->
             <div class="bg-white rounded-xl p-4 border border-green-200">
               <h4 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <span>üìà</span>
-                R√©partition COM
+                <span>??</span>
+                RÈpartition COM
               </h4>
               <div class="space-y-3">
                 <div v-for="com in comedogenicDistribution"
@@ -299,43 +299,43 @@
             <!-- Recommandations -->
             <div class="bg-white rounded-xl p-4 border border-green-200">
               <h4 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <span>üí°</span>
+                <span>??</span>
                 Recommandations
               </h4>
               <div class="space-y-2">
                 <p class="text-sm text-gray-600">
                   Pour une peau <span class="font-bold capitalize">{{ formData.skinType }}</span>,
-                  limitez la phase huileuse √†
+                  limitez la phase huileuse ‡
                   <span class="font-bold text-green-700">{{ skinProfiles[formData.skinType]?.oil || 20 }}%</span>.
                 </p>
                 <ul class="text-sm text-gray-600 space-y-1">
                   <li class="flex items-start gap-2">
-                    <span class="text-green-500 mt-1">‚úì</span>
-                    <span>Privil√©giez les huiles COM 0-1 pour peaux grasses</span>
+                    <span class="text-green-500 mt-1">?</span>
+                    <span>PrivilÈgiez les huiles COM 0-1 pour peaux grasses</span>
                   </li>
                   <li class="flex items-start gap-2">
-                    <span class="text-green-500 mt-1">‚úì</span>
-                    <span>√âvitez les m√©langes trop complexes (2-3 huiles max)</span>
+                    <span class="text-green-500 mt-1">?</span>
+                    <span>…vitez les mÈlanges trop complexes (2-3 huiles max)</span>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <!-- Avertissement d√©passement -->
+          <!-- Avertissement dÈpassement -->
           <div v-if="oilPhaseExceeded"
                class="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-300">
             <div class="flex items-start gap-3">
-              <span class="text-red-600 text-xl mt-1">‚ö†Ô∏è</span>
+              <span class="text-red-600 text-xl mt-1">??</span>
               <div>
-                <h4 class="font-bold text-red-800 mb-1">D√©passement d√©tect√©</h4>
+                <h4 class="font-bold text-red-800 mb-1">DÈpassement dÈtectÈ</h4>
                 <p class="text-sm text-red-700">
-                  La phase huileuse d√©passe de
+                  La phase huileuse dÈpasse de
                   <span class="font-bold">{{
                       (oilPhaseTotal - (skinProfiles[formData.skinType]?.oil || 20)).toFixed(1)
                     }}%</span>
-                  la limite recommand√©e pour une peau {{ formData.skinType }}.
-                  Cela peut rendre la formule trop grasse et com√©dog√®ne.
+                  la limite recommandÈe pour une peau {{ formData.skinType }}.
+                  Cela peut rendre la formule trop grasse et comÈdogËne.
                 </p>
               </div>
             </div>
@@ -346,7 +346,7 @@
             <div class="flex justify-between items-center">
               <div>
                 <span class="font-bold text-gray-900">Total phase huileuse</span>
-                <p class="text-sm text-gray-500">Recommand√©: {{ skinProfiles[formData.skinType]?.oil || 20 }}% max</p>
+                <p class="text-sm text-gray-500">RecommandÈ: {{ skinProfiles[formData.skinType]?.oil || 20 }}% max</p>
               </div>
               <div class="text-right">
                 <span :class="[
@@ -420,14 +420,14 @@ const getRemainingOilPercent = () => {
 
 const getOilPropertyClass = (property) => {
   const classes = {
-    'Non com√©dog√®ne': 'bg-green-100 text-green-800 border border-green-200',
-    'R√©gulateur': 'bg-blue-100 text-blue-800 border border-blue-200',
-    'Anti-√¢ge': 'bg-purple-100 text-purple-800 border border-purple-200',
+    'Non comÈdogËne': 'bg-green-100 text-green-800 border border-green-200',
+    'RÈgulateur': 'bg-blue-100 text-blue-800 border border-blue-200',
+    'Anti-‚ge': 'bg-purple-100 text-purple-800 border border-purple-200',
     'Antioxydant': 'bg-orange-100 text-orange-800 border border-orange-200',
     'Hydratant': 'bg-cyan-100 text-cyan-800 border border-cyan-200',
     'Cicatrisant': 'bg-red-100 text-red-800 border border-red-200',
     'Anti-inflammatoire': 'bg-pink-100 text-pink-800 border border-pink-200',
-    'S√©bor√©gulateur': 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+    'SÈborÈgulateur': 'bg-emerald-100 text-emerald-800 border border-emerald-200',
     'default': 'bg-gray-100 text-gray-800 border border-gray-200'
   }
 
@@ -440,3 +440,4 @@ const getOilPropertyClass = (property) => {
   return classes.default
 }
 </script>
+

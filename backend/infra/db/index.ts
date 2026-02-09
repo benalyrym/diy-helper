@@ -16,7 +16,11 @@ db.prepare(
     `CREATE TABLE IF NOT EXISTS users(
         id TEXT PRIMARY KEY, 
         email TEXT UNIQUE, 
-        password TEXT
+        password TEXT,
+        firstName TEXT,
+        lastName TEXT,
+        displayName TEXT,
+        createdAt TEXT DEFAULT (datetime('now'))
     )`
 ).run()
 
@@ -27,6 +31,11 @@ db.prepare(
         description TEXT,
         ownerId TEXT NOT NULL,
         type TEXT DEFAULT 'recipe',
+        category TEXT,
+        subtype TEXT,
+        recipeType TEXT,
+        formulaType TEXT,
+        steps TEXT,
         volume INTEGER,
         skinType TEXT,
         prepTime INTEGER,
@@ -47,8 +56,33 @@ db.prepare(
         name TEXT NOT NULL,
         ratio REAL NOT NULL,
         density TEXT,
+        type TEXT,
         FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE
     )`
 ).run()
+
+const ensureColumn = (table: string, column: string, type: string) => {
+    const columns = db.prepare(`PRAGMA table_info(${table})`).all()
+    const exists = columns.some((col: any) => col.name === column)
+    if (!exists) {
+        db.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`).run()
+    }
+}
+
+ensureColumn('users', 'firstName', 'TEXT')
+ensureColumn('users', 'lastName', 'TEXT')
+ensureColumn('users', 'displayName', 'TEXT')
+ensureColumn('users', 'createdAt', 'TEXT')
+ensureColumn('recipes', 'category', 'TEXT')
+ensureColumn('recipes', 'subtype', 'TEXT')
+ensureColumn('recipes', 'recipeType', 'TEXT')
+ensureColumn('recipes', 'formulaType', 'TEXT')
+ensureColumn('recipes', 'steps', 'TEXT')
+ensureColumn('recipes', 'prepTime', 'INTEGER')
+ensureColumn('recipes', 'cookTime', 'INTEGER')
+ensureColumn('recipes', 'servings', 'INTEGER')
+ensureColumn('recipes', 'difficulty', 'TEXT')
+ensureColumn('recipes', 'notes', 'TEXT')
+ensureColumn('ingredients', 'type', 'TEXT')
 
 console.log('✅ Base de données initialisée avec succès')

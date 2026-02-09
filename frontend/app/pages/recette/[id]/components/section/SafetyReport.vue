@@ -71,3 +71,4 @@ defineProps({
 
 defineEmits(['generate-safety-report'])
 </script>
+

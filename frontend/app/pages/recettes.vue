@@ -443,7 +443,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Informations -->
                     <div>
-                        <h3 class="font-bold text-gray-900 mb-3">Formulateur Pro</h3>
+                        <h3 class="font-bold text-gray-900 mb-3">CosmeticLab</h3>
                         <p class="text-sm text-gray-600">
                             Outil professionnel de formulation cosmétique et ménagère.
                             Conforme aux réglementations européennes.
@@ -490,7 +490,7 @@
                 </div>
 
                 <div class="mt-8 pt-8 border-t border-gray-200 text-center text-xs text-gray-500">
-                    <p>© {{ currentYear }} Formulateur Pro • Version 2.3 • Conforme UE 1223/2009</p>
+                    <p>© {{ currentYear }} CosmeticLab • Version 2.3 • Conforme UE 1223/2009</p>
                 </div>
             </div>
         </footer>
@@ -915,4 +915,6 @@ onMounted(async () => {
     }
 }
 </style>
+
+
 

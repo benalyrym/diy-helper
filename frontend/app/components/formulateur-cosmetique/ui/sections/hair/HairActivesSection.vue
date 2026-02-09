@@ -416,3 +416,4 @@ input[type="range"]::-moz-range-thumb {
   @apply h-5 w-5 rounded-full bg-white border-2 border-blue-500 shadow-lg cursor-pointer;
 }
 </style>
+

@@ -248,3 +248,5 @@ defineProps({
   reducedMotion: { type: Boolean, required: true }
 })
 </script>
+
+

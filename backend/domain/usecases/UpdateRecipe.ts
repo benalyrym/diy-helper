@@ -15,8 +15,14 @@ export class UpdateRecipe {
         }
 
         // Mettre à jour la recette
-        await this.recipeRepo.update(recipeId, data)
+        const merged = {
+            ...existingRecipe,
+            ...data,
+            ingredients: Array.isArray(data.ingredients) ? data.ingredients : existingRecipe.ingredients
+        }
+        await this.recipeRepo.update(recipeId, merged)
 
         console.log('✅ Recipe updated successfully')
+        return this.recipeRepo.findByIdAndOwner(recipeId, ownerId)
     }
 }

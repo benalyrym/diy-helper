@@ -1,12 +1,12 @@
-ï»¿<template>
+<template>
   <div :class="containerClasses">
-    <!-- Navigation d'accessibilitÃ© -->
+    <!-- Navigation d'accessibilité -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
       Passer au contenu principal
     </a>
 
-    <div class=" mx-auto space-y-8" role="application" aria-label="Formulaire de formulation cosmÃ©tique">
-      <!-- En-tÃªte -->
+    <div class=" mx-auto space-y-8" role="application" aria-label="Formulaire de formulation cosmétique">
+      <!-- En-tête -->
       <HeaderSection
           :completion-percentage="completionPercentage"
           :regulatory-status="regulatoryStatus"
@@ -15,7 +15,7 @@
           @toggle-accessibility="toggleAccessibilityMenu"
       />
 
-      <!-- Menu d'accessibilitÃ© -->
+      <!-- Menu d'accessibilité -->
       <AccessibilityMenu
           v-if="showAccessibilityMenu"
           :high-contrast="highContrast"
@@ -28,7 +28,7 @@
       />
 
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Sidebar avec rÃ©sumÃ© -->
+        <!-- Sidebar avec résumé -->
         <FormulaSummary
             :form-data="formData"
             :regulatory-errors="regulatoryErrors"
@@ -53,7 +53,7 @@
               @validate-volume="validateVolume"
           />
 
-          <!-- Section 2: Actifs cosmÃ©tiques -->
+          <!-- Section 2: Actifs cosmétiques -->
           <ActivesSection
               :actives="filteredActives"
               :form-data="formData"
@@ -93,7 +93,7 @@
               @optimize="optimizeOilPhase"
           />
 
-          <!-- Section 5: SystÃ¨me de conservation -->
+          <!-- Section 5: Système de conservation -->
           <PreservativesSection
               :form-data="formData"
               :preservative-systems="preservativeSystems"
@@ -212,10 +212,10 @@ const props = defineProps({
   }
 })
 
-// Ã‰vÃ©nements
+// Événements
 const emit = defineEmits(['save', 'cancel', 'save-draft'])
 
-// Ã‰tats UI
+// États UI
 const showAccessibilityMenu = ref(false)
 const summaryExpanded = ref(false)
 const showFixedBar = ref(true)
@@ -224,7 +224,7 @@ const isEditMode = ref(false)
 const errors = ref({})
 const showAllMentions = ref(false)
 
-// DonnÃ©es
+// Données
 const {
   formData,
   actives,
@@ -262,7 +262,7 @@ const {
   selectedSkinProfile
 } = useCalculations(formData, actives, aqueousPhaseOptions, oilPhaseOptions, skinProfiles)
 
-// Validation rÃ©glementaire
+// Validation réglementaire
 const {
   regulatoryChecks,
   regulatoryErrors,
@@ -291,7 +291,7 @@ const {
   updateHEFilters
 } = useFilters(actives, extendedEssentialOils)
 
-// AccessibilitÃ©
+// Accessibilité
 const {
   highContrast,
   reducedMotion,
@@ -303,7 +303,7 @@ const {
   toggleReducedMotion
 } = useAccessibility()
 
-// IngrÃ©dients
+// Ingrédients
 const { inciList } = useIngredients(formData, actives, preservativeSystems, heTotal, selectedOilPhase)
 
 // Sections pour navigation
@@ -326,7 +326,7 @@ const currentDate = ref(new Date().toLocaleDateString('fr-FR', {
 
 const isMobile = computed(() => window.innerWidth < 1024)
 
-// MÃ©thodes
+// Méthodes
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId)
   if (element) {
@@ -351,7 +351,7 @@ const toggleMentions = () => {
   showAllMentions.value = !showAllMentions.value
 }
 
-// MÃ©thodes de catÃ©gories
+// Méthodes de catégories
 const toggleCategory = (category, type) => {
   const items = category.items
   const allSelected = items.every(i => i.selected)
@@ -364,7 +364,7 @@ const toggleCategory = (category, type) => {
   })
 }
 
-// MÃ©thodes de calcul automatique
+// Méthodes de calcul automatique
 const autoCalculateWaterPhase = () => {
   const currentTotal = oilPhaseTotal.value +
       aqueousPhaseTotal.value +
@@ -451,7 +451,7 @@ const optimizeOilPhase = () => {
   })
 }
 
-// MÃ©thodes helpers
+// Méthodes helpers
 const findAqueousItem = (name) => {
   for (const category of Object.values(aqueousPhaseOptions)) {
     for (const item of category.items) {
@@ -470,7 +470,7 @@ const findOilItem = (name) => {
   return null
 }
 
-// MÃ©thodes HE
+// Méthodes HE
 const toggleHE = (oil) => {
   const idx = formData.selectedHE.findIndex(h => h.name === oil.name)
 
@@ -496,7 +496,7 @@ const clearAllHE = () => {
   formData.selectedHE = []
 }
 
-// MÃ©thodes INCI
+// Méthodes INCI
 const copyINCI = async () => {
   const inciText = inciList.value.join(',\n')
   await copy(inciText)
@@ -505,7 +505,7 @@ const copyINCI = async () => {
   }, 2000)
 }
 
-// MÃ©thodes de sauvegarde
+// Méthodes de sauvegarde
 const save = async () => {
   if (!isValid.value) {
     alert("Veuillez corriger les erreurs avant d'enregistrer")
@@ -622,7 +622,7 @@ const generateIngredientsForDB = () => {
     })
   })
 
-  // Huiles vÃ©gÃ©tales
+  // Huiles végétales
   selectedOilPhase.value.forEach(oil => {
     ingredients.push({
       name: oil.name,
@@ -635,15 +635,15 @@ const generateIngredientsForDB = () => {
 
   // Eau
   ingredients.push({
-    name: 'Eau dÃ©minÃ©ralisÃ©e',
+    name: 'Eau déminéralisée',
     quantity: waterPhase.value,
     unit: '%',
     type: 'water'
   })
 
-  // Ã‰mulsifiant
+  // Émulsifiant
   ingredients.push({
-    name: 'Ã‰mulsifiant',
+    name: 'Émulsifiant',
     quantity: 5,
     unit: '%',
     type: 'emulsifier'
@@ -653,24 +653,24 @@ const generateIngredientsForDB = () => {
 }
 
 const generateDescription = () => {
-  const preservativeName = preservativeSystems.find(p => p.id === formData.preservativeSystem)?.name || 'Non spÃ©cifiÃ©'
+  const preservativeName = preservativeSystems.find(p => p.id === formData.preservativeSystem)?.name || 'Non spécifié'
 
   return `${formData.name} - Formule pour peau ${formData.skinType}
-â€¢ Volume: ${formData.volume}ml
-â€¢ Actifs: ${actives.filter(a => a.enabled).map(a => `${a.label} ${a.percent}%`).join(', ') || 'Aucun'}
-â€¢ Phase huileuse: ${oilPhaseTotal.value.toFixed(1)}%
-â€¢ Phase aqueuse: ${aqueousPhaseTotal.value.toFixed(1)}%
-â€¢ Conservateur: ${preservativeName} ${formData.preservativeSystem === 'cosgard' ? formData.cosgardPercent + '%' : ''}
-â€¢ HE: ${formData.selectedHE.map(h => `${h.name} ${h.percent}%`).join(', ') || 'Aucune'}
-â€¢ Validation UE: ${regulatoryStatus.value.isValid ? 'Conforme' : 'Non conforme'}`
+• Volume: ${formData.volume}ml
+• Actifs: ${actives.filter(a => a.enabled).map(a => `${a.label} ${a.percent}%`).join(', ') || 'Aucun'}
+• Phase huileuse: ${oilPhaseTotal.value.toFixed(1)}%
+• Phase aqueuse: ${aqueousPhaseTotal.value.toFixed(1)}%
+• Conservateur: ${preservativeName} ${formData.preservativeSystem === 'cosgard' ? formData.cosgardPercent + '%' : ''}
+• HE: ${formData.selectedHE.map(h => `${h.name} ${h.percent}%`).join(', ') || 'Aucune'}
+• Validation UE: ${regulatoryStatus.value.isValid ? 'Conforme' : 'Non conforme'}`
 }
 
 const generateReport = () => {
   if (!isValid.value) {
-    alert('La formule doit Ãªtre valide pour gÃ©nÃ©rer un rapport')
+    alert('La formule doit être valide pour générer un rapport')
     return
   }
-  console.log('GÃ©nÃ©ration du rapport PDF...')
+  console.log('Génération du rapport PDF...')
 }
 
 const exportFormula = () => {
@@ -690,7 +690,7 @@ const exportFormula = () => {
     metadata: {
       version: '2.2',
       exportDate: new Date().toISOString(),
-      generatedBy: 'Formulateur CosmÃ©tique Pro'
+      generatedBy: 'Formulateur Cosmétique Pro'
     }
   }
 
@@ -706,7 +706,7 @@ const exportFormula = () => {
 }
 
 const generateComplianceReport = () => {
-  console.log('GÃ©nÃ©ration du rapport de conformitÃ©...')
+  console.log('Génération du rapport de conformité...')
 }
 
 const findEssentialOilByName = (name) => {
@@ -1061,7 +1061,7 @@ input[type="range"]::-moz-range-thumb {
   animation: fadeOut 2s ease-out forwards;
 }
 
-/* Scrollbar personnalisÃ©e */
+/* Scrollbar personnalisée */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1075,7 +1075,7 @@ input[type="range"]::-moz-range-thumb {
   @apply bg-gray-400 rounded-full hover:bg-gray-500;
 }
 
-/* Focus visible amÃ©liorÃ© */
+/* Focus visible amélioré */
 :focus-visible {
   @apply outline-none ring-2 ring-blue-500 ring-offset-2;
 }
@@ -1087,3 +1087,5 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 </style>
+
+

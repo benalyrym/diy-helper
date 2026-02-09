@@ -294,3 +294,4 @@ const convertToFullFormula = () => {
     left: 100%;
 }
 </style>
+

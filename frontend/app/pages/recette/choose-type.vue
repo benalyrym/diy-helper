@@ -667,3 +667,4 @@ watch(selectedSubtype, (newVal) => {
   transform: translateX(20px);
 }
 </style>
+

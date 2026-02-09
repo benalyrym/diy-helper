@@ -7,6 +7,8 @@ export class RecipeRepositorySQLite {
     async save(recipe: Recipe) {
         const id = uuidv4()
         const now = new Date().toISOString()
+        const recipeTypeValue = recipe.recipeType ? JSON.stringify(recipe.recipeType) : null
+        const stepsValue = recipe.steps ? JSON.stringify(recipe.steps) : null
 
         console.log('💾 Saving recipe:', {
             name: recipe.name,
@@ -18,16 +20,28 @@ export class RecipeRepositorySQLite {
             db.prepare(
                 `INSERT INTO recipes(
                     id, name, description, ownerId, type,
-                    volume, skinType, createdAt, updatedAt
-                ) VALUES(?,?,?,?,?,?,?,?,?)`
+                    category, subtype, recipeType, formulaType, steps,
+                    volume, skinType, prepTime, cookTime, servings,
+                    difficulty, notes, createdAt, updatedAt
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
             ).run(
                 id,
                 recipe.name,
                 recipe.description || '',
                 recipe.ownerId,
                 recipe.type || 'recipe',
+                recipe.category || null,
+                recipe.subtype || null,
+                recipeTypeValue,
+                recipe.formulaType || null,
+                stepsValue,
                 recipe.volume || null,
                 recipe.skinType || null,
+                recipe.prepTime || null,
+                recipe.cookTime || null,
+                recipe.servings || null,
+                recipe.difficulty || null,
+                recipe.notes || null,
                 now,
                 now
             )
@@ -35,7 +49,7 @@ export class RecipeRepositorySQLite {
             // Insertion des ingrédients
             if (recipe.ingredients && recipe.ingredients.length > 0) {
                 const stmt = db.prepare(
-                    "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES(?,?,?,?)"
+                    "INSERT INTO ingredients(recipeId, name, ratio, density, type) VALUES(?,?,?,?,?)"
                 )
 
                 for (const ingredient of recipe.ingredients) {
@@ -43,13 +57,15 @@ export class RecipeRepositorySQLite {
                         id,
                         ingredient.name,
                         ingredient.quantity,
-                        ingredient.unit || null
+                        ingredient.unit || null,
+                        ingredient.type || null
                     )
                 }
             }
 
             return {
                 id,
+                _id: id,
                 ...recipe,
                 createdAt: now,
                 updatedAt: now
@@ -108,6 +124,8 @@ export class RecipeRepositorySQLite {
 
     async update(id: string, data: any): Promise<void> {
         const now = new Date().toISOString()
+        const recipeTypeValue = data.recipeType ? JSON.stringify(data.recipeType) : null
+        const stepsValue = data.steps ? JSON.stringify(data.steps) : null
 
         console.log('📝 Repository update:', { id, data })
 
@@ -116,7 +134,9 @@ export class RecipeRepositorySQLite {
             const stmt = db.prepare(`
                 UPDATE recipes 
                 SET name = ?, description = ?, type = ?,
-                    volume = ?, skinType = ?, updatedAt = ?
+                    category = ?, subtype = ?, recipeType = ?, formulaType = ?, steps = ?,
+                    volume = ?, skinType = ?, prepTime = ?, cookTime = ?, servings = ?,
+                    difficulty = ?, notes = ?, updatedAt = ?
                 WHERE id = ?
             `)
 
@@ -124,8 +144,18 @@ export class RecipeRepositorySQLite {
                 data.name || '',
                 data.description || '',
                 data.type || 'recipe',
+                data.category || null,
+                data.subtype || null,
+                recipeTypeValue,
+                data.formulaType || null,
+                stepsValue,
                 data.volume || null,
                 data.skinType || null,
+                data.prepTime || null,
+                data.cookTime || null,
+                data.servings || null,
+                data.difficulty || null,
+                data.notes || null,
                 now,
                 id
             )
@@ -138,16 +168,17 @@ export class RecipeRepositorySQLite {
                 // Insérer les nouveaux ingrédients
                 if (data.ingredients.length > 0) {
                     const insertStmt = db.prepare(`
-                        INSERT INTO ingredients(recipeId, name, ratio, density)
-                        VALUES (?, ?, ?, ?)
+                        INSERT INTO ingredients(recipeId, name, ratio, density, type)
+                        VALUES (?, ?, ?, ?, ?)
                     `)
 
                     for (const ing of data.ingredients) {
                         insertStmt.run(
                             id,
                             ing.name,
-                            ing.quantity || 0,
-                            ing.unit || null
+                            ing.quantity ?? ing.ratio ?? 0,
+                            ing.unit || null,
+                            ing.type || null
                         )
                     }
                 }
@@ -164,32 +195,44 @@ export class RecipeRepositorySQLite {
     private _enrichRecipe(recipe: any) {
         try {
             console.log(`🔍 Enriching recipe: ${recipe.id}`)
+            const parseJson = (value: any) => {
+                if (!value) return undefined
+                try {
+                    return JSON.parse(value)
+                } catch {
+                    return undefined
+                }
+            }
 
-            // Récupérer les ingrédients
             const ingredientsQuery = db
-                .prepare("SELECT name, ratio, density FROM ingredients WHERE recipeId = ?")
+                .prepare("SELECT name, ratio, density, type FROM ingredients WHERE recipeId = ?")
 
             const ingredientsRows = ingredientsQuery.all(recipe.id)
 
             const ingredients = ingredientsRows.map((ing: any) => ({
                 name: ing.name,
                 quantity: ing.ratio,
-                unit: ing.density || undefined
+                unit: ing.density || undefined,
+                type: ing.type || undefined
             }))
 
-            // Construction de l'objet enrichi
             const enriched: any = {
                 id: recipe.id,
+                _id: recipe.id,
                 name: recipe.name,
                 description: recipe.description,
                 ownerId: recipe.ownerId,
                 ingredients,
                 type: recipe.type || 'recipe',
+                category: recipe.category || undefined,
+                subtype: recipe.subtype || undefined,
+                recipeType: parseJson(recipe.recipeType),
+                formulaType: recipe.formulaType || undefined,
+                steps: parseJson(recipe.steps),
                 createdAt: recipe.createdAt,
                 updatedAt: recipe.updatedAt
             }
 
-            // Ajouter les champs spécifiques selon le type
             if (recipe.type === 'skincare') {
                 enriched.volume = recipe.volume || 50
                 enriched.skinType = recipe.skinType || 'mixte'
@@ -207,9 +250,9 @@ export class RecipeRepositorySQLite {
         } catch (error: any) {
             console.error(`💥 Error enriching recipe ${recipe.id}:`, error.message)
 
-            // Retourner la recette de base en cas d'erreur
             return {
                 id: recipe.id,
+                _id: recipe.id,
                 name: recipe.name,
                 description: recipe.description,
                 ownerId: recipe.ownerId,
@@ -234,15 +277,16 @@ export class RecipeRepositorySQLite {
     async insertIngredients(recipeId: string, ingredients: any[]) {
         try {
             const stmt = db.prepare(
-                "INSERT INTO ingredients(recipeId, name, ratio, density) VALUES (?,?,?,?)"
+                "INSERT INTO ingredients(recipeId, name, ratio, density, type) VALUES (?,?,?,?,?)"
             )
 
             for (const ing of ingredients) {
                 stmt.run(
                     recipeId,
                     ing.name,
-                    ing.quantity,
-                    ing.unit || null
+                    (ing.quantity ?? ing.ratio ?? 0),
+                    ing.unit || null,
+                            ing.type || null
                 )
             }
             console.log(`✅ ${ingredients.length} ingredients inserted for recipe ${recipeId}`)
@@ -252,3 +296,24 @@ export class RecipeRepositorySQLite {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

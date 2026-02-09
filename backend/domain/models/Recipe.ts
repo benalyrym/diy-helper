@@ -8,7 +8,7 @@ export class Recipe {
     constructor(
         public name: string,
         public description: string,
-        ingredients: { name: string; quantity: number; unit?: string }[],
+        ingredients: { name: string; quantity: number; unit?: string; type?: string }[],
         public ownerId: string,
         public type: 'recipe' | 'skincare' = 'recipe',
         public volume?: number,
@@ -17,14 +17,20 @@ export class Recipe {
         public cookTime?: number,
         public servings?: number,
         public difficulty?: 'easy' | 'medium' | 'hard',
-        public notes?: string
+        public notes?: string,
+        public category?: string,
+        public subtype?: string,
+        public recipeType?: any,
+        public formulaType?: string,
+        public steps?: string[]
     ) {
         if (!name) throw new DomainError("Name required")
 
         this.ingredients = ingredients.map(ing => ({
             name: ing.name,
             quantity: ing.quantity,
-            unit: ing.unit
+            unit: ing.unit,
+            type: ing.type
         }))
     }
 }

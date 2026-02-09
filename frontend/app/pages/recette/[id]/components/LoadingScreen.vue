@@ -22,3 +22,4 @@
 <script setup>
 // Écran de chargement simple
 </script>
+

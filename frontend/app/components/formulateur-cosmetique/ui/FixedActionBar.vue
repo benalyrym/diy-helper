@@ -98,3 +98,4 @@ defineProps({
 
 defineEmits(['save', 'save-draft', 'toggle-fixed-bar'])
 </script>
+

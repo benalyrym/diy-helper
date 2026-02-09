@@ -258,3 +258,5 @@ defineProps({
   generateComplianceReport: { type: Function, required: true }
 })
 </script>
+
+

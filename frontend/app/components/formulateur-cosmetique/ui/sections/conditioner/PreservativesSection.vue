@@ -337,3 +337,4 @@ const grams = (percent) => {
   return Number(((volume.value * percent) / 100).toFixed(2))
 }
 </script>
+
