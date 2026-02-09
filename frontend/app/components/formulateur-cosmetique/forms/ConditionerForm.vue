@@ -112,7 +112,7 @@
           />
 
           <!-- Section 7: Parfums et huiles essentielles -->
-          <ConditionerFragranceSection
+          <ConditionerEssentialOilSection
               :form-data="formData"
               :fragrance-options="fragranceOptions"
               :fragrance-notes="fragranceNotes"
@@ -199,7 +199,7 @@ import ConditionerAqueousPhaseSection from '../ui/sections/conditioner/AqueousPh
 import ConditionerOilPhaseSection from '../ui/sections/conditioner/OilPhaseSection.vue'
 import ConditionerConditioningAgentsSection from '../ui/sections/conditioner/ConditioningAgentsSection.vue'
 import ConditionerPreservativesSection from '../ui/sections/conditioner/PreservativesSection.vue'
-import ConditionerFragranceSection from '../ui/sections/conditioner/FragranceSection.vue'
+import ConditionerEssentialOilSection from '../ui/sections/conditioner/EssentialOilSection.vue'
 import ConditionerAnalysisSection from '../ui/sections/conditioner/AnalysisSection.vue'
 import ConditionerActionsSection from '../ui/sections/conditioner/ActionsSection.vue'
 

@@ -301,4 +301,30 @@ input[type="range"]::-webkit-slider-thumb {
     @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
   }
 }
+
+.label {
+  @apply block text-base font-bold text-gray-900 mb-2
+  tracking-tight;
+}
+
+.label.required::after {
+  content: " *";
+  @apply text-red-600;
+}
+
+.error-message {
+  @apply mt-1 text-sm text-red-600 font-medium flex items-center gap-1;
+}
+
+.help-text {
+  @apply mt-1 text-sm text-gray-500;
+}
+
+/* Cartes */
+.hair-type-card {
+  @apply border-2 rounded-xl cursor-pointer
+  transition-all duration-300
+  hover:shadow-lg;
+}
+
 </style>

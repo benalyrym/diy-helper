@@ -12,25 +12,14 @@
 
         <!-- Contenu principal -->
         <div v-else-if="formula">
-            <!-- Barre de navigation -->
-            <FormulaNavigation
+            <FormulaHeader
                 :formula="formula"
-                :is-valid="isFormulaValid"
+                :is-formula-valid="isFormulaValid"
                 @generate-pdf="generatePDF"
                 @toggle-print="togglePrintMode"
             />
 
             <div class=" mx-auto space-y-8 p-4 md:p-8">
-                <!-- En-tête avec métadonnées -->
-                <FormulaHeader
-                    :formula="formula"
-                    :actives="actives"
-                    :essential-oils="essentialOils"
-                    :he-total="heTotal"
-                    :is-formula-valid="isFormulaValid"
-                    :regulatory-errors="regulatoryErrors"
-                />
-
                 <!-- Navigation rapide -->
                 <FormulaQuickNav
                     :sections="sections"
@@ -112,8 +101,7 @@ import { useFormulaData } from './composables/useFormulaData'
 // Composants
 import LoadingScreen from './components/LoadingScreen.vue'
 import ErrorScreen from './components/ErrorScreen.vue'
-import FormulaNavigation from './components/FormulaNavigation.vue'
-import FormulaHeader from './components/FormulaHeader.vue'
+import FormulaHeader from '~/components/FormulaHeader.vue'
 import FormulaQuickNav from './components/FormulaQuickNav.vue'
 import FormulaSidebar from './components/FormulaSidebar.vue'
 import FormulaDescription from './components/FormulaDescription.vue'
@@ -270,3 +258,6 @@ onUnmounted(() => {
     }
 }
 </style>
+
+
+

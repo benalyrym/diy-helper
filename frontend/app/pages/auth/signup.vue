@@ -25,6 +25,10 @@
 import {useAuth} from "../../composables/useAuth.js";
 import {navigateTo} from "nuxt/app";
 
+definePageMeta({
+    layout: "auth"
+})
+
 const email = ref("")
 const pass = ref("")
 const { signup } = useAuth()

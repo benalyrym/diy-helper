@@ -2,16 +2,8 @@
 <template>
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-8">
         <div class="max-w-4xl mx-auto">
-            <!-- Navigation -->
-            <div class="flex items-center justify-between mb-8">
-                <NuxtLink :to="`/recette/${formula.id}`"
-                          class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
-                    <span>←</span>
-                    <span>Retour à la recette</span>
-                </NuxtLink>
-                <div class="text-sm text-gray-500">
-                    Conversion de recette
-                </div>
+            <div class="mb-8 text-sm text-gray-500">
+                Conversion de recette
             </div>
 
             <!-- En-tête -->
@@ -262,3 +254,4 @@ const convertToFullFormula = async () => {
     router.push(`/recette/${formula.value.id}`)
 }
 </script>
+

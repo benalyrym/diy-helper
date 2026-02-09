@@ -1,17 +1,7 @@
 ﻿<!-- pages/recette/edit/[id].vue -->
 <template>
-  <div class="mx-auto p-4 md:p-8">
-    <!-- Navigation -->
+  <div class="min-h-screen mx-auto p-4 md:p-8">
     <div class="mb-8">
-      <NuxtLink
-          :to="`/recette/${recipeId}`"
-          class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
-      >
-        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-        </svg>
-        Retour à la recette
-      </NuxtLink>
       <h1 class="text-3xl font-bold text-gray-900">Modifier "{{ recipe?.name }}"</h1>
       <p class="text-gray-600 mt-2">Modifiez les informations de votre recette</p>
     </div>
@@ -28,12 +18,6 @@
     <div v-else-if="loadError" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold text-red-800 mb-2">Erreur</h2>
       <p class="text-red-700">{{ loadError }}</p>
-      <NuxtLink
-          :to="`/recette/${recipeId}`"
-          class="inline-block mt-4 text-blue-600 hover:text-blue-800"
-      >
-        ← Retour à la recette
-      </NuxtLink>
     </div>
 
     <!-- Formulaire via FormRenderer -->
@@ -385,6 +369,3 @@ const handleCancel = () => {
   router.push(`/recette/${id}`)
 }
 </script>
-
-
-

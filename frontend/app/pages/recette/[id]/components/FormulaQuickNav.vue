@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 border border-gray-100 sticky top-20 z-40">
+    <nav class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-3 border border-gray-100 sticky top-30 z-40">
         <div class="flex flex-wrap gap-2 justify-center">
             <a v-for="section in sections"
                :key="section.id"
@@ -42,5 +42,8 @@ defineEmits(['scroll-to-section'])
 
 .nav-link-indicator.active {
     @apply w-3/4 opacity-100;
+}
+.top-30 {
+  top: 9rem;
 }
 </style>
