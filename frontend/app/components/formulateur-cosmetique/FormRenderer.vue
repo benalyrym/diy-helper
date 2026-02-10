@@ -43,72 +43,71 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-// Import dynamique des formulaires spécifiques
+const formComponents: Record<string, any> = {
+  // Soins de la peau
+  'face_cream': defineAsyncComponent(() =>
+      import('./forms/FaceCreamForm.vue')
+  ),
+  'conditioner': defineAsyncComponent(() =>
+      import('./forms/ConditionerForm.vue')
+  ),
+ /*   'face_serum': defineAsyncComponent(() =>
+      import('./forms/SerumForm.vue')
+  ),
+  'face_mask': defineAsyncComponent(() =>
+      import('./forms/FaceMaskForm.vue')
+  ),
+  'face_toner': defineAsyncComponent(() =>
+      import('./forms/TonerForm.vue')
+  ),
+  'face_cleanser': defineAsyncComponent(() =>
+      import('./forms/CleanserForm.vue')
+  ),
+
+  // Soins capillaires
+  'shampoo': defineAsyncComponent(() =>
+      import('./forms/ShampooForm.vue')
+  ),
+  'hair_mask': defineAsyncComponent(() =>
+      import('./forms/HairMaskForm.vue')
+  ),
+  'hair_serum': defineAsyncComponent(() =>
+      import('./forms/HairSerumForm.vue')
+  ),
+
+  // Soins du corps
+  'body_lotion': defineAsyncComponent(() =>
+      import('./forms/BodyLotionForm.vue')
+  ),
+  'body_butter': defineAsyncComponent(() =>
+      import('./forms/BodyButterForm.vue')
+  ),
+  'body_scrub': defineAsyncComponent(() =>
+      import('./forms/BodyScrubForm.vue')
+  ),
+
+  // Cosm?tiques
+  'lip_balm': defineAsyncComponent(() =>
+      import('./forms/LipBalmForm.vue')
+  ),
+
+  // Produits m?nagers
+  'household_cleaner': defineAsyncComponent(() =>
+      import('./forms/HouseholdCleanerForm.vue')
+  ),
+  'laundry_detergent': defineAsyncComponent(() =>
+      import('./forms/LaundryDetergentForm.vue')
+  ),
+
+  // Personnalis?
+  'custom': defineAsyncComponent(() =>
+      import('./forms/CustomForm.vue')
+  ),*/
+}
+
+// Import dynamique des formulaires sp?cifiques
 const currentFormComponent = computed(() => {
   if (!props.recipeType?.subtype) return null
-
-  const formComponents: Record<string, any> = {
-    // Soins de la peau
-    'face_cream': defineAsyncComponent(() =>
-        import('./forms/FaceCreamForm.vue')
-    ),
-    'conditioner': defineAsyncComponent(() =>
-        import('./forms/ConditionerForm.vue')
-    ),
- /*   'face_serum': defineAsyncComponent(() =>
-        import('./forms/SerumForm.vue')
-    ),
-    'face_mask': defineAsyncComponent(() =>
-        import('./forms/FaceMaskForm.vue')
-    ),
-    'face_toner': defineAsyncComponent(() =>
-        import('./forms/TonerForm.vue')
-    ),
-    'face_cleanser': defineAsyncComponent(() =>
-        import('./forms/CleanserForm.vue')
-    ),
-
-    // Soins capillaires
-    'shampoo': defineAsyncComponent(() =>
-        import('./forms/ShampooForm.vue')
-    ),
-    'hair_mask': defineAsyncComponent(() =>
-        import('./forms/HairMaskForm.vue')
-    ),
-    'hair_serum': defineAsyncComponent(() =>
-        import('./forms/HairSerumForm.vue')
-    ),
-
-    // Soins du corps
-    'body_lotion': defineAsyncComponent(() =>
-        import('./forms/BodyLotionForm.vue')
-    ),
-    'body_butter': defineAsyncComponent(() =>
-        import('./forms/BodyButterForm.vue')
-    ),
-    'body_scrub': defineAsyncComponent(() =>
-        import('./forms/BodyScrubForm.vue')
-    ),
-
-    // Cosmétiques
-    'lip_balm': defineAsyncComponent(() =>
-        import('./forms/LipBalmForm.vue')
-    ),
-
-    // Produits ménagers
-    'household_cleaner': defineAsyncComponent(() =>
-        import('./forms/HouseholdCleanerForm.vue')
-    ),
-    'laundry_detergent': defineAsyncComponent(() =>
-        import('./forms/LaundryDetergentForm.vue')
-    ),
-
-    // Personnalisé
-    'custom': defineAsyncComponent(() =>
-        import('./forms/CustomForm.vue')
-    ),*/
-  }
-
   return formComponents[props.recipeType.subtype] || formComponents['custom']
 })
 

@@ -224,6 +224,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useAuth } from '~/composables/useAuth'
 import { useApi } from '~/composables/useApi'
+import { useRecipes } from '~/composables/useRecipes'
 
 const route = useRoute()
 const router = useRouter()
@@ -239,7 +240,7 @@ const user = ref({
   initials: 'MD'
 })
 
-const recipes = ref<any[]>([])
+const { recipes, recipesLoaded, setRecipes, clearRecipes } = useRecipes()
 
 const userName = computed(() => user.value?.name)
 const userEmail = computed(() => user.value?.email)
@@ -265,6 +266,7 @@ const toggleUserMenu = () => {
 
 const logout = async () => {
   await authLogout()
+  clearRecipes()
   userMenuOpen.value = false
   mobileMenuOpen.value = false
   await router.push('/auth/login')
@@ -288,11 +290,13 @@ onBeforeUnmount(() => {
 })
 
 const loadRecipes = async () => {
+  if (recipesLoaded.value) {
+    return
+  }
   try {
-    recipes.value = await listRecipes()
+    setRecipes(await listRecipes())
   } catch (error) {
     console.error('Erreur chargement recettes:', error)
-    recipes.value = []
   }
 }
 </script>
