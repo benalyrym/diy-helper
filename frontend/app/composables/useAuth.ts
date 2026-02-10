@@ -1,4 +1,5 @@
 import { useRuntimeConfig, useState, useRouter } from "nuxt/app"
+import { useApiClient } from "../utils/apiClient"
 
 interface LoginResponse {
     token: string
@@ -7,14 +8,19 @@ interface LoginResponse {
 export function useAuth() {
     const token = useState<string | null>("jwt", () => null)
     const authReady = useState<boolean>("authReady", () => false)
+    const authError = useState<string | null>("authError", () => null)
     const config = useRuntimeConfig()
     const router = useRouter()
+    const { request: apiRequest, apiError, clearApiError } = useApiClient()
+    const persistAuth = config.public.persistAuth !== false
 
     // 🔁 Restore token côté client au refresh
     if (process.client && !token.value) {
-        const storedToken = sessionStorage.getItem("jwt")
-        if (storedToken) {
-            token.value = storedToken
+        if (persistAuth) {
+            const storedToken = sessionStorage.getItem("jwt")
+            if (storedToken) {
+                token.value = storedToken
+            }
         }
         authReady.value = true
     } else if (process.client) {
@@ -25,17 +31,29 @@ export function useAuth() {
     const isAuthenticated = computed(() => !!token.value)
 
     // 🔑 Login avec redirection
+    const handleUnauthorized = async () => {
+        token.value = null
+        if (process.client) {
+            sessionStorage.removeItem("jwt")
+        }
+        if (process.client) {
+            await router.push("/auth/login")
+        }
+    }
+
     const login = async (email: string, pass: string, redirectTo?: string) => {
         try {
-            const res = await $fetch<LoginResponse>("/login", {
-                baseURL: config.public.apiBase,
+            const res = await apiRequest<LoginResponse>("/login", {
                 method: "POST" as const,
                 body: { email, password: pass },
+                onUnauthorized: handleUnauthorized
             })
 
             token.value = res.token
+            authError.value = null
+            clearApiError()
 
-            if (process.client) {
+            if (process.client && persistAuth) {
                 sessionStorage.setItem("jwt", res.token)
             }
 
@@ -50,6 +68,7 @@ export function useAuth() {
             if (process.client) {
                 sessionStorage.removeItem("jwt")
             }
+            authError.value = "Identifiants incorrects"
             throw error
         }
     }
@@ -62,8 +81,7 @@ export function useAuth() {
         lastName?: string
         displayName?: string
     }) => {
-        return $fetch("/signup", {
-            baseURL: config.public.apiBase,
+        return apiRequest("/signup", {
             method: "POST" as const,
             body: data,
         })
@@ -71,22 +89,28 @@ export function useAuth() {
 
     // 🔒 Fetch authentifié
     const authFetch = async <T>(url: string, opts: any = {}) => {
-        return $fetch<T>(url, {
-            baseURL: config.public.apiBase,
-            headers: {
-                ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
-                ...(opts.headers || {}),
-            },
-            ...opts,
-        })
+        try {
+            return await apiRequest<T>(url, {
+                headers: {
+                    ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+                    ...(opts.headers || {}),
+                },
+                ...opts,
+                onUnauthorized: handleUnauthorized
+            })
+        } catch (error: any) {
+            throw error
+        }
     }
 
     // 🔑 Logout
-    const logout = () => {
+    const logout = async () => {
         token.value = null
+        authError.value = null
+        clearApiError()
         if (process.client) {
             sessionStorage.removeItem("jwt")
-            router.push("auth/login")
+            await router.push("/auth/login")
         }
     }
 
@@ -94,6 +118,8 @@ export function useAuth() {
         token,
         isAuthenticated,
         authReady,
+        authError,
+        apiError,
         login,
         signup,
         authFetch,

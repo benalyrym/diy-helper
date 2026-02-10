@@ -686,12 +686,12 @@ const getRecipeCategory = (recipe: any): string => {
     return 'other'
 }
 
-const getCategoryName = (categoryId: string): string => {
+const getCategoryName = (categoryId: string | number): string => {
     const category = allCategories.find(c => c.id === categoryId)
     return category?.name || 'Non catégorisé'
 }
 
-const getCategoryIcon = (categoryId: string): string => {
+const getCategoryIcon = (categoryId: string | number): string => {
     const category = allCategories.find(c => c.id === categoryId)
     return category?.icon || '🧪'
 }

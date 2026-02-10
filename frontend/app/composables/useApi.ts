@@ -36,12 +36,16 @@ export function useApi() {
         authFetch<Recipe>(`/recipes/${id}`)
 
     const createRecipe = async (data: any): Promise<Recipe> => {
-        console.log('Envoi des données:', data)
+        if (process.dev) {
+            console.log("Envoi des donnees:", data)
+        }
         const response = await authFetch<Recipe>("/recipes", {
             method: "POST",
             body: data
         })
-        console.log('Réponse reçue:', response)
+        if (process.dev) {
+            console.log("Reponse recue:", response)
+        }
         return response
     }
     const updateRecipe = (id: string | number, data: Partial<Recipe>): Promise<Recipe> => {
