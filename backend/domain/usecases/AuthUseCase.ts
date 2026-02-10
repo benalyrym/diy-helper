@@ -1,6 +1,7 @@
 import { UserRepositorySQLite } from "../../infra/repositories/UserRepositorySQLite"
 import bcrypt from "bcryptjs"
 import fastifyJwt from '@fastify/jwt'
+import { bcryptRounds, passwordPepper } from "../../config.js"
 
 export class AuthUseCase {
     constructor(private userRepo: UserRepositorySQLite) {}
@@ -29,7 +30,8 @@ export class AuthUseCase {
             throw new Error("User exists")
         }
 
-        const hash = await bcrypt.hash(password, 10)
+        const passwordWithPepper = `${password}${passwordPepper}`
+        const hash = await bcrypt.hash(passwordWithPepper, bcryptRounds)
         const user = await this.userRepo.save({
             email,
             password: hash,
@@ -42,17 +44,32 @@ export class AuthUseCase {
 
     async login(fastifyJwt: any, email: string, password: string) {
         const normalizedEmail = (email || '').trim().toLowerCase()
+        if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            throw new Error("Invalid credentials")
+        }
+        if (!password) {
+            throw new Error("Invalid credentials")
+        }
         const user = await this.userRepo.findByEmail(normalizedEmail)
         if (!user) {
             throw new Error("Invalid credentials")
         }
 
-        const isValid = await bcrypt.compare(password, user.password)
-        if (!isValid) {
-            throw new Error("Invalid credentials")
+        const withPepper = `${password}${passwordPepper}`
+        const isValidPeppered = await bcrypt.compare(withPepper, user.password)
+        if (!isValidPeppered) {
+            const isValidLegacy = await bcrypt.compare(password, user.password)
+            if (!isValidLegacy) {
+                throw new Error("Invalid credentials")
+            }
+            if (passwordPepper) {
+                const upgradedHash = await bcrypt.hash(withPepper, bcryptRounds)
+                await this.userRepo.updatePassword(user.id, upgradedHash)
+            }
         }
 
         const token = fastifyJwt.sign({
+            sub: user.id.toString(),
             id: user.id.toString(),
             email: user.email,
             displayName: user.displayName || undefined

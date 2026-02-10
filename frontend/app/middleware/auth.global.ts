@@ -3,10 +3,16 @@ import {defineNuxtRouteMiddleware, navigateTo} from "nuxt/app";
 
 // middleware/auth.global.ts
 export default defineNuxtRouteMiddleware((to, from) => {
-    const { isAuthenticated } = useAuth()
+    if (process.server) return
+
+    const { isAuthenticated, authReady } = useAuth()
 
     // Liste des routes publiques
     const publicRoutes = ['/auth/login', '/auth/signup', '/']
+
+    if (!authReady.value) {
+        return
+    }
 
     // Si la route n'est pas publique et l'utilisateur n'est pas authentifié
     if (!publicRoutes.includes(to.path) && !isAuthenticated.value) {

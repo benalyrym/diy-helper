@@ -27,8 +27,15 @@ export class UserRepositorySQLite {
     }
 
     async findByEmail(email: string) {
+        const normalized = (email || '').trim().toLowerCase()
         return db
             .prepare("SELECT * FROM users WHERE email=?")
-            .get(email)
+            .get(normalized)
+    }
+
+    async updatePassword(userId: string, password: string) {
+        db.prepare(
+            "UPDATE users SET password = ? WHERE id = ?"
+        ).run(password, userId)
     }
 }

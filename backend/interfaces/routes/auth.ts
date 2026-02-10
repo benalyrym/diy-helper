@@ -5,7 +5,45 @@ export default async function (fastify) {
     const userRepo = new UserRepositorySQLite()
     const auth = new AuthUseCase(userRepo)
 
-    fastify.post("/signup", async (req, reply) => {
+    fastify.post("/signup", {
+        config: {
+            rateLimit: {
+                max: 5,
+                timeWindow: "1 minute"
+            }
+        },
+        schema: {
+            body: {
+                type: "object",
+                required: ["email", "password"],
+                additionalProperties: false,
+                properties: {
+                    email: {
+                        type: "string",
+                        maxLength: 254,
+                        pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                    },
+                    password: {
+                        type: "string",
+                        minLength: 8,
+                        maxLength: 72
+                    },
+                    firstName: {
+                        type: "string",
+                        maxLength: 60
+                    },
+                    lastName: {
+                        type: "string",
+                        maxLength: 60
+                    },
+                    displayName: {
+                        type: "string",
+                        maxLength: 80
+                    }
+                }
+            }
+        }
+    }, async (req, reply) => {
         try {
             const { email, password, firstName, lastName, displayName } = req.body || {}
             const user = await auth.signup({ email, password, firstName, lastName, displayName })
@@ -17,7 +55,33 @@ export default async function (fastify) {
         }
     })
 
-    fastify.post("/login", async (req, reply) => {
+    fastify.post("/login", {
+        config: {
+            rateLimit: {
+                max: 5,
+                timeWindow: "1 minute"
+            }
+        },
+        schema: {
+            body: {
+                type: "object",
+                required: ["email", "password"],
+                additionalProperties: false,
+                properties: {
+                    email: {
+                        type: "string",
+                        maxLength: 254,
+                        pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+                    },
+                    password: {
+                        type: "string",
+                        minLength: 1,
+                        maxLength: 72
+                    }
+                }
+            }
+        }
+    }, async (req, reply) => {
         try {
             const { email, password } = req.body || {}
             const result = await auth.login(fastify.jwt, email, password)

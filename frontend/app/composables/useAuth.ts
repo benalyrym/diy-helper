@@ -6,6 +6,7 @@ interface LoginResponse {
 
 export function useAuth() {
     const token = useState<string | null>("jwt", () => null)
+    const authReady = useState<boolean>("authReady", () => false)
     const config = useRuntimeConfig()
     const router = useRouter()
 
@@ -15,6 +16,9 @@ export function useAuth() {
         if (storedToken) {
             token.value = storedToken
         }
+        authReady.value = true
+    } else if (process.client) {
+        authReady.value = true
     }
 
     // 🔑 Vérifier si l'utilisateur est authentifié
@@ -89,6 +93,7 @@ export function useAuth() {
     return {
         token,
         isAuthenticated,
+        authReady,
         login,
         signup,
         authFetch,

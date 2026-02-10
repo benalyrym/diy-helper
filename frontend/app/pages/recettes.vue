@@ -507,7 +507,7 @@ const router = useRouter()
 // @ts-ignore
 const { listRecipes } = useApi()
 // @ts-ignore
-const { isAuthenticated } = useAuth()
+const { isAuthenticated, authReady } = useAuth()
 
 // États
 const recipes = ref<any[]>([])
@@ -801,6 +801,10 @@ const loadRecipes = async () => {
         error.value = ''
 
         // Vérifier si l'utilisateur est authentifié
+        if (!authReady.value) {
+            return
+        }
+
         if (!isAuthenticated.value) {
             await router.push('/auth/login')
             return
@@ -845,7 +849,15 @@ watch(currentPage, () => {
 
 // Initialisation
 onMounted(async () => {
-    await loadRecipes()
+    if (authReady.value) {
+        await loadRecipes()
+    }
+})
+
+watch(authReady, async (ready) => {
+    if (ready) {
+        await loadRecipes()
+    }
 })
 </script>
 

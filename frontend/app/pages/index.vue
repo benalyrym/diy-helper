@@ -222,7 +222,7 @@
               © 2024 DIY Recipe Helper. Tous droits réservés.
             </p>
             <p class="text-gray-400 text-sm mt-1">
-              Fait avec ❤️ pour les passionnés de cuisine
+              Fait avec ❤️ pour les passionnés de cosmetique
             </p>
           </div>
         </div>
