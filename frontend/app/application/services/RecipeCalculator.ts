@@ -1,10 +1,14 @@
-export function calculateIngredients(
-    ingredients: any[],
+type IngredientRatio = {
+    ratio: number
+}
+
+export function calculateIngredients<T extends IngredientRatio>(
+    ingredients: T[],
     totalVolume: number
-): any[] {
-    const totalRatio = ingredients.reduce((a, i) => a + i.ratio, 0)
-    return ingredients.map((i) => ({
-        ...i,
-        quantity: (i.ratio / totalRatio) * totalVolume,
+): Array<T & { quantity: number }> {
+    const totalRatio = ingredients.reduce((acc, item) => acc + item.ratio, 0)
+    return ingredients.map((item) => ({
+        ...item,
+        quantity: (item.ratio / totalRatio) * totalVolume
     }))
 }

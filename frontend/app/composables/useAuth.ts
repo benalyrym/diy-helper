@@ -1,9 +1,7 @@
 import { useRuntimeConfig, useState, useRouter } from "nuxt/app"
 import { useApiClient } from "../utils/apiClient"
-
-interface LoginResponse {
-    token: string
-}
+import { createAuthApi } from "../services/api/auth"
+import type { AuthCredentials, LoginResponse, SignupPayload } from "../types/auth"
 
 export function useAuth() {
     const token = useState<string | null>("jwt", () => null)
@@ -12,6 +10,7 @@ export function useAuth() {
     const config = useRuntimeConfig()
     const router = useRouter()
     const { request: apiRequest, apiError, clearApiError } = useApiClient()
+    const authApi = createAuthApi(apiRequest)
     const persistAuth = config.public.persistAuth !== false
 
     // 🔁 Restore token côté client au refresh
@@ -43,11 +42,7 @@ export function useAuth() {
 
     const login = async (email: string, pass: string, redirectTo?: string) => {
         try {
-            const res = await apiRequest<LoginResponse>("/login", {
-                method: "POST" as const,
-                body: { email, password: pass },
-                onUnauthorized: handleUnauthorized
-            })
+            const res = await authApi.login({ email, password: pass } as AuthCredentials)
 
             token.value = res.token
             authError.value = null
@@ -81,10 +76,7 @@ export function useAuth() {
         lastName?: string
         displayName?: string
     }) => {
-        return apiRequest("/signup", {
-            method: "POST" as const,
-            body: data,
-        })
+        return authApi.signup(data as SignupPayload)
     }
 
     // 🔒 Fetch authentifié

@@ -1,5 +1,28 @@
+type MainCategory = {
+    id: string
+    name: string
+    icon: string
+    color: string
+    description: string
+    examples: string[]
+}
+
+type SubtypeIngredient = {
+    name: string
+    category: string
+}
+
+type SubtypeConfig = {
+    id: string
+    name: string
+    icon: string
+    defaultIngredients?: SubtypeIngredient[]
+    defaultInstructions?: string[]
+    tips?: string[]
+}
+
 export const useRecipeTypes = () => {
-    const mainCategories = [
+    const mainCategories: MainCategory[] = [
         {
             id: 'skincare',
             name: 'Soin de la peau',
@@ -11,7 +34,7 @@ export const useRecipeTypes = () => {
         // ... autres catégories
     ]
 
-    const subtypesByCategory = {
+    const subtypesByCategory: Record<string, SubtypeConfig[]> = {
         skincare: [
             {
                 id: 'face_cream',
@@ -54,9 +77,8 @@ export const useRecipeTypes = () => {
     }
 
     const getSubtypeConfig = (subtypeId: string) => {
-        for (const category in subtypesByCategory) {
-            // @ts-ignore
-            const subtype = subtypesByCategory[category].find(s => s.id === subtypeId)
+        for (const category of Object.keys(subtypesByCategory)) {
+            const subtype = subtypesByCategory[category]?.find(s => s.id === subtypeId)
             if (subtype) return subtype
         }
         return null

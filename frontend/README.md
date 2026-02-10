@@ -33,6 +33,15 @@ Key variables:
 - `NUXT_PUBLIC_API_BASE`: Backend base URL (default: `http://localhost:4000`).
 - `NUXT_PUBLIC_PERSIST_AUTH`: `true` to persist token in `sessionStorage`, `false` for memory-only.
 
+## Architecture
+
+- `app/pages`: route-level components.
+- `app/components`: presentational UI.
+- `app/composables`: stateful logic.
+- `app/services/api`: HTTP accessors.
+- `app/domain/models`: shared types and models.
+- `tests/domain`, `tests/ui`: unit and component tests.
+
 ## Auth flow
 
 The frontend uses a short-lived access token stored in memory and optionally in
