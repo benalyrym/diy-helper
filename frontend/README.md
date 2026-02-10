@@ -33,14 +33,29 @@ Key variables:
 - `NUXT_PUBLIC_API_BASE`: Backend base URL (default: `http://localhost:4000`).
 - `NUXT_PUBLIC_PERSIST_AUTH`: `true` to persist token in `sessionStorage`, `false` for memory-only.
 
-## Architecture
+## Architecture (DDD)
 
-- `app/pages`: route-level components.
-- `app/components`: presentational UI.
-- `app/composables`: stateful logic.
-- `app/services/api`: HTTP accessors.
-- `app/domain/models`: shared types and models.
-- `tests/domain`, `tests/ui`: unit and component tests.
+- `app/contexts/*/domain`: entities and ports (no Vue/HTTP).
+- `app/contexts/*/application`: use-cases and mappers.
+- `app/contexts/*/infrastructure`: HTTP adapters.
+- `app/app/di`: composition root (DI).
+- `app/shared`: cross-cutting utilities and infrastructure.
+- `app/pages`: route-level shells.
+- `app/components`: shared UI (see conventions).
+- `app/domain/models`: compatibility re-exports for domain entities.
+- `tests/domain`, `tests/application`, `tests/ui`: unit and component tests.
+
+### Component conventions
+
+- `app/components/ui`: dumb UI only (no API, no router, no business store).
+- `app/components/layout`: layout-level components (navigation, shell).
+- `app/features/<feature>/components`: feature UI and orchestration.
+
+x### Pages organization
+
+Pages are grouped with Nuxt route groups to keep URLs unchanged:
+
+- `app/pages/(home)`, `app/pages/(auth)`, `app/pages/(recipes)`, `app/pages/(tools)`
 
 ## Auth flow
 

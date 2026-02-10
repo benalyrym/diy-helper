@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { mount } from "@vue/test-utils"
-import PhaseInput from "../../app/components/PhaseInput.vue"
+import PhaseInput from "../../app/components/ui/PhaseInput.vue"
 
 describe("PhaseInput", () => {
     it("emits updated ingredients when adding", async () => {

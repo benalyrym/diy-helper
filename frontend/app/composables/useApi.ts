@@ -1,18 +1,17 @@
 // composables/useApi.ts
-import { useAuth } from "./useAuth"
-import type { IRecipe, RecipeForm } from "../domain/models/Recipe"
-import { createRecipesApi } from "../services/api/recipes"
+import { useContainer } from "~/di/useContainer"
+import type { RecipeForm } from "~/domain/models/Recipe"
 
 
 export function useApi() {
-    const { authFetch } = useAuth()
-    const api = createRecipesApi(authFetch)
+    const { recipes } = useContainer()
 
     return {
-        listRecipes: api.listRecipes,
-        getRecipe: api.getRecipe,
-        createRecipe: (data: RecipeForm) => api.createRecipe(data),
-        updateRecipe: (id: string | number, data: Partial<RecipeForm>) => api.updateRecipe(id, data),
-        deleteRecipe: api.deleteRecipe
+        listRecipes: () => recipes.listRecipes.execute(),
+        getRecipe: (id: string | string[]) => recipes.getRecipe.execute(id),
+        createRecipe: (data: RecipeForm) => recipes.createRecipe.execute(data),
+        updateRecipe: (id: string | number, data: Partial<RecipeForm>) =>
+            recipes.updateRecipe.execute(id, data),
+        deleteRecipe: (id: string | number) => recipes.deleteRecipe.execute(id)
     }
 }
