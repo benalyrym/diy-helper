@@ -1,62 +1,111 @@
-// interfaces/routes/recipe.ts - version complète avec toutes les routes
+// interfaces/routes/recipe.ts
 import { RecipeRepositorySQLite } from "../../infra/repositories/RecipeRepositorySQLite.js"
 import { CreateRecipe } from "../../domain/usecases/CreateRecipe.js"
 import { ListRecipes } from "../../domain/usecases/ListRecipes.js"
 import { GetRecipe } from "../../domain/usecases/GetRecipe.js"
 import { UpdateRecipe } from "../../domain/usecases/UpdateRecipe.js"
+import { requireAuth } from "../middleware/requireAuth.js"
 
 export default async function (fastify: any) {
     const repo = new RecipeRepositorySQLite()
 
-    fastify.addHook("onRequest", async (req: { jwtVerify: () => any; user: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { error: string }): any; new(): any } } }) => {
-        try {
-            await req.jwtVerify()
-            const user = req.user as any
-            console.log('✅ Authenticated user:', user.id)
+    fastify.addHook("onRequest", requireAuth)
 
-            // Normaliser l'ID utilisateur
-            if (user.sub && !user.id) {
-                req.user = { ...user, id: user.sub }
+    const idParamsSchema = {
+        type: "object",
+        required: ["id"],
+        additionalProperties: false,
+        properties: {
+            id: {
+                type: "string",
+                minLength: 1,
+                maxLength: 64
             }
-            if (user.userId && !user.id) {
-                req.user = { ...user, id: user.userId }
-            }
-
-        } catch (err: any) {
-            console.error('🔐 Auth error:', err.message)
-            return reply.code(401).send({ error: "Unauthorized" })
         }
-    })
+    }
 
-    // GET /recipes - Liste toutes les recettes de l'utilisateur
-    fastify.get("/", async (req: { user: any; query: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { error: string }): any; new(): any } } }) => {
+    const listQuerySchema = {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+            type: { type: "string", enum: ["recipe", "skincare"] }
+        }
+    }
+
+    const ingredientSchema = {
+        type: "object",
+        required: ["name", "quantity"],
+        additionalProperties: false,
+        properties: {
+            name: { type: "string", minLength: 1, maxLength: 120 },
+            quantity: { type: "number", minimum: 0 },
+            unit: { type: "string", maxLength: 20 },
+            type: { type: "string", maxLength: 50 }
+        }
+    }
+
+    const createRecipeSchema = {
+        type: "object",
+        required: ["name"],
+        additionalProperties: false,
+        properties: {
+            name: { type: "string", minLength: 1, maxLength: 200 },
+            description: { type: "string", maxLength: 2000 },
+            type: { type: "string", enum: ["recipe", "skincare"] },
+            category: { type: "string", maxLength: 120 },
+            subtype: { type: "string", maxLength: 120 },
+            recipeType: { type: "object" },
+            formulaType: { type: "string", maxLength: 120 },
+            steps: {
+                type: "array",
+                items: { type: "string", maxLength: 500 },
+                maxItems: 200
+            },
+            volume: { type: "number", minimum: 0 },
+            skinType: { type: "string", maxLength: 40 },
+            prepTime: { type: "number", minimum: 0 },
+            cookTime: { type: "number", minimum: 0 },
+            servings: { type: "number", minimum: 0 },
+            difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
+            notes: { type: "string", maxLength: 2000 },
+            ingredients: {
+                type: "array",
+                items: ingredientSchema,
+                maxItems: 200
+            }
+        }
+    }
+
+    const updateRecipeSchema = {
+        ...createRecipeSchema,
+        required: []
+    }
+
+    fastify.get("/", {
+        schema: { querystring: listQuerySchema }
+    }, async (req: { user: any; query: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
             const type = (req.query as any).type
 
-            console.log('📋 Getting recipes for user:', userId, 'type:', type)
-
             const list = new ListRecipes(repo)
             const recipes = await list.execute(userId, type)
 
-            console.log(`✅ Returning ${recipes.length} recipes`)
             return recipes
 
         } catch (error: any) {
-            console.error('💥 Error listing recipes:', error.message)
             return reply.code(500).send({
                 error: "Internal server error"
             })
         }
     })
 
-    // GET /recipes/:id - Récupère une recette spécifique
-    fastify.get("/:id", async (req: { user: any; params: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { error: string }): any; new(): any } } }) => {
+    fastify.get("/:id", {
+        schema: { params: idParamsSchema }
+    }, async (req: { user: any; params: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
             const recipeId = (req.params as any).id
-
-            console.log('🔍 Getting recipe:', { recipeId, userId })
 
             const get = new GetRecipe(repo)
             const recipe = await get.execute(recipeId, userId)
@@ -68,29 +117,23 @@ export default async function (fastify: any) {
             return recipe
 
         } catch (error: any) {
-            console.error('💥 Error getting recipe:', error.message)
             return reply.code(500).send({ error: "Internal server error" })
         }
     })
 
-    // POST /recipes - Crée une nouvelle recette
-    fastify.post("/", async (req: { user: any; body: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; data?: { createdAt: string; updatedAt: string; ingredients: any[]; name: string; description: string; ownerId: string; type: "recipe" | "skincare"; volume?: number | undefined; skinType?: string | undefined; prepTime?: number | undefined; cookTime?: number | undefined; servings?: number | undefined; difficulty?: "easy" | "medium" | "hard" | undefined; notes?: string | undefined; id: string }; message?: string; error?: any }): any; new(): any } } }) => {
+    fastify.post("/", {
+        schema: { body: createRecipeSchema }
+    }, async (req: { user: any; body: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
             const data = { ...req.body, ownerId: userId }
 
-            console.log('➕ Creating recipe for user:', userId)
-            console.log('📦 Data:', data)
-
             const create = new CreateRecipe(repo)
             const result = await create.execute(data)
-
-            console.log('✅ Recipe created:', result.id)
 
             return reply.code(201).send(result)
 
         } catch (error: any) {
-            console.error("💥 Error creating recipe:", error.message)
             return reply.code(400).send({
                 success: false,
                 error: error.message
@@ -98,15 +141,13 @@ export default async function (fastify: any) {
         }
     })
 
-    // PUT /recipes/:id - Met à jour une recette existante
-    fastify.put("/:id", async (req: { user: any; params: any; body: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { success?: boolean; message?: string; error?: any; details?: any }): any; new(): any } } }) => {
+    fastify.put("/:id", {
+        schema: { params: idParamsSchema, body: updateRecipeSchema }
+    }, async (req: { user: any; params: any; body: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
             const recipeId = (req.params as any).id
             const data = req.body
-
-            console.log('📝 Updating recipe:', { recipeId, userId })
-            console.log('📦 Update data:', data)
 
             const update = new UpdateRecipe(repo)
             const updated = await update.execute(recipeId, userId, data)
@@ -114,9 +155,7 @@ export default async function (fastify: any) {
             return reply.code(200).send(updated)
 
         } catch (error: any) {
-            console.error("💥 Error updating recipe:", error.message)
-
-            if (error.message.includes('not found') || error.message.includes('unauthorized')) {
+            if (error.message.includes("not found") || error.message.includes("unauthorized")) {
                 return reply.code(403).send({
                     error: error.message
                 })
@@ -129,16 +168,17 @@ export default async function (fastify: any) {
         }
     })
 
-    // DELETE /recipes/:id - Supprime une recette
-    fastify.delete("/:id", async (req: { user: any; params: any }, reply: { code: (arg0: number) => { (): any; new(): any; send: { (arg0: { success?: boolean; message?: string; error?: string }): any; new(): any } } }) => {
+    fastify.delete("/:id", {
+        schema: { params: idParamsSchema }
+    }, async (req: { user: any; params: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
             const recipeId = (req.params as any).id
 
-            console.log('🗑️  Deleting recipe:', { recipeId, userId })
-
-            // À implémenter dans le repository
-            // await repo.delete(recipeId, userId)
+            const deleted = await repo.deleteByIdAndOwner(recipeId, userId)
+            if (!deleted) {
+                return reply.code(404).send({ error: "Recipe not found" })
+            }
 
             return reply.code(200).send({
                 success: true,
@@ -146,19 +186,15 @@ export default async function (fastify: any) {
             })
 
         } catch (error: any) {
-            console.error("💥 Error deleting recipe:", error.message)
             return reply.code(500).send({ error: "Internal server error" })
         }
     })
 
-    // GET /recipes/skincare/formulas - Routes spécifiques skincare
-    fastify.get("/skincare/formulas", async (req: { user: any }, reply: { send: (arg0: { success: boolean; data: any[]; count: number }) => any; code: (arg0: number) => { (): any; new(): any; send: { (arg0: { error: string }): any; new(): any } } }) => {
+    fastify.get("/skincare/formulas", async (req: { user: any }, reply: any) => {
         try {
             const userId = (req.user as any).id
 
-            console.log('🧴 Getting skincare formulas for user:', userId)
-
-            const recipes = await repo.findByOwner(userId, 'skincare')
+            const recipes = await repo.findByOwner(userId, "skincare")
 
             return reply.send({
                 success: true,
@@ -167,9 +203,7 @@ export default async function (fastify: any) {
             })
 
         } catch (error: any) {
-            console.error("💥 Error getting skincare formulas:", error.message)
             return reply.code(500).send({ error: "Internal server error" })
         }
     })
 }
-

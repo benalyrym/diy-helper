@@ -192,6 +192,14 @@ export class RecipeRepositorySQLite {
         }
     }
 
+    async deleteByIdAndOwner(id: string, ownerId: string): Promise<boolean> {
+        const result = db.prepare(
+            "DELETE FROM recipes WHERE id = ? AND ownerId = ?"
+        ).run(id, ownerId)
+
+        return result.changes > 0
+    }
+
     private _enrichRecipe(recipe: any) {
         try {
             console.log(`🔍 Enriching recipe: ${recipe.id}`)

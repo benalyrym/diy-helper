@@ -1,9 +1,10 @@
 // infra/db/index.ts - version corrigée
 import Database from "better-sqlite3"
 import { join } from "path"
+import { dbPath as configuredPath } from "../../config.js"
 
 // Chemin vers la base de données
-const dbPath = join(process.cwd(), "recipes.db")
+const dbPath = configuredPath === ":memory:" ? configuredPath : join(process.cwd(), configuredPath)
 
 export const db = new Database(dbPath)
 

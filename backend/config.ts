@@ -63,6 +63,10 @@ const passwordPepper = process.env.PASSWORD_PEPPER || ""
 const bodyLimit = Number(process.env.BODY_LIMIT || "1048576")
 const safeBodyLimit = Number.isFinite(bodyLimit) ? bodyLimit : 1048576
 
+const dbPath = process.env.DB_PATH || "recipes.db"
+const enableHsts = process.env.HSTS_ENABLED === "true"
+const requestIdHeader = process.env.REQUEST_ID_HEADER || "x-request-id"
+
 export {
     isProd,
     isOriginAllowed,
@@ -73,5 +77,8 @@ export {
     jwtExpiresIn,
     bcryptRounds,
     passwordPepper,
-    safeBodyLimit
+    safeBodyLimit,
+    dbPath,
+    enableHsts,
+    requestIdHeader
 }
