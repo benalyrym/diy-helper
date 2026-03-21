@@ -2,7 +2,7 @@
   "name": "recipe-api",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch index.ts",
+    "devBack": "tsx watch index.ts",
     "test": "vitest"
   },
   "dependencies": {

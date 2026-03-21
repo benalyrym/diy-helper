@@ -1,724 +1,694 @@
-<template>
+﻿<template>
   <div :class="containerClasses">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
+    <!-- Navigation d'accessibilité -->
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-3 rounded-lg z-50">
       Passer au contenu principal
     </a>
 
-    <div class="mx-auto space-y-8" role="application" aria-label="Formulaire de formulation shampooing">
-      <!-- En-tête spécifique shampooing -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="p-3 bg-white rounded-xl shadow-sm">
-              <span class="text-3xl">🧴</span>
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">Formulaire Shampooing</h1>
-              <p class="text-gray-600">Créez votre shampooing personnalisé selon vos besoins capillaires</p>
-            </div>
-          </div>
-          <div class="text-right">
-                        <span class="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
-                            Complétion: {{ completionPercentage }}%
-                        </span>
-          </div>
-        </div>
-      </div>
+    <div class="mx-auto space-y-8" role="application" aria-label="Formulation de shampoing">
+      <!-- En-tête -->
+      <HeaderSection
+          :completion-percentage="completionPercentage"
+          :regulatory-status="regulatoryStatus"
+          :sections="sections"
+          @scroll-to-section="scrollToSection"
+          @toggle-accessibility="toggleAccessibilityMenu"
+      />
+
+      <!-- Menu d'accessibilité -->
+      <AccessibilityMenu
+          v-if="showAccessibilityMenu"
+          :high-contrast="highContrast"
+          :reduced-motion="reducedMotion"
+          @close="toggleAccessibilityMenu"
+          @increase-text-size="increaseTextSize"
+          @decrease-text-size="decreaseTextSize"
+          @toggle-high-contrast="toggleHighContrast"
+          @toggle-reduced-motion="toggleReducedMotion"
+      />
 
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Sidebar résumé -->
-        <aside class="lg:w-1/4" v-if="!isMobile || summaryExpanded">
-          <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 sticky top-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Résumé du Shampooing</h3>
+        <!-- Sidebar avec résumé -->
+        <FormulaSummary
+            :form-data="formData"
+            :regulatory-errors="regulatoryErrors"
+            :phases-summary="formulationSummary"
+            :is-valid="isValid"
+            :summary-expanded="summaryExpanded"
+            :is-mobile="isMobile"
+            @toggle-summary="toggleSummary"
+            @generate-report="generateReport"
+            @export-formula="exportFormula"
+        />
 
-            <div class="space-y-4">
-              <div>
-                <h4 class="font-medium text-gray-700 mb-2">Composition globale</h4>
-                <div class="space-y-2">
-                  <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Base lavante</span>
-                    <span class="font-medium">{{ baseLavanteTotal.toFixed(1) }}%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Conditionneurs</span>
-                    <span class="font-medium">{{ conditionersTotal.toFixed(1) }}%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Eau</span>
-                    <span class="font-medium">{{ waterPercent.toFixed(1) }}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="border-t pt-4">
-                <h4 class="font-medium text-gray-700 mb-2">Type de cheveux</h4>
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">{{ getHairTypeEmoji(formData.hairType) }}</span>
-                  <span class="font-medium">{{ getHairTypeLabel(formData.hairType) }}</span>
-                </div>
-              </div>
-
-              <div class="border-t pt-4">
-                <h4 class="font-medium text-gray-700 mb-2">pH cible</h4>
-                <div class="flex items-center justify-between">
-                  <span class="text-lg">🧪</span>
-                  <span class="font-bold text-blue-600">pH {{ formData.targetPH }}</span>
-                </div>
-              </div>
-
-              <button @click="toggleSummary" v-if="isMobile" class="w-full mt-4 btn-secondary">
-                Masquer le résumé
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Contenu principal -->
-        <main id="main-content" class="lg:w-3/4 space-y-8">
+        <!-- Contenu principal du formulaire -->
+        <main id="main-content" class="lg:w-3/4 space-y-8" role="main">
           <!-- Section 1: Informations de base -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-blue-100 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h2 class="text-xl font-bold text-gray-900">Informations de base</h2>
-            </div>
+          <ShampooBasicInfoSection
+              :form-data="formData"
+              :errors="errors"
+              :hair-profiles-options="hairProfilesOptions"
+              :selected-hair-profile="selectedHairProfile"
+              :clear-error="clearError"
+              :validate-volume="validateVolume"
+          />
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="label required">Nom du shampooing</label>
-                <input
-                    v-model="formData.name"
-                    type="text"
-                    class="input-field"
-                    placeholder="Ex: Shampooing doux à l'avocat"
-                    required
-                >
-              </div>
+          <!-- Section 2: Tensioactifs (Base lavante) -->
+          <ShampooSurfactantsSection
+              :surfactants="surfactants"
+              :form-data="formData"
+              :total-surfactants="totalSurfactants"
+              :surfactant-ratio="surfactantRatio"
+              :surfactant-warnings="surfactantWarnings"
+              :grams="grams"
+              :optimize-surfactants="optimizeSurfactants"
+          />
 
-              <div>
-                <label class="label required">Volume total (ml)</label>
-                <input
-                    v-model="formData.volume"
-                    type="number"
-                    min="50"
-                    max="1000"
-                    class="input-field"
-                    placeholder="250"
-                    required
-                >
-              </div>
+          <!-- Section 3: Actifs capillaires -->
+          <ShampooActivesSection
+              :filtered-actives="filteredActives"
+              :form-data="formData"
+              :hair-profiles="hairProfiles"
+              :enabled-actives-count="enabledActivesCount"
+              :too-many-actives="tooManyActives"
+              :active-search="activeSearch"
+              :active-type-filter="activeTypeFilter"
+              :update-active-search="updateActiveSearch"
+              :update-active-type-filter="updateActiveTypeFilter"
+              :grams="grams"
+          />
 
-              <div>
-                <label class="label required">Type de cheveux</label>
-                <div class="grid grid-cols-2 gap-3">
-                  <div v-for="type in hairTypes" :key="type.id"
-                       :class="[
-                                             'skin-type-card p-4 text-center',
-                                             formData.hairType === type.id ? 'skin-type-card-selected' : 'skin-type-card-default'
-                                         ]"
-                       @click="formData.hairType = type.id">
-                    <span class="text-2xl block mb-2">{{ type.emoji }}</span>
-                    <span class="font-medium">{{ type.label }}</span>
-                  </div>
-                </div>
-              </div>
+          <!-- Section 4: Agents conditionneurs -->
+          <ShampooConditioningAgentsSection
+              :conditioning-agents="conditioningAgents"
+              :form-data="formData"
+              :selected-conditioning-agents="selectedConditioningAgents"
+              :total-conditioning-percent="totalConditioningPercent"
+              :grams="grams"
+          />
 
-              <div>
-                <label class="label">Objectifs capillaires</label>
-                <div class="space-y-2">
-                  <div v-for="goal in hairGoals" :key="goal.id"
-                       class="flex items-center gap-3">
-                    <input
-                        :id="`goal-${goal.id}`"
-                        v-model="formData.hairGoals"
-                        type="checkbox"
-                        :value="goal.id"
-                        class="w-4 h-4 text-blue-600 rounded"
-                    >
-                    <label :for="`goal-${goal.id}`" class="flex items-center gap-2 cursor-pointer">
-                      <span>{{ goal.emoji }}</span>
-                      <span>{{ goal.label }}</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <!-- Section 5: Ajusteurs de pH et viscosité -->
+          <ShampooTexturizersSection
+              :form-data="formData"
+              :thickeners="thickeners"
+              :ph-adjusters="phAdjusters"
+              :target-ph="targetPh"
+              :ph-warnings="phWarnings"
+              :viscosity-target="viscosityTarget"
+          />
 
-          <!-- Section 2: Système lavant -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-green-100 rounded-lg">
-                  <span class="text-xl">🧼</span>
-                </div>
-                <h2 class="text-xl font-bold text-gray-900">Système lavant</h2>
-              </div>
-              <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-medium">
-                                {{ baseLavanteTotal.toFixed(1) }}%
-                            </span>
-            </div>
+          <!-- Section 6: Système de conservation -->
+          <ShampooPreservativesSection
+              :form-data="formData"
+              :preservative-systems="preservativeSystems"
+              :preservative-warnings="preservativeWarnings"
+              :check-preservative-compatibility="checkPreservativeCompatibility"
+          />
 
-            <div class="space-y-6">
-              <!-- Tensioactifs primaires -->
-              <div>
-                <h3 class="font-bold text-gray-900 mb-4">Tensioactifs primaires ({{ primarySurfactants.length }})</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div v-for="surfactant in primarySurfactants" :key="surfactant.id"
-                       class="border rounded-xl p-4">
-                    <div class="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 class="font-medium">{{ surfactant.name }}</h4>
-                        <p class="text-sm text-gray-600">{{ surfactant.inci }}</p>
-                      </div>
-                      <input
-                          v-model="surfactant.percent"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          :max="surfactant.max"
-                          class="w-20 px-3 py-1 border rounded"
-                      >
-                    </div>
-                    <div class="flex justify-between text-sm">
-                      <span class="text-gray-500">Mousse: {{ surfactant.foam }}</span>
-                      <span class="text-gray-500">Douceur: {{ surfactant.mildness }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <!-- Section 7: Parfums et huiles essentielles -->
+          <ShampooFragranceSection
+              :form-data="formData"
+              :fragrance-options="fragranceOptions"
+              :fragrance-notes="fragranceNotes"
+              :hair-essential-oils="hairEssentialOils"
+              :fragrance-warnings="fragranceWarnings"
+              :toggle-essential-oil="toggleEssentialOil"
+              :check-fragrance-allergens="checkFragranceAllergens"
+          />
 
-              <!-- Tensioactifs secondaires -->
-              <div>
-                <h3 class="font-bold text-gray-900 mb-4">Tensioactifs secondaires</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div v-for="surfactant in secondarySurfactants" :key="surfactant.id"
-                       class="border rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-2">
-                      <h4 class="font-medium">{{ surfactant.name }}</h4>
-                      <input
-                          v-model="surfactant.selected"
-                          type="checkbox"
-                          class="w-4 h-4"
-                      >
-                    </div>
-                    <p class="text-sm text-gray-600 mb-2">{{ surfactant.function }}</p>
-                    <input
-                        v-if="surfactant.selected"
-                        v-model="surfactant.percent"
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        class="w-full px-3 py-1 border rounded"
-                    >
-                  </div>
-                </div>
-              </div>
+          <!-- Section 8: Analyse et validation INCI -->
+          <ShampooAnalysisSection
+              :phases="phases"
+              :total-formulation-percent="totalFormulationPercent"
+              :water-phase="waterPhase"
+              :water-phase-grams="waterPhaseGrams"
+              :get-phase-dash-offset="getPhaseDashOffset"
+              :format-inci-list="formatINCIList"
+              :copy-inci="copyINCI"
+              :copied="copied"
+              :inci-list="inciList"
+              :inci-with-cas="inciWithCas"
+              :regulatory-status="regulatoryStatus"
+              :regulatory-errors="regulatoryErrors"
+              :regulatory-checks="regulatoryChecks"
+              :allergens-list="allergensList"
+              :generate-compliance-report="generateComplianceReport"
+          />
 
-              <!-- Épaississants -->
-              <div>
-                <h3 class="font-bold text-gray-900 mb-4">Système d'épaississement</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label class="label">Épaississant</label>
-                    <select v-model="formData.thickener" class="input-field">
-                      <option value="">Sélectionner...</option>
-                      <option value="salt">Sel (NaCl)</option>
-                      <option value="xanthan">Gomme Xanthane</option>
-                      <option value="cocoamide">Cocoamide DEA</option>
-                      <option value="acrylates">Polyacrylate</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="label">Pourcentage</label>
-                    <input
-                        v-model="formData.thickenerPercent"
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="3"
-                        class="input-field"
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Section 3: Conditionneurs et actifs -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                  <span class="text-xl">✨</span>
-                </div>
-                <h2 class="text-xl font-bold text-gray-900">Conditionneurs et actifs</h2>
-              </div>
-              <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full font-medium">
-                                {{ conditionersTotal.toFixed(1) }}%
-                            </span>
-            </div>
-
-            <div class="space-y-6">
-              <!-- Conditionneurs cationiques -->
-              <div>
-                <h3 class="font-bold text-gray-900 mb-4">Conditionneurs</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div v-for="conditioner in conditioners" :key="conditioner.id"
-                       :class="[
-                                             'p-4 border rounded-xl cursor-pointer transition-all',
-                                             conditioner.selected ? 'border-purple-300 bg-purple-50' : 'border-gray-200'
-                                         ]"
-                       @click="toggleConditioner(conditioner)">
-                    <div class="flex items-center justify-between mb-2">
-                      <h4 class="font-medium">{{ conditioner.name }}</h4>
-                      <input
-                          v-model="conditioner.selected"
-                          type="checkbox"
-                          class="w-4 h-4"
-                          @click.stop
-                      >
-                    </div>
-                    <p class="text-sm text-gray-600 mb-2">{{ conditioner.benefit }}</p>
-                    <div v-if="conditioner.selected" class="mt-3">
-                      <label class="text-xs text-gray-500">Pourcentage (%)</label>
-                      <input
-                          v-model="conditioner.percent"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          :max="conditioner.max"
-                          class="w-full px-3 py-1 border rounded"
-                          @click.stop
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Actifs capillaires -->
-              <div>
-                <h3 class="font-bold text-gray-900 mb-4">Actifs capillaires</h3>
-                <div class="space-y-4">
-                  <div v-for="active in hairActives" :key="active.id"
-                       class="flex items-center justify-between p-4 border rounded-xl">
-                    <div>
-                      <h4 class="font-medium">{{ active.name }}</h4>
-                      <p class="text-sm text-gray-600">{{ active.description }}</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                      <input
-                          v-model="active.percent"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          max="active.max"
-                          class="w-20 px-3 py-1 border rounded"
-                      >
-                      <span class="text-sm text-gray-500">%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Section 4: pH et ajustements -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-yellow-100 rounded-lg">
-                <span class="text-xl">⚗️</span>
-              </div>
-              <h2 class="text-xl font-bold text-gray-900">pH et ajustements</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="label">pH cible</label>
-                <div class="flex items-center gap-4">
-                  <input
-                      v-model="formData.targetPH"
-                      type="range"
-                      min="4"
-                      max="7"
-                      step="0.1"
-                      class="flex-1 range-green"
-                  >
-                  <span class="text-2xl font-bold text-gray-900">{{ formData.targetPH }}</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-500 mt-2">
-                  <span>Acide (4.0)</span>
-                  <span>Neutre (5.5)</span>
-                  <span>Alcalin (7.0)</span>
-                </div>
-              </div>
-
-              <div>
-                <label class="label">Ajusteur de pH</label>
-                <select v-model="formData.pHAdjuster" class="input-field">
-                  <option value="citric">Acide citrique</option>
-                  <option value="lactic">Acide lactique</option>
-                  <option value="sodium_bicarbonate">Bicarbonate de sodium</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="label">Parfum</label>
-                <select v-model="formData.fragrance" class="input-field">
-                  <option value="">Sans parfum</option>
-                  <option value="floral">Floral</option>
-                  <option value="fruity">Fruité</option>
-                  <option value="herbal">Herbal</option>
-                  <option value="woody">Boisé</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="label">Colorant (optionnel)</label>
-                <input
-                    v-model="formData.color"
-                    type="text"
-                    class="input-field"
-                    placeholder="Ex: Bleu ciel"
-                >
-              </div>
-            </div>
-          </section>
-
-          <!-- Section 5: Eau et proportions -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                  <span class="text-xl">💧</span>
-                </div>
-                <h2 class="text-xl font-bold text-gray-900">Eau et proportions</h2>
-              </div>
-              <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium">
-                                Total: {{ totalPercent.toFixed(1) }}%
-                            </span>
-            </div>
-
-            <div class="space-y-6">
-              <!-- Diagramme circulaire simplifié -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="text-center p-4 bg-gray-50 rounded-xl">
-                  <div class="text-2xl font-bold text-blue-600">{{ baseLavanteTotal.toFixed(1) }}%</div>
-                  <div class="text-sm text-gray-600">Base lavante</div>
-                </div>
-                <div class="text-center p-4 bg-gray-50 rounded-xl">
-                  <div class="text-2xl font-bold text-purple-600">{{ conditionersTotal.toFixed(1) }}%</div>
-                  <div class="text-sm text-gray-600">Conditionneurs</div>
-                </div>
-                <div class="text-center p-4 bg-gray-50 rounded-xl">
-                  <div class="text-2xl font-bold text-green-600">{{ waterPercent.toFixed(1) }}%</div>
-                  <div class="text-sm text-gray-600">Eau</div>
-                </div>
-                <div class="text-center p-4 bg-gray-50 rounded-xl">
-                  <div class="text-2xl font-bold text-yellow-600">{{ (100 - totalPercent).toFixed(1) }}%</div>
-                  <div class="text-sm text-gray-600">Restant</div>
-                </div>
-              </div>
-
-              <!-- Équilibre automatique -->
-              <div class="p-4 bg-blue-50 rounded-xl">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h4 class="font-medium text-blue-900">Équilibre automatique</h4>
-                    <p class="text-sm text-blue-700">Ajustez automatiquement l'eau pour atteindre 100%</p>
-                  </div>
-                  <button @click="autoBalance" class="btn-primary px-4 py-2">
-                    Équilibrer
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Section 6: Instructions et notes -->
-          <section class="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-gray-100 rounded-lg">
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-              </div>
-              <h2 class="text-xl font-bold text-gray-900">Instructions et notes</h2>
-            </div>
-
-            <div class="space-y-6">
-              <div>
-                <label class="label">Instructions de fabrication</label>
-                <textarea
-                    v-model="formData.instructions"
-                    rows="6"
-                    class="input-field"
-                    placeholder="Étapes détaillées pour fabriquer le shampooing..."
-                ></textarea>
-              </div>
-
-              <div>
-                <label class="label">Notes de formulation</label>
-                <textarea
-                    v-model="formData.notes"
-                    rows="4"
-                    class="input-field"
-                    placeholder="Observations, conseils, variantes..."
-                ></textarea>
-              </div>
-
-              <div>
-                <label class="label">Durée de conservation (mois)</label>
-                <input
-                    v-model="formData.shelfLife"
-                    type="number"
-                    min="3"
-                    max="24"
-                    class="input-field w-32"
-                >
-              </div>
-            </div>
-          </section>
+          <!-- Section 9: Finalisation -->
+          <ShampooActionsSection
+              :is-valid="isValid"
+              :saving="saving"
+              :is-edit-mode="isEditMode"
+              :initial-data="props.initialData"
+              :save-draft="saveDraft"
+              :save="save"
+              :cancel="cancel"
+              :format-date="formatDate"
+          />
         </main>
       </div>
 
-      <!-- Actions -->
-      <div class="flex justify-between gap-4 pt-8 border-t">
-        <button @click="cancel" class="btn-secondary">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-          Annuler
-        </button>
+      <!-- Barre d'actions fixe -->
+      <FixedActionBar
+          :show-fixed-bar="showFixedBar"
+          :is-valid="isValid"
+          :saving="saving"
+          :is-edit-mode="isEditMode"
+          :regulatory-errors="regulatoryErrors"
+          :completion-percentage="completionPercentage"
+          @save="save"
+          @save-draft="saveDraft"
+          @toggle-fixed-bar="toggleFixedBar"
+      />
 
-        <div class="flex gap-4">
-          <button @click="saveDraft" class="btn-outline">
-            Sauvegarder comme brouillon
-          </button>
-          <button @click="save" :disabled="!isValid" class="btn-primary">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Créer le shampooing
-          </button>
-        </div>
-      </div>
+      <!-- Espace pour la barre fixe -->
+      <div class="h-20"></div>
+
+      <!-- Footer -->
+      <Footer :current-date="currentDate"/>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import {computed, ref, watch, onMounted, onUnmounted} from 'vue'
+import {useRouter} from 'vue-router'
+import {useClipboard} from '@vueuse/core'
 
+// Composables
+import useShampooFormData from '../composables/hair/useShampooFormData'
+import useShampooFilters from '../composables/hair/useShampooFilters'
+import useShampooCalculations from '../composables/hair/useShampooCalculations'
+import useShampooRegulatoryValidation from '../composables/hair/useShampooRegulatoryValidation'
+import useShampooIngredients from '../composables/hair/useShampooIngredients'
+import useShampooAccessibility from '../composables/hair/useShampooAccessibility'
+import useShampooINCI from '../composables/hair/useShampooINCI'
+
+// Composants
+import HeaderSection from '../ui/HeaderSection.vue'
+import AccessibilityMenu from '../ui/AccessibilityMenu.vue'
+import FormulaSummary from '../ui/FormulaSummary.vue'
+import FixedActionBar from '../ui/FixedActionBar.vue'
+import Footer from '../ui/Footer.vue'
+import ShampooBasicInfoSection from '../ui/sections/shampoo/BasicInfoSection.vue'
+import ShampooSurfactantsSection from '../ui/sections/shampoo/SurfactantsSection.vue'
+import ShampooActivesSection from '../ui/sections/shampoo/ActivesSection.vue'
+import ShampooConditioningAgentsSection from '../ui/sections/shampoo/ConditioningAgentsSection.vue'
+import ShampooTexturizersSection from '../ui/sections/shampoo/TexturizersSection.vue'
+import ShampooPreservativesSection from '../ui/sections/shampoo/PreservativesSection.vue'
+import ShampooFragranceSection from '../ui/sections/shampoo/FragranceSection.vue'
+import ShampooAnalysisSection from '../ui/sections/shampoo/AnalysisSection.vue'
+import ShampooActionsSection from '../ui/sections/shampoo/ActionsSection.vue'
+
+const router = useRouter()
+const {copy, copied} = useClipboard()
+
+// Props pour les données initiales
 const props = defineProps({
-  recipeType: any
+  initialData: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
+// Événements
 const emit = defineEmits(['save', 'cancel', 'save-draft'])
 
 // États UI
-const isMobile = ref(false)
-const summaryExpanded = ref(true)
+const saving = ref(false)
+const errors = ref({})
+const isEditMode = ref(false)
+const showFixedBar = ref(true)
+const summaryExpanded = ref(false)
+const showAccessibilityMenu = ref(false)
 
-// Données du formulaire
-const formData = ref({
-  name: '',
-  volume: 250,
-  hairType: 'normal',
-  hairGoals: [],
-  targetPH: 5.5,
-  thickener: '',
-  thickenerPercent: 0,
-  pHAdjuster: 'citric',
-  fragrance: '',
-  color: '',
-  instructions: '',
-  notes: '',
-  shelfLife: 12,
-  preservativeSystem: 'cosgard',
-  preservativePercent: 0.5
+// Données
+const {
+  formData,
+  hairProfiles,
+  hairProfilesOptions,
+  selectedHairProfile,
+  surfactants,
+  actives,
+  conditioningAgents,
+  thickeners,
+  phAdjusters,
+  preservativeSystems,
+  fragranceOptions,
+  fragranceNotes,
+  hairEssentialOils,
+  targetPh,
+  viscosityTarget,
+  applyInitialData
+} = useShampooFormData()
+
+// Filtres
+const {
+  activeSearch,
+  activeTypeFilter,
+  filteredActives
+} = useShampooFilters(actives)
+
+const updateActiveSearch = (value) => {
+  activeSearch.value = value
+}
+
+const updateActiveTypeFilter = (value) => {
+  activeTypeFilter.value = value
+}
+
+// Calculs
+const {
+  grams,
+  totalSurfactants,
+  surfactantRatio,
+  surfactantWarnings,
+  selectedConditioningAgents,
+  totalConditioningPercent,
+  enabledActivesCount,
+  tooManyActives,
+  preservativePercent,
+  thickenerPercent,
+  totalActivesPercent,
+  heTotal,
+  waterPhase,
+  waterPhaseGrams,
+  totalFormulationPercent,
+  phases,
+  formulationSummary,
+  phWarnings,
+  preservativeWarnings,
+  fragranceWarnings
+} = useShampooCalculations({
+  formData,
+  surfactants,
+  actives,
+  conditioningAgents,
+  hairProfiles,
+  targetPh,
+  viscosityTarget
 })
 
-// Tensioactifs primaires
-const primarySurfactants = ref([
-  { id: 'sls', name: 'Sodium Laureth Sulfate', inci: 'Sodium Laureth Sulfate', percent: 15, max: 25, foam: 'Élevée', mildness: 'Faible' },
-  { id: 'sles', name: 'Sodium Lauryl Sulfate', inci: 'Sodium Lauryl Sulfate', percent: 10, max: 20, foam: 'Très élevée', mildness: 'Très faible' },
-  { id: 'coco_betaine', name: 'Coco-Betaine', inci: 'Cocamidopropyl Betaine', percent: 8, max: 15, foam: 'Bonne', mildness: 'Élevée' },
-  { id: 'decyl_glucoside', name: 'Decyl Glucoside', inci: 'Decyl Glucoside', percent: 12, max: 20, foam: 'Moyenne', mildness: 'Très élevée' }
-])
+// Validation réglementaire
+const {
+  regulatoryChecks,
+  regulatoryErrors,
+  regulatoryStatus,
+  validateVolume,
+  clearError,
+  checkPreservativeCompatibility,
+  checkFragranceAllergens
+} = useShampooRegulatoryValidation(
+    {
+      formData,
+      waterPhase,
+      totalSurfactants,
+      surfactantRatio,
+      totalConditioningPercent,
+      hairProfiles,
+      heTotal,
+      targetPh
+    },
+    errors
+)
 
-// Tensioactifs secondaires
-const secondarySurfactants = ref([
-  { id: 'cocoamide', name: 'Cocoamide DEA', function: 'Épaississant/mousse', selected: false, percent: 0 },
-  { id: 'lauramide', name: 'Lauramide DEA', function: 'Épaississant', selected: false, percent: 0 },
-  { id: 'cocamidopropyl', name: 'Cocamidopropyl', function: 'Surgraissage', selected: false, percent: 0 }
-])
+// Ingrédients et INCI
+const {
+  inciList,
+  inciWithCas,
+  allergensList
+} = useShampooINCI({
+  formData,
+  surfactants,
+  actives,
+  thickeners,
+  phAdjusters,
+  preservativeSystems,
+  selectedConditioningAgents
+})
 
-// Conditionneurs
-const conditioners = ref([
-  { id: 'behentrimonium', name: 'Behentrimonium Chloride', benefit: 'Démêlage', selected: false, percent: 1, max: 3 },
-  { id: 'cetrimonium', name: 'Cetrimonium Chloride', benefit: 'Brillance', selected: false, percent: 0.5, max: 2 },
-  { id: 'guar_hydroxypropyl', name: 'Guar Hydroxypropyltrimonium', benefit: 'Volume', selected: false, percent: 0.3, max: 1 },
-  { id: 'polyquaternium', name: 'Polyquaternium-7', benefit: 'Fixation légère', selected: false, percent: 0.2, max: 1 },
-  { id: 'panthenol', name: 'Panthenol', benefit: 'Hydratation', selected: false, percent: 0.5, max: 2 },
-  { id: 'silicone', name: 'Dimethicone', benefit: 'Lissage', selected: false, percent: 0.5, max: 2 }
-])
+// Accessibilité
+const {
+  highContrast,
+  reducedMotion,
+  containerClasses,
+  increaseTextSize,
+  decreaseTextSize,
+  toggleHighContrast,
+  toggleReducedMotion,
+  detectSystemPreferences
+} = useShampooAccessibility()
 
-// Actifs capillaires
-const hairActives = ref([
-  { id: 'keratin', name: 'Kératine hydrolysée', description: 'Réparation', percent: 1, max: 3 },
-  { id: 'collagen', name: 'Collagène', description: 'Élasticité', percent: 0.5, max: 2 },
-  { id: 'biotin', name: 'Biotine', description: 'Croissance', percent: 0.1, max: 0.5 },
-  { id: 'caffeine', name: 'Caféine', description: 'Stimulant', percent: 0.2, max: 1 }
-])
+const currentDate = ref(new Date().toLocaleDateString('fr-FR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}))
 
-// Types de cheveux
-const hairTypes = [
-  { id: 'normal', label: 'Normaux', emoji: '✨' },
-  { id: 'dry', label: 'Secs', emoji: '🌵' },
-  { id: 'oily', label: 'Gras', emoji: '💦' },
-  { id: 'damaged', label: 'Abîmés', emoji: '⚡' },
-  { id: 'colored', label: 'Colorés', emoji: '🎨' },
-  { id: 'curly', label: 'Bouclés', emoji: '🌀' }
+// Sections pour navigation
+const sections = [
+  {id: 'basic-info', name: 'Informations'},
+  {id: 'surfactants', name: 'Base lavante'},
+  {id: 'actives', name: 'Actifs'},
+  {id: 'conditioning-agents', name: 'Conditionneurs'},
+  {id: 'texturizers', name: 'Texturisants'},
+  {id: 'preservatives', name: 'Conservation'},
+  {id: 'fragrance', name: 'Parfum'},
+  {id: 'analysis', name: 'Analyse INCI'},
+  {id: 'actions', name: 'Finalisation'}
 ]
 
-// Objectifs capillaires
-const hairGoals = [
-  { id: 'moisture', label: 'Hydratation', emoji: '💧' },
-  { id: 'repair', label: 'Réparation', emoji: '🔧' },
-  { id: 'volume', label: 'Volume', emoji: '📈' },
-  { id: 'shine', label: 'Brillance', emoji: '✨' },
-  { id: 'curl_definition', label: 'Définition des boucles', emoji: '🌀' },
-  { id: 'anti_dandruff', label: 'Anti-pelliculaire', emoji: '❄️' }
-]
+const isMobile = computed(() => window.innerWidth < 1024)
 
-// Computed properties
-const baseLavanteTotal = computed(() => {
-  const primary = primarySurfactants.value.reduce((sum, s) => sum + s.percent, 0)
-  const secondary = secondarySurfactants.value
-      .filter(s => s.selected)
-      .reduce((sum, s) => sum + s.percent, 0)
-  return primary + secondary
-})
-
-const conditionersTotal = computed(() => {
-  const conditionerSum = conditioners.value
-      .filter(c => c.selected)
-      .reduce((sum, c) => sum + c.percent, 0)
-  const activesSum = hairActives.value.reduce((sum, a) => sum + a.percent, 0)
-  return conditionerSum + activesSum + (formData.value.thickenerPercent || 0)
-})
-
-const waterPercent = computed(() => {
-  const otherComponents = baseLavanteTotal.value +
-      conditionersTotal.value +
-      (formData.value.preservativePercent || 0.5)
-  return Math.max(0, 100 - otherComponents)
-})
-
-const totalPercent = computed(() => {
-  return baseLavanteTotal.value +
-      conditionersTotal.value +
-      waterPercent.value +
-      (formData.value.preservativePercent || 0.5)
-})
-
+// Pourcentage de complétion
 const completionPercentage = computed(() => {
-  let score = 0
-  if (formData.value.name) score += 20
-  if (formData.value.hairType) score += 20
-  if (baseLavanteTotal.value > 0) score += 30
-  if (conditionersTotal.value > 0) score += 20
-  if (waterPercent.value > 0) score += 10
-  return Math.min(100, score)
+  let percentage = 0
+
+  // Vérification sécurisée
+  if (formData?.value?.name && formData.value.name.trim().length > 0) percentage += 10
+  if (formData?.value?.volume >= 100) percentage += 5
+  if (formData?.value?.hairType) percentage += 10
+
+  if (formData?.value?.preservativeSystem) percentage += 15
+  if (formData?.value?.preservativeSystem === 'cosgard' && (formData?.value?.cosgardPercent || 0) >= 0.5) {
+    percentage += 5
+  }
+
+  if (enabledActivesCount.value > 0) percentage += 10
+  if (selectedConditioningAgents?.value?.length > 0) percentage += 10
+  if (formData?.value?.thickener) percentage += 5
+  if (regulatoryStatus?.value?.isValid) percentage += 15
+
+  return Math.min(percentage, 100)
+})
+
+// Méthodes UI
+const scrollToSection = (sectionId) => {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({behavior: 'smooth', block: 'start'})
+    element.focus({preventScroll: true})
+  }
+}
+
+const toggleFixedBar = () => {
+  showFixedBar.value = !showFixedBar.value
+}
+
+const toggleSummary = () => {
+  summaryExpanded.value = !summaryExpanded.value
+}
+
+const toggleAccessibilityMenu = () => {
+  showAccessibilityMenu.value = !showAccessibilityMenu.value
+}
+
+// Optimisation des tensioactifs
+const optimizeSurfactants = () => {
+  const total = totalSurfactants.value
+
+  if (total < 10) {
+    // Augmenter pour atteindre 15%
+    const multiplier = 15 / total
+    surfactants.value.forEach(s => {
+      if (s.selected) {
+        s.percent = Math.min(s.max, s.percent * multiplier)
+      }
+    })
+  } else if (total > 30) {
+    // Réduire pour atteindre 25%
+    const multiplier = 25 / total
+    surfactants.value.forEach(s => {
+      if (s.selected) {
+        s.percent = Math.max(s.min, s.percent * multiplier)
+      }
+    })
+  }
+}
+
+// Méthodes INCI
+const formatINCIList = () => {
+  return inciList.value.join(',\n')
+}
+
+const copyINCI = async () => {
+  await copy(formatINCIList())
+  setTimeout(() => {
+    copied.value = false
+  }, 2000)
+}
+
+// Méthodes de formatage
+const formatDate = (dateString) => {
+  if (!dateString) return 'Jamais'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+const getPhaseDashOffset = (phase, index) => {
+  let offset = 0
+  for (let i = 0; i < index; i++) {
+    offset += phases.value[i].percent * 9.42
+  }
+  return offset
+}
+
+// Validation de sauvegarde
+const canSave = computed(() => {
+  const hasPreservative = formData.preservativeSystem === 'cosgard'
+      ? (formData.cosgardPercent >= 0.5 && formData.cosgardPercent <= 1.0)
+      : formData.preservativeSystem
+
+  const surfactantsOk = totalSurfactants.value >= 8 && totalSurfactants.value <= 35
+  const phOk = targetPh.value >= 4.0 && targetPh.value <= 6.0
+
+  return formData?.name?.trim()?.length > 0 &&
+      formData.volume >= 50 &&
+      formData.hairType &&
+      hasPreservative &&
+      surfactantsOk &&
+      phOk &&
+      waterPhase.value >= 0
 })
 
 const isValid = computed(() => {
-  return formData.value.name &&
-      formData.value.hairType &&
-      baseLavanteTotal.value > 0 &&
-      baseLavanteTotal.value <= 40 &&
-      conditionersTotal.value <= 15 &&
-      waterPercent.value > 0 &&
-      totalPercent.value === 100
+  // Autorise le clic dès que les conditions de base sont réunies; le blocage détaillé reste géré par regulatoryStatus
+  const regulatoryOk = regulatoryStatus.value?.isValid ?? true
+  return canSave.value && regulatoryOk
 })
 
-const containerClasses = computed(() => {
-  return 'max-w-7xl mx-auto p-4 md:p-8'
-})
+// Méthodes de sauvegarde
+const generateIngredientsForDB = () => {
+  const ingredients = []
 
-// Méthodes
-const getHairTypeEmoji = (type) => {
-  const typeObj = hairTypes.find(t => t.id === type)
-  return typeObj?.emoji || '✨'
-}
+  // Tensioactifs (par ordre INCI)
+  surfactants.value.filter(s => s.selected).forEach(s => {
+    ingredients.push({
+      name: s.inci,
+      quantity: s.percent,
+      unit: "%",
+      type: "surfactant",
+      function: s.function,
+      cas: s.cas
+    })
+  })
 
-const getHairTypeLabel = (type) => {
-  const typeObj = hairTypes.find(t => t.id === type)
-  return typeObj?.label || 'Non spécifié'
-}
+  // Actifs
+  actives.value.filter(a => a.enabled).forEach(a => {
+    ingredients.push({
+      name: a.inci,
+      quantity: a.percent,
+      unit: "%",
+      type: "active",
+      cas: a.cas,
+      function: a.function
+    })
+  })
 
-const toggleConditioner = (conditioner) => {
-  conditioner.selected = !conditioner.selected
-  if (!conditioner.selected) {
-    conditioner.percent = 0
+  // Agents conditionneurs
+  selectedConditioningAgents.value.forEach(agent => {
+    ingredients.push({
+      name: agent.inci,
+      quantity: agent.percent,
+      unit: "%",
+      type: "conditioning_agent",
+      cas: agent.cas
+    })
+  })
+
+  // Épaississant
+  const thickenerObj = thickeners.value.find(t => t.name === formData.thickener)
+  if (thickenerObj) {
+    ingredients.push({
+      name: thickenerObj.inci,
+      quantity: formData.thickenerPercent,
+      unit: "%",
+      type: "thickener",
+      cas: thickenerObj.cas
+    })
   }
-}
 
-const autoBalance = () => {
-  // Ajuste automatiquement l'eau pour atteindre 100%
-  const currentTotal = baseLavanteTotal.value + conditionersTotal.value + 0.5
-  const neededWater = 100 - currentTotal
-
-  if (neededWater > 0) {
-    // On peut ajuster ici si nécessaire
-    console.log(`Eau nécessaire: ${neededWater}%`)
+  // Ajusteur de pH
+  const phAdjuster = phAdjusters.value.find(p => p.name === formData.phAdjuster)
+  if (phAdjuster) {
+    ingredients.push({
+      name: phAdjuster.inci,
+      quantity: formData.phAdjusterPercent,
+      unit: "%",
+      type: "ph_adjuster",
+      cas: phAdjuster.cas
+    })
   }
+
+  // Conservateur
+  const preservative = preservativeSystems.find(p => p.id === formData.preservativeSystem)
+  if (preservative) {
+    ingredients.push({
+      name: preservative.inci,
+      quantity: formData.preservativeSystem === 'cosgard' ? formData.cosgardPercent : preservative.defaultPercent,
+      unit: "%",
+      type: "preservative",
+      cas: preservative.cas
+    })
+  }
+
+  // Huiles essentielles
+  formData.selectedEssentialOils.forEach(he => {
+    ingredients.push({
+      name: he.inci || `Parfum (${he.name})`,
+      quantity: typeof he.percent === 'number' ? he.percent : 0.5,
+      unit: "%",
+      type: "fragrance",
+      allergens: he.allergens || []
+    })
+  })
+
+  // Eau (toujours en dernier)
+  ingredients.push({
+    name: "Aqua (Water)",
+    quantity: waterPhase.value,
+    unit: "%",
+    type: "solvent"
+  })
+
+  return ingredients
 }
 
-const save = () => {
+const save = async () => {
   if (!isValid.value) {
-    alert('Veuillez compléter correctement le formulaire avant de sauvegarder')
+    const details = regulatoryErrors.value.length
+        ? `\n\nErreurs:\n- ${regulatoryErrors.value.join('\n- ')}`
+        : ''
+    alert(`Veuillez corriger les erreurs réglementaires avant d'enregistrer${details}`)
     return
   }
 
-  const formulaData = {
-    name: formData.value.name,
-    description: generateDescription(),
-    type: 'shampoo',
-    hairType: formData.value.hairType,
-    hairGoals: formData.value.hairGoals,
-    volume: formData.value.volume,
-    pH: formData.value.targetPH,
-    ingredients: generateIngredients(),
-    instructions: formData.value.instructions,
-    notes: formData.value.notes,
-    shelfLife: formData.value.shelfLife,
-    preservative: formData.value.preservativeSystem,
-    preservativePercent: formData.value.preservativePercent,
-    createdAt: new Date().toISOString(),
-    totalPercent: totalPercent.value,
-    composition: {
-      surfactants: baseLavanteTotal.value,
-      conditioners: conditionersTotal.value,
-      water: waterPercent.value
-    }
-  }
+  saving.value = true
 
-  emit('save', formulaData)
+  try {
+    const ingredients = generateIngredientsForDB()
+
+    // Tri INCI (ordre décroissant de concentration)
+    ingredients.sort((a, b) => b.quantity - a.quantity)
+
+    const formulaData = {
+      id: isEditMode.value ? props.initialData.id : `shampoo-${Date.now()}`,
+      name: formData.name.trim(),
+      description: generateDescription(),
+      type: "hair_shampoo",
+      createdAt: isEditMode.value ? props.initialData.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+
+      // Formulation
+      volume: formData.volume,
+      hairType: formData.hairType,
+      targetPh: targetPh.value,
+
+      // Base lavante
+      surfactants: surfactants.value.filter(s => s.selected).map(s => ({
+        id: s.id,
+        percent: s.percent
+      })),
+      totalSurfactants: totalSurfactants.value,
+
+      // Actifs
+      actives: actives.value.filter(a => a.enabled).map(a => ({
+        id: a.id,
+        percent: a.percent
+      })),
+
+      // Agents conditionneurs
+      conditioningAgents: selectedConditioningAgents.value.map(a => ({
+        id: a.id,
+        percent: a.percent
+      })),
+
+      // Texturisants
+      thickener: formData.thickener,
+      thickenerPercent: formData.thickenerPercent,
+      phAdjuster: formData.phAdjuster,
+      phAdjusterPercent: formData.phAdjusterPercent,
+
+      // Conservation
+      preservativeSystem: formData.preservativeSystem,
+      cosgardPercent: formData.cosgardPercent,
+
+      // Parfum
+      fragranceType: formData.fragranceType,
+      fragranceIntensity: formData.fragranceIntensity,
+      fragranceNote: formData.fragranceNote,
+      selectedEssentialOils: formData.selectedEssentialOils,
+
+      // Ingrédients complets
+      ingredients: ingredients,
+
+      // Calculs
+      totalPercent: totalFormulationPercent.value,
+      waterPercent: waterPhase.value,
+
+      // Métadonnées INCI
+      inciList: inciList.value,
+      inciWithCas: inciWithCas.value,
+      allergensList: allergensList.value,
+
+      // Conformité
+      compliance: {
+        euRegulation: "1223/2009",
+        preservativeCompliant: true,
+        phAppropriate: targetPh.value >= 4.0 && targetPh.value <= 6.0,
+        surfactantLevelAppropriate: totalSurfactants.value >= 8 && totalSurfactants.value <= 35,
+        isValid: regulatoryStatus.value.isValid,
+        errors: regulatoryErrors.value,
+        warnings: [...surfactantWarnings.value, ...phWarnings.value, ...preservativeWarnings.value]
+      },
+
+      // Version
+      version: "2.2"
+    }
+
+    emit("save", formulaData)
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement:", error)
+    alert("Une erreur est survenue lors de l'enregistrement")
+  } finally {
+    saving.value = false
+  }
 }
 
 const saveDraft = () => {
-  emit('save-draft', {
-    ...formData.value,
-    primarySurfactants: primarySurfactants.value,
-    secondarySurfactants: secondarySurfactants.value.filter(s => s.selected),
-    conditioners: conditioners.value.filter(c => c.selected),
-    hairActives: hairActives.value,
+  emit("save-draft", {
+    ...formData,
+    surfactants: surfactants.value.filter(s => s.selected),
+    actives: actives.value.filter(a => a.enabled),
+    conditioningAgents: selectedConditioningAgents.value,
     isDraft: true,
     savedAt: new Date().toISOString(),
     progress: completionPercentage.value
@@ -726,148 +696,155 @@ const saveDraft = () => {
 }
 
 const cancel = () => {
-  emit('cancel')
+  emit("cancel")
+  if (!emit.cancel) {
+    router.push(isEditMode.value ? `/recette/${props.initialData.id}` : '/recettes')
+  }
 }
 
 const generateDescription = () => {
-  const hairTypeLabel = getHairTypeLabel(formData.value.hairType)
-  const surfactantCount = primarySurfactants.value.length +
-      secondarySurfactants.value.filter(s => s.selected).length
-  const conditionerCount = conditioners.value.filter(c => c.selected).length
+  const preservativeName = preservativeSystems.find(p => p.id === formData.preservativeSystem)?.name || 'Non spécifié'
+  const surfactantsList = surfactants.value.filter(s => s.selected).map(s => `${s.name} ${s.percent}%`).join(', ')
 
-  return `Shampooing ${formData.value.name} pour cheveux ${hairTypeLabel}
-• Volume: ${formData.value.volume}ml
-• pH: ${formData.value.targetPH}
-• Tensioactifs: ${surfactantCount} types (${baseLavanteTotal.value.toFixed(1)}%)
-• Conditionneurs: ${conditionerCount} types (${conditionersTotal.value.toFixed(1)}%)
-• Phase aqueuse: ${waterPercent.value.toFixed(1)}%`
+  return `${formData.name} - Shampoing pour cheveux ${formData.hairType}
+- Volume: ${formData.volume}ml
+- pH cible: ${targetPh.value}
+- Base lavante (${totalSurfactants.value.toFixed(1)}%): ${surfactantsList || 'Aucune'}
+- Actifs: ${actives.filter(a => a.enabled).map(a => `${a.name} ${a.percent}%`).join(', ') || 'Aucun'}
+- Agents conditionneurs: ${selectedConditioningAgents.value.map(a => `${a.name} ${a.percent}%`).join(', ') || 'Aucun'}
+- Épaississant: ${formData.thickener || 'Aucun'} ${formData.thickenerPercent || 0}%
+- Conservateur: ${preservativeName}
+- Validation UE: ${regulatoryStatus.value.isValid ? 'Conforme' : 'Non conforme'}`
 }
 
-const generateIngredients = () => {
-  const ingredients = []
-
-  // Tensioactifs primaires
-  primarySurfactants.value.forEach(s => {
-    if (s.percent > 0) {
-      ingredients.push({
-        name: s.name,
-        inci: s.inci,
-        percent: s.percent,
-        type: 'surfactant_primary'
-      })
-    }
-  })
-
-  // Tensioactifs secondaires
-  secondarySurfactants.value
-      .filter(s => s.selected && s.percent > 0)
-      .forEach(s => {
-        ingredients.push({
-          name: s.name,
-          percent: s.percent,
-          type: 'surfactant_secondary'
-        })
-      })
-
-  // Conditionneurs
-  conditioners.value
-      .filter(c => c.selected && c.percent > 0)
-      .forEach(c => {
-        ingredients.push({
-          name: c.name,
-          percent: c.percent,
-          type: 'conditioner'
-        })
-      })
-
-  // Actifs
-  hairActives.value
-      .filter(a => a.percent > 0)
-      .forEach(a => {
-        ingredients.push({
-          name: a.name,
-          percent: a.percent,
-          type: 'active'
-        })
-      })
-
-  // Épaississant
-  if (formData.value.thickener && formData.value.thickenerPercent > 0) {
-    ingredients.push({
-      name: `Épaississant (${formData.value.thickener})`,
-      percent: formData.value.thickenerPercent,
-      type: 'thickener'
-    })
+// Méthodes d'export
+const generateReport = () => {
+  if (!isValid.value) {
+    alert("La formule doit être valide pour générer un rapport")
+    return
   }
 
-  // Conservateur
-  ingredients.push({
-    name: 'Système de conservation',
-    percent: formData.value.preservativePercent,
-    type: 'preservative'
-  })
-
-  // Eau
-  ingredients.push({
-    name: 'Eau déminéralisée',
-    percent: waterPercent.value,
-    type: 'water'
-  })
-
-  // Ajusteur pH
-  ingredients.push({
-    name: `Ajusteur pH (${formData.value.pHAdjuster})`,
-    percent: 0.1, // Valeur indicative
-    type: 'ph_adjuster'
-  })
-
-  return ingredients
+  console.log('Génération du rapport PDF...')
 }
 
-// Lifecycle hooks
-onMounted(() => {
-  isMobile.value = window.innerWidth < 1024
+const exportFormula = () => {
+  const exportData = {
+    formula: {
+      ...formData,
+      surfactants: surfactants.value.filter(s => s.selected),
+      actives: actives.value.filter(a => a.enabled),
+      conditioningAgents: selectedConditioningAgents.value
+    },
+    analysis: {
+      phases: phases.value,
+      regulatoryStatus: regulatoryStatus.value,
+      inciList: inciList.value,
+      inciWithCas: inciWithCas.value,
+      allergensList: allergensList.value
+    },
+    metadata: {
+      version: "2.2",
+      exportDate: new Date().toISOString(),
+      generatedBy: "Formulateur Shampoing Pro"
+    }
+  }
 
-  // Pré-remplir avec des valeurs par défaut
-  if (!formData.value.name && props.recipeType?.productName) {
-    formData.value.name = `Mon ${props.recipeType.productName}`
+  const dataStr = JSON.stringify(exportData, null, 2)
+  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
+
+  const exportFileDefaultName = `shampoing-${formData.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
+
+  const linkElement = document.createElement('a')
+  linkElement.setAttribute('href', dataUri)
+  linkElement.setAttribute('download', exportFileDefaultName)
+  linkElement.click()
+}
+
+const generateComplianceReport = () => {
+  console.log('Génération du rapport de conformité...')
+}
+
+// Initialisation
+onMounted(() => {
+  if (props.initialData && Object.keys(props.initialData).length > 0) {
+    isEditMode.value = true
+    applyInitialData(props.initialData)
+  }
+
+  document.addEventListener('keydown', handleKeyboardShortcuts)
+  detectSystemPreferences()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyboardShortcuts)
+})
+
+const handleKeyboardShortcuts = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    save()
+  }
+
+  if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+    e.preventDefault()
+    saveDraft()
+  }
+
+  if (e.key === 'Escape') {
+    cancel()
+  }
+}
+
+// Watchers
+watch(() => props.initialData, (newData) => {
+  if (newData && Object.keys(newData).length > 0) {
+    isEditMode.value = true
+    applyInitialData(newData)
+  }
+}, {immediate: true})
+
+watch(() => formData.cosgardPercent, (newVal) => {
+  if (newVal < 0.5 || newVal > 1.0) {
+    errors.value.cosgardPercent = "Cosgard: plage 0.5-1.0% requise"
+  } else {
+    delete errors.value.cosgardPercent
+  }
+})
+
+watch(() => formData.volume, validateVolume)
+watch(totalSurfactants, (newVal) => {
+  if (newVal < 8) {
+    errors.value.surfactants = "Base lavante insuffisante (min 8%)"
+  } else if (newVal > 35) {
+    errors.value.surfactants = "Base lavante trop concentrée (max 35%)"
+  } else {
+    delete errors.value.surfactants
   }
 })
 </script>
 
 <style scoped>
-/* Utilisez les mêmes styles que dans votre template principal */
+/* Styles spécifiques aux Shampoings */
 .input-field {
   @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl
-  bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-  transition-all duration-200 placeholder:text-gray-400;
+  bg-white
+  focus:outline-none focus:ring-2 focus:ring-offset-1
+  transition-all duration-200
+  placeholder:text-gray-400
+  disabled:bg-gray-100 disabled:cursor-not-allowed;
 }
 
-.btn-primary {
-  @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700
-  text-white font-bold rounded-xl hover:from-blue-700 hover:to-blue-800
-  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-  transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
-  flex items-center justify-center gap-2 shadow-lg hover:shadow-xl;
+.input-error {
+  @apply border-red-500 focus:ring-red-500 focus:border-red-500;
 }
 
-.btn-secondary {
-  @apply px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-50
-  text-gray-700 font-bold rounded-xl border-2 border-gray-300
-  hover:bg-gradient-to-r hover:from-gray-200 hover:to-gray-100
-  focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
-  transition-all duration-300 flex items-center justify-center gap-2;
-}
-
-.btn-outline {
-  @apply px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl
-  hover:border-gray-400 hover:bg-gray-50
-  focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
-  transition-all duration-300 flex items-center justify-center gap-2;
+.input-valid {
+  @apply border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500;
 }
 
 .label {
-  @apply block text-base font-bold text-gray-900 mb-2 tracking-tight;
+  @apply block text-base font-bold text-gray-900 mb-2
+  tracking-tight;
 }
 
 .label.required::after {
@@ -875,20 +852,112 @@ onMounted(() => {
   @apply text-red-600;
 }
 
-.skin-type-card {
-  @apply border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg;
+.error-message {
+  @apply mt-1 text-sm text-red-600 font-medium flex items-center gap-1;
 }
 
-.skin-type-card-selected {
+.help-text {
+  @apply mt-1 text-sm text-gray-500;
+}
+
+/* Cartes spécifiques */
+.surfactant-card {
+  @apply border-2 rounded-xl transition-all duration-300;
+}
+
+.surfactant-card-selected {
   @apply border-blue-500 bg-gradient-to-br from-blue-50 to-white;
 }
 
-.skin-type-card-default {
+.surfactant-card-default {
   @apply border-gray-200 hover:border-blue-300;
 }
 
-.range-green::-webkit-slider-thumb {
-  @apply appearance-none h-5 w-5 rounded-full border-4 border-white shadow-xl cursor-pointer bg-green-500;
+.ph-indicator {
+  @apply w-full h-2 rounded-full bg-gradient-to-r from-red-500 via-green-500 to-blue-500;
+}
+
+/* Boutons */
+.btn-primary {
+  @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700
+  text-white font-bold rounded-xl
+  hover:from-blue-700 hover:to-indigo-800
+  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+  transition-all duration-300
+  disabled:opacity-50 disabled:cursor-not-allowed
+  flex items-center justify-center gap-2
+  shadow-lg hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-50
+  text-gray-700 font-bold rounded-xl border-2 border-gray-300
+  hover:bg-gradient-to-r hover:from-gray-200 hover:to-gray-100
+  focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
+  transition-all duration-300
+  disabled:opacity-50 disabled:cursor-not-allowed
+  flex items-center justify-center gap-2
+  shadow-sm hover:shadow-md;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Support contraste élevé */
+:global(.high-contrast) {
+  --text-color: #000;
+  --bg-color: #fff;
+  --border-color: #000;
+}
+
+/* Support réduction de mouvement */
+:global(.reduced-motion) * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .surfactant-card {
+    @apply p-3;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    @apply px-4 py-2 text-sm;
+  }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full hover:bg-gray-500;
+}
+
+/* Focus visible amélioré */
+:focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
 }
 </style>
-

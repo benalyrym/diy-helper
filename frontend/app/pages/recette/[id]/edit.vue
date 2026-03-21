@@ -1,4 +1,4 @@
-<!-- pages/recette/edit/[id].vue -->
+ï»¿<!-- pages/recette/edit/[id].vue -->
 <template>
   <div class="min-h-screen mx-auto p-4 md:p-8">
     <div class="mb-8">
@@ -6,7 +6,7 @@
       <p class="text-gray-600 mt-2">Modifiez les informations de votre recette</p>
     </div>
 
-    <!-- États de chargement -->
+    <!-- Ã‰tats de chargement -->
     <div v-if="loading" class="flex justify-center items-center h-64">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -30,7 +30,7 @@
       />
     </div>
 
-    <!-- État de sauvegarde -->
+    <!-- Ã‰tat de sauvegarde -->
     <div v-if="saving" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <div class="flex items-center space-x-3">
@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useApi, type Recipe } from '../../../composables/useApi'
+import { useApi, type Recipe } from '~/composables/useApi'
 import { useRoute, useRouter } from "vue-router"
 import FormRenderer from "~/components/formulateur-cosmetique/FormRenderer.vue"
 
@@ -103,7 +103,7 @@ const extractQuantityFromDescription = (description: string, ingredientName: str
   for (const line of lines) {
     if (line.includes(ingredientName)) {
       const percentMatch = line.match(/(\d+\.?\d*)%/i)
-      if (percentMatch) return parseFloat(percentMatch[1])
+      if (percentMatch && percentMatch[1]) return parseFloat(percentMatch[1])
     }
   }
   return null
@@ -166,7 +166,7 @@ const extractInfoFromDescription = (description: string) => {
   const result = { volume: 50, skinType: 'mixte', hairType: 'normaux' }
   if (!description) return result
   const volumeMatch = description.match(/(\d+)ml/i)
-  if (volumeMatch) {
+  if (volumeMatch && volumeMatch[1]) {
     result.volume = parseInt(volumeMatch[1])
   }
   const skinTypes = ['seche', 'grasse', 'sensible', 'mixte', 'mature']
@@ -216,7 +216,7 @@ const normalizeRecipeForEdit = (apiData: any) => {
   }
 }
 
-// Déterminer recipeType à partir des données de la recette
+// DÃ©terminer recipeType Ã  partir des donnÃ©es de la recette
 const recipeType = computed(() => {
   if (!recipe.value) return null
 
@@ -255,7 +255,7 @@ const recipeType = computed(() => {
     (recipeTypeValue === 'bodycare' ? 'bodycare' : '') ||
     'other'
 
-  // Déterminer la catégorie principale
+  // DÃ©terminer la catÃ©gorie principale
   if (subtype === 'custom') {
     const desc = normalizeKey(recipe.value.description || '')
     const name = normalizeKey(recipe.value.name || '')
@@ -286,13 +286,13 @@ const recipeType = computed(() => {
     subtype = 'face_cream'
   }
 
-  // Déterminer categoryName
+  // DÃ©terminer categoryName
   const categoryNames: Record<string, string> = {
     'skincare': 'Soin de la peau',
     'haircare': 'Soin des cheveux',
     'bodycare': 'Soin du corps',
-    'cosmetic': 'Cosmétique',
-    'household': 'Ménager',
+    'cosmetic': 'CosmÃ©tique',
+    'household': 'MÃ©nager',
     'other': 'Autre'
   }
 
@@ -314,16 +314,16 @@ onMounted(async () => {
       loadError.value = 'ID de recette manquant'
       return
     }
-    console.log('?? Chargement recette pour édition, ID:', id)
+    console.log('ðŸ”„ Chargement recette pour Ã©dition, ID:', id)
 
     const data = await getRecipe(id)
     const normalized = normalizeRecipeForEdit(data)
-    console.log('? Données reçues pour édition:', normalized)
-    console.log('?? Type détecté:', recipeType.value)
+    console.log('âœ… DonnÃ©es reÃ§ues pour Ã©dition:', normalized)
+    console.log('ðŸ“ Type dÃ©tectÃ©:', recipeType.value)
 
     recipe.value = normalized
   } catch (err: any) {
-    console.error('?? Erreur chargement recette:', err)
+    console.error('ðŸ’¥ Erreur chargement recette:', err)
     loadError.value = err.message || 'Impossible de charger la recette'
   } finally {
     loading.value = false
@@ -340,10 +340,10 @@ const handleSave = async (updatedData: any) => {
       loadError.value = 'ID de recette manquant'
       return
     }
-    console.log('?? Mise à jour recette ID:', id)
-    console.log('?? Données envoyées:', updatedData)
+    console.log('ðŸ’¾ Mise Ã  jour recette ID:', id)
+    console.log('ðŸ“¤ DonnÃ©es envoyÃ©es:', updatedData)
 
-    // Combiner avec les données existantes
+    // Combiner avec les donnÃ©es existantes
     const fullData = {
       ...recipe.value,
       ...updatedData,
@@ -353,12 +353,12 @@ const handleSave = async (updatedData: any) => {
     const updatedRecipe = await updateRecipe(id, fullData)
     const targetId = updatedRecipe?.id || updatedRecipe?._id || id
 
-    // Redirection vers la page de détail
+    // Redirection vers la page de dÃ©tail
     await router.push(`/recette/${targetId}`)
 
   } catch (err: any) {
-    console.error('?? Erreur mise à jour:', err)
-    saveError.value = err.message || 'Erreur lors de la mise à jour'
+    console.error('ðŸ’¥ Erreur mise Ã  jour:', err)
+    saveError.value = err.message || 'Erreur lors de la mise Ã  jour'
   } finally {
     saving.value = false
   }
@@ -369,5 +369,3 @@ const handleCancel = () => {
   router.push(`/recette/${id}`)
 }
 </script>
-
-
